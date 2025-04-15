@@ -1,9 +1,9 @@
 "use client";
 import {useState, useEffect} from "react";
 import data from "@/data/apartments.json";
-import FilterSidebar from "@/app/components/FilterSidebar";
-import ApartmentsList from "@/app/components/ApartmentsList";
-import PageTransition from "@/app/components/PageTransition";
+import FilterSidebar from "@/components/FilterSidebar";
+import ApartmentsList from "@/components/ApartmentsList";
+import PageTransition from "@/components/PageTransition";
 
 export default function ApartmentsLayout() {
     const [initialApartments] = useState(data);

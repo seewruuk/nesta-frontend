@@ -1,4 +1,4 @@
-import SingleApartmentLayout from "@/app/components/_layouts/SingleApartmentLayout";
+import SingleApartmentLayout from "@/components/_layouts/SingleApartmentLayout";
 
 export default function page({params}) {
     return (

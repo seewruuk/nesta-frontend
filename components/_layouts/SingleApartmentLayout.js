@@ -1,11 +1,11 @@
 "use client"
 import apartments from "@/data/apartments.json"
-import Layout from "@/app/components/Layout";
+import Layout from "@/components/Layout";
 import Link from "next/link";
-import Button from "@/app/components/Button";
+import Button from "@/components/Button";
 import Image from "next/image";
 import {useState} from "react";
-import PageTransition from "@/app/components/PageTransition";
+import PageTransition from "@/components/PageTransition";
 
 
 export default function SingleApartmentLayout({slug}) {
