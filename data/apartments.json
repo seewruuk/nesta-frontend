@@ -1,0 +1,202 @@
+[
+  {
+    "header": "Apartament w centrum Warszawy",
+    "address": "ul. Krakowska 12, Warszawa",
+    "price": 3500,
+    "slogan": "Nowoczesne mieszkanie w sercu stolicy",
+    "slug": "a7x2k3nq",
+    "filter": {
+      "location": "Warszawa",
+      "district": "Śródmieście",
+      "billsIncluded": true,
+      "deposit": true,
+      "propertyType": "Mieszkanie",
+      "areaRange": "51-70 m²",
+      "furnishing": "Umeblowane",
+      "roomsCount": "3",
+      "bathrooms": "2",
+      "amenities": ["Wifi", "Balkon", "Zmywarka"],
+      "shortTermRental": false,
+      "smokingAllowed": false,
+      "disabledAccess": true,
+      "petsAccepted": true
+    },
+    "landlord": {
+      "name": "Jan Kowalski",
+      "slug": "jan-kowalski",
+      "email": "jan.kowalski@example.com",
+      "phone": "123-456-789"
+    },
+    "images": [
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/275484/pexels-photo-275484.jpeg",
+      "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg",
+      "https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
+      "https://images.pexels.com/photos/565324/pexels-photo-565324.jpeg",
+      "https://images.pexels.com/photos/813692/pexels-photo-813692.jpeg",
+      "https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg",
+      "https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg"
+    ]
+  },
+  {
+    "header": "Przestronny apartament z ogrodem",
+    "address": "ul. Słoneczna 5, Wrocław",
+    "price": 4500,
+    "slogan": "Nowa cena!!! | 4 pokoje | willowy budynek | ogród",
+    "slug": "k2jw8tzy",
+    "filter": {
+      "location": "Wrocław",
+      "district": "Okęcie",
+      "billsIncluded": false,
+      "deposit": true,
+      "propertyType": "Mieszkanie",
+      "areaRange": "71-100 m²",
+      "furnishing": "Częściowo umeblowane",
+      "roomsCount": "4+",
+      "bathrooms": "2",
+      "amenities": ["Balkon", "Ogród", "Miejsce parkingowe"],
+      "shortTermRental": true,
+      "smokingAllowed": false,
+      "disabledAccess": true,
+      "petsAccepted": "Do ustalenia"
+    },
+    "landlord": {
+      "name": "Anna Nowak",
+      "slug": "anna-nowak",
+      "email": "anna.nowak@example.com",
+      "phone": "987-654-321"
+    },
+    "images": [
+      "https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg",
+      "https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg",
+      "https://images.pexels.com/photos/813692/pexels-photo-813692.jpeg",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
+      "https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg",
+      "https://images.pexels.com/photos/275484/pexels-photo-275484.jpeg",
+      "https://images.pexels.com/photos/565324/pexels-photo-565324.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg"
+    ]
+  },
+  {
+    "header": "Klimatyczne studio przy plaży",
+    "address": "ul. Morska 8, Gdańsk",
+    "price": 2800,
+    "slogan": "Idealne studio na krótkoterminowy wynajem, blisko morza",
+    "slug": "r4p3msuv",
+    "filter": {
+      "location": "Gdańsk",
+      "district": "Oliwa",
+      "billsIncluded": true,
+      "deposit": false,
+      "propertyType": "Studio",
+      "areaRange": "31-50 m²",
+      "furnishing": "Nieumeblowane",
+      "roomsCount": "1",
+      "bathrooms": "1",
+      "amenities": ["Wifi", "Winda"],
+      "shortTermRental": true,
+      "smokingAllowed": false,
+      "disabledAccess": false,
+      "petsAccepted": false
+    },
+    "landlord": {
+      "name": "Piotr Zieliński",
+      "slug": "piotr-zielinski",
+      "email": "piotr.zielinski@example.com",
+      "phone": "555-666-777"
+    },
+    "images": [
+      "https://images.pexels.com/photos/565324/pexels-photo-565324.jpeg",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
+      "https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg",
+      "https://images.pexels.com/photos/813692/pexels-photo-813692.jpeg",
+      "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg",
+      "https://images.pexels.com/photos/275484/pexels-photo-275484.jpeg",
+      "https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg"
+    ]
+  },
+  {
+    "header": "Luksusowy apartament z widokiem",
+    "address": "ul. Piękna 20, Warszawa",
+    "price": 8000,
+    "slogan": "Luksus i komfort na najwyższym poziomie",
+    "slug": "zb9qx1ue",
+    "filter": {
+      "location": "Warszawa",
+      "district": "Bemowo",
+      "billsIncluded": false,
+      "deposit": true,
+      "propertyType": "Mieszkanie",
+      "areaRange": "101+ m²",
+      "furnishing": "Umeblowane",
+      "roomsCount": "4+",
+      "bathrooms": "3+",
+      "amenities": ["Wifi", "Balkon", "Pralka", "Miejsce parkingowe"],
+      "shortTermRental": false,
+      "smokingAllowed": false,
+      "disabledAccess": true,
+      "petsAccepted": true
+    },
+    "landlord": {
+      "name": "Marta Wiśniewska",
+      "slug": "marta-wisniewska",
+      "email": "marta.wisniewska@example.com",
+      "phone": "222-333-444"
+    },
+    "images": [
+      "https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg",
+      "https://images.pexels.com/photos/565324/pexels-photo-565324.jpeg",
+      "https://images.pexels.com/photos/275484/pexels-photo-275484.jpeg",
+      "https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/813692/pexels-photo-813692.jpeg",
+      "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg",
+      "https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg"
+    ]
+  },
+  {
+    "header": "Przytulne mieszkanie blisko Rynku",
+    "address": "ul. Piotrkowska 15, Wrocław",
+    "price": 3200,
+    "slogan": "Komfort i funkcjonalność w centrum miasta",
+    "slug": "vj3cydpm",
+    "filter": {
+      "location": "Wrocław",
+      "district": "Stare Miasto",
+      "billsIncluded": true,
+      "deposit": false,
+      "propertyType": "Mieszkanie",
+      "areaRange": "51-70 m²",
+      "furnishing": "Częściowo umeblowane",
+      "roomsCount": "3",
+      "bathrooms": "1",
+      "amenities": ["Wifi", "Zmywarka", "Balkon"],
+      "shortTermRental": false,
+      "smokingAllowed": true,
+      "disabledAccess": true,
+      "petsAccepted": "Do ustalenia"
+    },
+    "landlord": {
+      "name": "Krzysztof Lewandowski",
+      "slug": "krzysztof-lewandowski",
+      "email": "krzysztof.lewandowski@example.com",
+      "phone": "444-555-666"
+    },
+    "images": [
+      "https://images.pexels.com/photos/813692/pexels-photo-813692.jpeg",
+      "https://images.pexels.com/photos/1428348/pexels-photo-1428348.jpeg",
+      "https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg",
+      "https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg",
+      "https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg",
+      "https://images.pexels.com/photos/565324/pexels-photo-565324.jpeg",
+      "https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
+      "https://images.pexels.com/photos/275484/pexels-photo-275484.jpeg"
+    ]
+  }
+]

@@ -1,4 +1,5 @@
-import ApartmentsLayout from "@/app/components/_layouts/ApartamentsLayout";
+import ApartmentsLayout from "@/app/components/ApartamentsLayout";
+
 
 export default function Page(){
     return(

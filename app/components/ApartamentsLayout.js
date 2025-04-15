@@ -1,63 +1,80 @@
-"use client"
-import data from "@/data/apartments.json"
-import {useState} from "react";
+"use client";
+import {useState, useEffect} from "react";
+import data from "@/data/apartments.json";
+import FilterSidebar from "@/app/components/FilterSidebar";
+import ApartmentsList from "@/app/components/ApartmentsList";
+import PageTransition from "@/app/components/PageTransition";
 
 export default function ApartmentsLayout() {
-
-    const [initialApartments, setInitialApartments] = useState(data);
+    const [initialApartments] = useState(data);
     const [filteredApartments, setFilteredApartments] = useState(data);
+    const [filters, setFilters] = useState({
+        location: "",
+        district: "",
+        priceRange: 15000,
+        billsIncluded: undefined,
+        deposit: undefined,
+        propertyType: "",
+        furnishing: [],
+        roomsCount: [],
+        bathrooms: [],
+        amenities: [],
+        shortTermRental: undefined,
+        smokingAllowed: undefined,
+        disabledAccess: undefined,
+        petsAccepted: undefined,
+    });
+
+    const applyFilters = () => {
+        const filtered = initialApartments.filter((apartment) => {
+            const {filter} = apartment;
+            if (
+                filters.location &&
+                !filter.location.toLowerCase().includes(filters.location.toLowerCase())
+            ) return false;
+            if (filters.district && filter.district !== filters.district) return false;
+            if (apartment.price > filters.priceRange) return false;
+            if (typeof filters.billsIncluded === "boolean" && filter.billsIncluded !== filters.billsIncluded)
+                return false;
+            if (typeof filters.deposit === "boolean" && filter.deposit !== filters.deposit)
+                return false;
+            if (filters.propertyType && filter.propertyType !== filters.propertyType)
+                return false;
+            if (filters.furnishing.length > 0 && !filters.furnishing.includes(filter.furnishing))
+                return false;
+            if (filters.roomsCount.length > 0 && !filters.roomsCount.includes(filter.roomsCount))
+                return false;
+            if (filters.bathrooms.length > 0 && !filters.bathrooms.includes(filter.bathrooms))
+                return false;
+            if (filters.amenities.length > 0) {
+                for (let amenity of filters.amenities) {
+                    if (!filter.amenities.includes(amenity)) return false;
+                }
+            }
+            if (typeof filters.shortTermRental === "boolean" && filter.shortTermRental !== filters.shortTermRental)
+                return false;
+            if (filters.smokingAllowed !== undefined && filter.smokingAllowed !== filters.smokingAllowed)
+                return false;
+            if (typeof filters.disabledAccess === "boolean" && filter.disabledAccess !== filters.disabledAccess)
+                return false;
+            if (filters.petsAccepted !== undefined && filter.petsAccepted !== filters.petsAccepted)
+                return false;
+            return true;
+        });
+        setFilteredApartments(filtered);
+    };
+
+    useEffect(() => {
+        applyFilters();
+    }, [filters]);
 
     return (
-        <div className={"flex gap-[24px]"}>
-            <div className={"w-1/4 p-[60px] bg-[#fff]"}>
-
+        <PageTransition>
+            <div className="flex bg-gray-50 min-h-screen items-start">
+                <FilterSidebar filters={filters} setFilters={setFilters}/>
+                <ApartmentsList apartments={filteredApartments}/>
             </div>
-            <div className={'flex-grow mr-[60px] grid grid-cols-3 pt-[60px] space-x-[20px] space-y-[45px]'}>
-                {
-                    filteredApartments.map((item, index) => {
-                        return (
-                            <div
-                                key={item + index}
-                                className={""}
-                            >
-                                <div className={'relative h-[250px] bg-primary'}>
-                                    asd
-                                </div>
+        </PageTransition>
 
-                                <div className={"flex flex-col gap-[15px]"}>
-                                    <h3>{item.header}</h3>
-                                    <p>{item.address}</p>
-                                    <div>
-                                        {
-                                            item.filter.amenities.map((item, index) => {
-                                                    return (
-                                                        <div key={item + index}>
-                                                            <span>i</span>
-                                                            <span>{item}</span>
-                                                        </div>
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    </div>
-                                    <div>
-                                        <div>
-                                            <span>{item.landlord.name}</span>
-                                            <span>{item.price} zł / miesiąc</span>
-                                        </div>
-                                        <div>
-                                            <button>Skontaktuj się</button>
-                                            <button>Zobacz więcej</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        )
-                    })
-                }
-
-            </div>
-        </div>
-    )
+    );
 }

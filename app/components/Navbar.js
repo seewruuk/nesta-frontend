@@ -1,6 +1,6 @@
 export default function Navbar(){
     return(
-        <div className={"text-center w-screen h-[65px] text-[12px] animate-pulse grid place-items-center bg-primary"}>
+        <div className={"text-center w-screen h-[65px] text-[12px] bg-white grid place-items-center"}>
             <span>
                 Navbar
             </span>
