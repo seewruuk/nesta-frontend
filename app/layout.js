@@ -1,6 +1,7 @@
 import "./globals.css";
 import {Inter, Sora} from "next/font/google";
 import Navbar from "@/components/Navbar";
+import StateContextProvider from "@/context/StateContext";
 
 export const metadata = {
     title: "Create Next App",
@@ -20,12 +21,15 @@ const sora = Sora({
 export default function RootLayout({children}) {
     return (
         <html lang="pl">
-            <body
-                className={`${inter.variable} ${sora.variable} relative overflow-x-hidden sora`}
-            >
+        <body
+            className={`${inter.variable} ${sora.variable} relative overflow-x-hidden sora`}
+        >
+        <StateContextProvider>
             <Navbar/>
             {children}
-            </body>
+        </StateContextProvider>
+
+        </body>
         </html>
     );
 }
