@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/_layouts/DashboardLayout";
 
-export default function page(){
+export default function Page(){
     return(
         <DashboardLayout>
             Settings
