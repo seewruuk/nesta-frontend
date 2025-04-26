@@ -4,7 +4,7 @@ import Transactions from "@/components/Transactions";
 import {useContext} from "react";
 import {StateContext} from "@/context/StateContext";
 
-export default function page(){
+export default function Page(){
 
     const {transactions} = useContext(StateContext)
 
