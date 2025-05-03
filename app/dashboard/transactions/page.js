@@ -12,7 +12,6 @@ export default function Page(){
     return(
         <DashboardLayout>
             <Transactions maxElements={10} transactions={transactions}/>
-
         </DashboardLayout>
     )
 }

@@ -10,7 +10,6 @@ import {StateContext} from "@/context/StateContext";
 export default function Page() {
     const {messages, transactions} = useContext(StateContext)
 
-
     return (
         <>
             <DashboardLayout>

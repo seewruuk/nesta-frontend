@@ -14,9 +14,9 @@ export default function DashboardLayout({children}) {
 
     return (
         <>
+            <div className={"flex relative pt-[100px]"}>
 
-            <div className={"flex relative"}>
-                <div className={"w-[250px] px-[40px] pt-[72px] bg-white min-h-screen"}>
+                <div className={"w-1/6 px-[40px] pt-[72px] bg-white min-h-screen"}>
                     <div className={"flex gap-5 flex-col"}>
                         {
                             links.map((item, index) => {
@@ -31,13 +31,11 @@ export default function DashboardLayout({children}) {
                         }
                     </div>
                 </div>
-                <div className={'flex-grow p-[30px] overflow-x-scroll flex flex-col gap-5 relative'}>
+
+                <div className={'w-5/6 p-[30px] overflow-x-scroll flex flex-col gap-5 relative'}>
                     {children}
                 </div>
-
             </div>
-
-
         </>
     )
 }

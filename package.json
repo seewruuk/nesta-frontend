@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "framer-motion": "^12.7.3",
+    "js-cookie": "^3.0.5",
     "next": "15.3.0",
     "postcss": "^8.5.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

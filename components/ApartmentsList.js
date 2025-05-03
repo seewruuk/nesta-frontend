@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function ApartmentsList({apartments}) {
     return (
 
-            <div className="flex-grow px-6 grid grid-cols-3 gap-6">
+            <div className="flex-grow p-6 grid grid-cols-3 gap-6">
                 {apartments.map((item, index) => (
                     <div key={index} className="flex flex-col">
                         <div className="relative h-[13dvw] bg-gray-200 mb-4 rounded-lg">

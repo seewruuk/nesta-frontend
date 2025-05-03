@@ -70,7 +70,7 @@ export default function ApartmentsLayout() {
 
     return (
         <PageTransition>
-            <div className="flex bg-gray-50 min-h-screen items-start">
+            <div className="flex bg-gray-50 min-h-screen items-start pt-[100px]">
                 <FilterSidebar filters={filters} setFilters={setFilters}/>
                 <ApartmentsList apartments={filteredApartments}/>
             </div>

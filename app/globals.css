@@ -1,10 +1,20 @@
 @import "tailwindcss";
 
 
+*{
+    box-sizing: border-box;
+}
+
 body{
     background-color: #F5F5F5;
     margin: 0;
     padding: 0;
+    height: 100%;
+
+}
+
+html{
+    height: 100%;
 }
 
 .inter{
@@ -14,6 +24,7 @@ body{
 .sora{
     font-family: var(--font-sora), serif;
 }
+
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 

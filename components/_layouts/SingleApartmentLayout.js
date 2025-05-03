@@ -71,7 +71,7 @@ export default function SingleApartmentLayout({slug}) {
         <PageTransition>
             <Layout>
 
-                <div className={"flex items-center gap-6 mt-[52px]"}>
+                <div className={"flex items-center gap-6 pt-[150px]"}>
                     <Link href={"/apartments"} className="text-sm text-gray-500">
                         Powrót
                     </Link>
