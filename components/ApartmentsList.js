@@ -1,17 +1,24 @@
+"use client"
 import Button from "@/components/Button";
 import Link from "next/link";
 import Image from "next/image";
+import {useRouter} from "next/navigation";
 
 export default function ApartmentsList({apartments}) {
+
+    const router = useRouter();
+
+
     return (
 
             <div className="flex-grow p-6 grid grid-cols-3 gap-6">
                 {apartments.map((item, index) => (
                     <div key={index} className="flex flex-col">
-                        <div className="relative h-[13dvw] bg-gray-200 mb-4 rounded-lg">
-                            <Image src={item.images[0]} alt={"asd"} fill className="rounded-lg object-cover"/>
-
-                        </div>
+                        <Link
+                            href={`/apartments/${item.slug}`}
+                            className="relative h-[13dvw] bg-gray-200 mb-4 rounded-lg">
+                            <Image src={item.images[0]} alt={"asd"} fill className="rounded-lg object-cover hover:opacity-80 transition-all"/>
+                        </Link>
 
                         <div className="flex flex-col gap-2">
                             <Link
@@ -34,20 +41,31 @@ export default function ApartmentsList({apartments}) {
                                       {Intl.NumberFormat("pl-PL").format(item.price)} zł / miesiąc
                                     </span>
                                 </div>
-                                <div className="flex gap-2 justify-between mt-2">
-                                    <Button
-                                        type="link"
-                                        style="white"
-                                        title="Skontaktuj się"
-                                        onClick={`/apartments/${item.slug}`}
-                                    />
-                                    <Button
-                                        type="link"
-                                        style="primary"
-                                        title="Zobacz więcej"
-                                        onClick={`/apartments/${item.slug}`}
-                                    />
-                                </div>
+                                {/*<div className="flex gap-2 justify-between mt-2">*/}
+                                    {/*<Button*/}
+                                    {/*    type="link"*/}
+                                    {/*    style="white"*/}
+                                    {/*    title="Skontaktuj się"*/}
+                                    {/*    onClick={`/apartments/${item.slug}`}*/}
+                                    {/*/>*/}
+                                    {/*<Button*/}
+                                    {/*    type="link"*/}
+                                    {/*    style="primary"*/}
+                                    {/*    title="Zobacz więcej"*/}
+                                    {/*    onClick={`/apartments/${item.slug}`}*/}
+                                    {/*/>*/}
+
+                                    {/*<button*/}
+                                    {/*    onClick={() => console.log("Skontaktuj się")}*/}
+                                    {/*>*/}
+                                    {/*    Skontaktuj się*/}
+                                    {/*</button>*/}
+                                    {/*<button*/}
+                                    {/*    onClick={() => router.push(`/apartments/${item.slug}`)}*/}
+                                    {/*>*/}
+                                    {/*    Zobacz więcej*/}
+                                    {/*</button>*/}
+                                {/*</div>*/}
                             </div>
                         </div>
                     </div>

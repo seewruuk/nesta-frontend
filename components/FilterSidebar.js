@@ -1,442 +1,198 @@
-export default function FilterSidebar({filters, setFilters})
-{
+"use client";
+import React from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import LocationDistrictFilter from "./LocationDistrictFilter";
+import PriceRangeFilter from "./PriceRangeFilter";
+import CheckboxGroupFilter from "./CheckboxGroupFilter";
+import RadioGroupFilter from "./RadioGroupFilter";
+
+export default function FilterSidebar({ filters, setFilters }) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    // Aktualizacja URL po zmianie filtra
+    const updateQuery = (key, value) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value === undefined || value === "" || (Array.isArray(value) && value.length === 0)) {
+            params.delete(key);
+        } else if (Array.isArray(value)) {
+            params.delete(key);
+            value.forEach((v) => params.append(key, v));
+        } else {
+            params.set(key, String(value));
+        }
+        router.replace(
+            `${pathname}${params.toString() ? `?${params.toString()}` : ""}`,
+            { shallow: true }
+        );
+    };
+
+    // Reset wszystkich filtrów (stan w ApartmentsLayout)
+    const resetFilters = () => {
+        setFilters({
+            location: "",
+            district: "",
+            priceRange: 15000,
+            billsIncluded: undefined,
+            deposit: undefined,
+            propertyType: "",
+            furnishing: [],
+            roomsCount: [],
+            bathrooms: [],
+            amenities: [],
+            shortTermRental: undefined,
+            smokingAllowed: undefined,
+            disabledAccess: undefined,
+            petsAccepted: undefined,
+        });
+        router.replace(pathname, { shallow: true });
+    };
+
     return (
         <div className="w-1/4 p-6 bg-white border-r border-stone-200 flex flex-col gap-6">
-            {/* Lokalizacja i dzielnica */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Lokalizacja
-                </label>
-                <input
-                    type="text"
-                    placeholder="Gdańsk"
-                    value={filters.location}
-                    onChange={(e) =>
-                        setFilters({ ...filters, location: e.target.value })
-                    }
-                    className="border border-stone-300 rounded-md px-3 py-2 w-full focus:outline-none focus:border-stone-400 placeholder:text-stone-400 text-sm"
-                />
-                <select
-                    value={filters.district}
-                    onChange={(e) =>
-                        setFilters({ ...filters, district: e.target.value })
-                    }
-                    className="border border-stone-300 rounded-md px-3 py-2 w-full focus:outline-none focus:border-stone-400 text-sm text-stone-700"
-                >
-                    <option value="">Dzielnica</option>
-                    <option value="Śródmieście">Śródmieście</option>
-                    <option value="Okęcie">Okęcie</option>
-                    <option value="Oliwa">Oliwa</option>
-                    <option value="Bemowo">Bemowo</option>
-                    <option value="Stare Miasto">Stare Miasto</option>
-                </select>
-            </div>
+            <button
+                disabled={
+                    !Object.keys(filters).some((key) => {
+                        const value = filters[key];
+                        return (
+                            (Array.isArray(value) && value.length > 0) ||
+                            (typeof value === "boolean" && value) ||
+                            (typeof value === "string" && value !== "")
+                        );
+                    })
 
-            {/* Cena za wynajem */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Cena za wynajem
-                </label>
-                <input
-                    type="range"
-                    step={500}
-                    min={1000}
-                    max={15000}
-                    value={filters.priceRange}
-                    onChange={(e) =>
-                        setFilters({ ...filters, priceRange: Number(e.target.value) })
-                    }
-                    className="accent-primary w-full cursor-pointer"
-                />
-                <div className="flex justify-between text-sm text-gray-600">
-                    <span>{Intl.NumberFormat("pl-PL").format(1000)} zł</span>
-                    <span>{Intl.NumberFormat("pl-PL").format(filters.priceRange)} zł</span>
-                </div>
-            </div>
+                }
+                onClick={resetFilters}
+                className="disabled:text-black/30 w-full border py-4 rounded-lg hover:bg-black hover:text-white transition-all duration-200 ease-in-out text-center text-sm font-semibold text-black cursor-pointer disabled:hover:bg-transparent disabled:cursor-not-allowed"
+            >
+                Resetuj opcje
+            </button>
 
-            {/* Rachunki wliczone w cenę */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Czy rachunki są wliczone w cenę?
-                </label>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.billsIncluded === true}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                billsIncluded: e.target.checked ? true : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Tak</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.billsIncluded === false}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                billsIncluded: e.target.checked ? false : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Nie</span>
-                </div>
-            </div>
+            <LocationDistrictFilter filters={filters} setFilters={setFilters} updateQuery={updateQuery} />
+            <PriceRangeFilter filters={filters} setFilters={setFilters} updateQuery={updateQuery} />
 
-            {/* Kaucja */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Kaucja</label>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.deposit === true}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                deposit: e.target.checked ? true : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Tak</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.deposit === false}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                deposit: e.target.checked ? false : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Nie</span>
-                </div>
-            </div>
-
-            {/* Typ nieruchomości i wyposażenie */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Typ nieruchomości
-                </label>
-                <select
-                    value={filters.propertyType}
-                    onChange={(e) =>
-                        setFilters({ ...filters, propertyType: e.target.value })
-                    }
-                    className="border border-stone-300 rounded-md px-3 py-2 w-full focus:outline-none focus:border-stone-400 text-sm text-stone-700"
-                >
-                    <option value="">Wybierz typ</option>
-                    <option value="Mieszkanie">Mieszkanie</option>
-                    <option value="Studio">Studio</option>
-                    <option value="Dom">Dom</option>
-                </select>
-
-                <div className="pt-2">
-                    <p className="text-sm font-medium text-gray-700">Wyposażenie</p>
-                    {["Umeblowane", "Nieumeblowane", "Częściowo umeblowane"].map(
-                        (option) => (
-                            <div
-                                key={option}
-                                className="flex items-center gap-2 text-sm text-gray-600 mt-1"
-                            >
-                                <input
-                                    type="checkbox"
-                                    checked={filters.furnishing.includes(option)}
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setFilters({
-                                                ...filters,
-                                                furnishing: [...filters.furnishing, option],
-                                            });
-                                        } else {
-                                            setFilters({
-                                                ...filters,
-                                                furnishing: filters.furnishing.filter(
-                                                    (item) => item !== option
-                                                ),
-                                            });
-                                        }
-                                    }}
-                                    className="h-4 w-4 accent-primary cursor-pointer"
-                                />
-                                <span>{option}</span>
-                            </div>
-                        )
-                    )}
-                </div>
-            </div>
-
-            {/* Liczba pokoi i łazienek */}
-            <div className="space-y-4">
-                <div>
-                    <p className="text-sm font-medium text-gray-700">
-                        Liczba pokoi w mieszkaniu
-                    </p>
-                    <div className="mt-1 space-y-1">
-                        {["1", "2", "3", "4+"].map((option) => (
-                            <div key={option} className="flex items-center gap-2 text-sm">
-                                <input
-                                    type="checkbox"
-                                    checked={filters.roomsCount.includes(option)}
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setFilters({
-                                                ...filters,
-                                                roomsCount: [...filters.roomsCount, option],
-                                            });
-                                        } else {
-                                            setFilters({
-                                                ...filters,
-                                                roomsCount: filters.roomsCount.filter(
-                                                    (item) => item !== option
-                                                ),
-                                            });
-                                        }
-                                    }}
-                                    className="h-4 w-4 accent-primary cursor-pointer"
-                                />
-                                <span>{option}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div>
-                    <p className="text-sm font-medium text-gray-700">Liczba łazienek</p>
-                    <div className="mt-1 space-y-1">
-                        {["1", "2", "3+"].map((option) => (
-                            <div key={option} className="flex items-center gap-2 text-sm">
-                                <input
-                                    type="checkbox"
-                                    checked={filters.bathrooms.includes(option)}
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setFilters({
-                                                ...filters,
-                                                bathrooms: [...filters.bathrooms, option],
-                                            });
-                                        } else {
-                                            setFilters({
-                                                ...filters,
-                                                bathrooms: filters.bathrooms.filter(
-                                                    (item) => item !== option
-                                                ),
-                                            });
-                                        }
-                                    }}
-                                    className="h-4 w-4 accent-primary cursor-pointer"
-                                />
-                                <span>{option}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Udogodnienia */}
-            <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Udogodnienia</p>
-                {[
-                    "Wifi",
-                    "Balkon",
-                    "Zmywarka",
-                    "Winda",
-                    "Pralka",
-                    "Miejsce parkingowe",
-                ].map((option) => (
-                    <div
-                        key={option}
-                        className="flex items-center gap-2 text-sm text-gray-600"
-                    >
-                        <input
-                            type="checkbox"
-                            checked={filters.amenities.includes(option)}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    setFilters({
-                                        ...filters,
-                                        amenities: [...filters.amenities, option],
-                                    });
-                                } else {
-                                    setFilters({
-                                        ...filters,
-                                        amenities: filters.amenities.filter(
-                                            (item) => item !== option
-                                        ),
-                                    });
-                                }
-                            }}
-                            className="h-4 w-4 accent-primary cursor-pointer"
-                        />
-                        <span>{option}</span>
-                    </div>
-                ))}
-            </div>
-
-            {/* Wynajem krótkoterminowy */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Czy wynajem krótkoterminowy?
-                </label>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.shortTermRental === true}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                shortTermRental: e.target.checked ? true : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Tak</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.shortTermRental === false}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                shortTermRental: e.target.checked ? false : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Nie</span>
-                </div>
-            </div>
-
-            {/* Akceptacja palenia */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Czy akceptuje palenie?
-                </label>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="radio"
-                        name="smokingAllowed"
-                        checked={filters.smokingAllowed === true}
-                        onChange={() =>
-                            setFilters({ ...filters, smokingAllowed: true })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Tak</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="radio"
-                        name="smokingAllowed"
-                        checked={filters.smokingAllowed === false}
-                        onChange={() =>
-                            setFilters({ ...filters, smokingAllowed: false })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Nie</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="radio"
-                        name="smokingAllowed"
-                        checked={filters.smokingAllowed === "Do ustalenia"}
-                        onChange={() =>
-                            setFilters({ ...filters, smokingAllowed: "Do ustalenia" })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Do ustalenia</span>
-                </div>
-            </div>
-
-            {/* Dostęp dla osób niepełnosprawnych */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Dostęp dla osób niepełnosprawnych
-                </label>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.disabledAccess === true}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                disabledAccess: e.target.checked ? true : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Tak</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="checkbox"
-                        checked={filters.disabledAccess === false}
-                        onChange={(e) =>
-                            setFilters({
-                                ...filters,
-                                disabledAccess: e.target.checked ? false : undefined,
-                            })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Nie</span>
-                </div>
-            </div>
-
-            {/* Akceptacja zwierząt */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                    Czy akceptuje zwierzęta?
-                </label>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="radio"
-                        name="petsAccepted"
-                        checked={filters.petsAccepted === true}
-                        onChange={() =>
-                            setFilters({ ...filters, petsAccepted: true })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Tak</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="radio"
-                        name="petsAccepted"
-                        checked={filters.petsAccepted === false}
-                        onChange={() =>
-                            setFilters({ ...filters, petsAccepted: false })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Nie</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <input
-                        type="radio"
-                        name="petsAccepted"
-                        checked={filters.petsAccepted === "Do ustalenia"}
-                        onChange={() =>
-                            setFilters({ ...filters, petsAccepted: "Do ustalenia" })
-                        }
-                        className="h-4 w-4 accent-primary cursor-pointer"
-                    />
-                    <span>Do ustalenia</span>
-                </div>
-            </div>
+            <CheckboxGroupFilter
+                label="Czy rachunki są wliczone w cenę?"
+                filterKey="billsIncluded"
+                options={[{ label: "Tak", value: true }, { label: "Nie", value: false }]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Kaucja"
+                filterKey="deposit"
+                options={[{ label: "Tak", value: true }, { label: "Nie", value: false }]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Typ nieruchomości"
+                filterKey="propertyType"
+                options={[
+                    { label: "Mieszkanie", value: "Mieszkanie" },
+                    { label: "Studio", value: "Studio" },
+                    { label: "Dom", value: "Dom" }
+                ]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Wyposażenie"
+                filterKey="furnishing"
+                options={[
+                    { label: "Umeblowane", value: "Umeblowane" },
+                    { label: "Nieumeblowane", value: "Nieumeblowane" },
+                    { label: "Częściowo umeblowane", value: "Częściowo umeblowane" }
+                ]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Liczba pokoi w mieszkaniu"
+                filterKey="roomsCount"
+                options={[
+                    { label: "1", value: "1" },
+                    { label: "2", value: "2" },
+                    { label: "3", value: "3" },
+                    { label: "4+", value: "4+" }
+                ]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Liczba łazienek"
+                filterKey="bathrooms"
+                options={[
+                    { label: "1", value: "1" },
+                    { label: "2", value: "2" },
+                    { label: "3+", value: "3+" }
+                ]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Udogodnienia"
+                filterKey="amenities"
+                options={[
+                    { label: "Wifi", value: "Wifi" },
+                    { label: "Balkon", value: "Balkon" },
+                    { label: "Zmywarka", value: "Zmywarka" },
+                    { label: "Winda", value: "Winda" },
+                    { label: "Pralka", value: "Pralka" },
+                    { label: "Miejsce parkingowe", value: "Miejsce parkingowe" }
+                ]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Wynajem krótkoterminowy"
+                filterKey="shortTermRental"
+                options={[{ label: "Tak", value: true }, { label: "Nie", value: false }]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <RadioGroupFilter
+                label="Czy akceptuje palenie?"
+                filterKey="smokingAllowed"
+                options={[
+                    { label: "Tak", value: true },
+                    { label: "Nie", value: false },
+                    { label: "Do ustalenia", value: "Do ustalenia" }
+                ]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <CheckboxGroupFilter
+                label="Dostęp dla osób niepełnosprawnych"
+                filterKey="disabledAccess"
+                options={[{ label: "Tak", value: true }, { label: "Nie", value: false }]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
+            <RadioGroupFilter
+                label="Czy akceptuje zwierzęta?"
+                filterKey="petsAccepted"
+                options={[
+                    { label: "Tak", value: true },
+                    { label: "Nie", value: false },
+                    { label: "Do ustalenia", value: "Do ustalenia" }
+                ]}
+                filters={filters}
+                setFilters={setFilters}
+                updateQuery={updateQuery}
+            />
         </div>
     );
 }
+
