@@ -1,14 +1,15 @@
 
 // ApartmentsLayout.js
 "use client";
-import { useState, useEffect } from "react";
+import {useState, useEffect, Suspense} from "react";
 import { useSearchParams } from "next/navigation";
 import data from "@/data/apartments.json";
 import FilterSidebar from "@/components/FilterSidebar";
 import ApartmentsList from "@/components/ApartmentsList";
 import PageTransition from "@/components/PageTransition";
+import Loading from "@/components/Loading";
 
-export default function ApartmentsLayout() {
+const ApartmentsRoot = () => {
     const searchParams = useSearchParams();
     const [initialApartments] = useState(data);
     const [filteredApartments, setFilteredApartments] = useState(data);
@@ -64,4 +65,14 @@ export default function ApartmentsLayout() {
             </div>
         </>
     );
+}
+
+export default function ApartmentsLayout(){
+    return(
+        <Suspense fallback={<Loading />}>
+            <PageTransition>
+                <ApartmentsRoot />
+            </PageTransition>
+        </Suspense>
+    )
 }
