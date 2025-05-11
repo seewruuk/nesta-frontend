@@ -13,6 +13,8 @@ export const links = [
     {name: "Strona główna", link: '/'},
     {name: "Dashboard", link: '/dashboard'},
     {name: "Apartamenty", link: "/apartments",},
+    {name: "Profil", link: "/users/k.sewruk",},
+    {name: "Posty", link: "/posts",},
 ];
 
 
@@ -89,19 +91,8 @@ const DesktopMenu = ({pathname}) => {
                         scrolled ? "text-white" : ""
                     } flex justify-between items-center text-[15px] h-[100px]`}
                 >
+
                     <div>
-                        <Link href={"/"}>
-                            {/*<Image*/}
-                            {/*    src={*/}
-                            {/*        scrolled ? `${baseUrl}/assets/logo-white.svg` : */}
-                            {/*    }*/}
-                            {/*    alt={"Galeria Mentis Logo"}*/}
-                            {/*    width={220}*/}
-                            {/*    height={50}*/}
-                            {/*/>*/}
-                        </Link>
-                    </div>
-                    <div className={"flex items-center gap-[24px]"}>
                         <ul className={`flex gap-8 ${scrolled ? "text-white" : ""}`}>
                             {links.map((link, index) => {
                                 return (
@@ -121,7 +112,9 @@ const DesktopMenu = ({pathname}) => {
                                 );
                             })}
                         </ul>
+                    </div>
 
+                    <div className={"flex gap-2"}>
                         <Button
                             type={"link"}
                             title={`Zaloguj się`}
@@ -135,6 +128,8 @@ const DesktopMenu = ({pathname}) => {
                             style={"white"}
                         />
                     </div>
+
+
                 </div>
             </Layout>
         </div>

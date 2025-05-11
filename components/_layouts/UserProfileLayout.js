@@ -107,7 +107,7 @@ export default function UserProfileLayout({slug}) {
 
                     {/*Reviews*/}
                     <div className={"flex-1"}>
-                        <Header title={"Opinie"} float={"left"}/>
+                        <Header title={"Opinie"}/>
 
                         <div className={"flex flex-col gap-4 mt-[42px]"}>
                             {
