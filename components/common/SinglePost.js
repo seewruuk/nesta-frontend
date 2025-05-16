@@ -17,9 +17,9 @@ export default function SinglePosts({post}, key) {
                         <Link
                             href={`/users/k.sewruk`}
                             className={"aspect-square h-[80px] rounded-full border-6 border-primary relative hover:border-background transition-all"}>
-                            <Image
-                                src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}
-                                alt="Profile Picture" fill className="object-cover rounded-full"/>
+                            {/*<Image*/}
+                            {/*    src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}*/}
+                            {/*    alt="Profile Picture" fill className="object-cover rounded-full"/>*/}
                         </Link>
                         <div>
                             <Link className={"text-[14px] text-black font-semibold hover:underline"} href={"/users/seewruuk"}>Kacper Sewruk</Link>

@@ -54,9 +54,9 @@ export default function UserProfileLayout({slug}) {
 
                         {/*Profile picture*/}
                         <div className={"aspect-square h-[200px] rounded-full border-8 border-background relative"}>
-                            <Image
-                                src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}
-                                alt="Profile Picture" fill className="object-cover rounded-full"/>
+                            {/*<Image*/}
+                            {/*    src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}*/}
+                            {/*    alt="Profile Picture" fill className="object-cover rounded-full"/>*/}
                             <div
                                 className={"bg-primary aspect-square h-[40px] rounded-full absolute bottom-0 right-0 border-background border-5"}/>
                         </div>

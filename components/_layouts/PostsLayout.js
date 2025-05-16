@@ -76,9 +76,9 @@ export default function PostsLayout() {
                     {/*User Profile info*/}
                     <div className={"flex gap-4 items-center"}>
                         <div className={"aspect-square h-[100px] rounded-full border-6 border-primary relative"}>
-                            <Image
-                                src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}
-                                alt="Profile Picture" fill className="object-cover rounded-full"/>
+                            {/*<Image*/}
+                            {/*    src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}*/}
+                            {/*    alt="Profile Picture" fill className="object-cover rounded-full"/>*/}
                         </div>
                         <div>
                             <h3 className={"text-[21px] text-black"}>Cześć, Kacper</h3>
