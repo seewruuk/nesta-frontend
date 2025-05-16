@@ -53,7 +53,7 @@ export default function UserProfileLayout({slug}) {
                     <div className={"flex justify-between items-end gap-[24px] -mt-[50px] z-50 px-[50px]"}>
 
                         {/*Profile picture*/}
-                        <div className={"aspect-square h-[200px] rounded-full border-8 border-background relative"}>
+                        <div className={"aspect-square h-[200px] rounded-full border-8 border-background bg-background relative"}>
                             {/*<Image*/}
                             {/*    src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}*/}
                             {/*    alt="Profile Picture" fill className="object-cover rounded-full"/>*/}
