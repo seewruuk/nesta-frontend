@@ -15,7 +15,7 @@ export default function LikedOffers({apartments}) {
                 {apartments.map((item, index) => {
                     return (
                         <Link
-                            href={`/apartments/${item.slug}`}
+                            href={`/rental-offers/${item.slug}`}
                             key={item + index}
                             className="flex flex-col gap-[12px] items-start max-w-[320px]"
                         >

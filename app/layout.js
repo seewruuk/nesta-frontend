@@ -30,7 +30,7 @@ export default function RootLayout({children}) {
         <AuthContextProvider>
 
             <StateContextProvider>
-                <Navbar/>
+                {/*<Navbar/>*/}
                 {children}
             </StateContextProvider>
         </AuthContextProvider>

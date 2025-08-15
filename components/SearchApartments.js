@@ -26,7 +26,7 @@ export default function SearchApartments() {
         if (searchValues.propertyType) params.set("propertyType", searchValues.propertyType);
         if (searchValues.minArea) params.set("minArea", String(searchValues.minArea));
         if (searchValues.maxArea) params.set("maxArea", String(searchValues.maxArea));
-        router.push(`/apartments?${params.toString()}`);
+        router.push(`/rental-offers?${params.toString()}`);
     };
 
     return (

@@ -9,7 +9,6 @@ export const MobileMenu = ({links}) => {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const router = useRouter();
 
-
     const hideNavItemsVariant = {
         opened: {
             opacity: 0,

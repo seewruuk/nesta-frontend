@@ -2,6 +2,7 @@
 
 
 import {createContext, useState} from "react";
+import {icons} from "@/src/icons";
 
 export const StateContext = createContext({});
 
@@ -9,12 +10,12 @@ export const StateContext = createContext({});
 export default function StateContextProvider({children}) {
 
     const [links, setLinks] = useState([
-        {name: "Dashboard", href: "/dashboard", icon: null},
-        {name: "Mieszkanie", href: "/dashboard/apartments", icon: null},
-        {name: "Transakcje", href: "/dashboard/transactions", icon: null},
-        {name: "Wiadomości", href: "/dashboard/messages", icon: null},
-        {name: "Opinie", href: "/dashboard/reviews", icon: null},
-        {name: "Ustawienia", href: "/dashboard/settings", icon: null},
+        {name: "Dashboard", href: "/dashboard", icon: icons.dashboard},
+        {name: "Oferty na wynajem", href: "/dashboard/rental-offers", icon: icons.rentaloffers},
+        {name: "Mieszkania", href: "/dashboard/apartments", icon: icons.apartments},
+        {name: "Transakcje", href: "/dashboard/transactions", icon: icons.transactions},
+        {name: "Wiadomości", href: "/dashboard/messages", icon: icons.messages},
+        {name: "Opinie", href: "/dashboard/reviews", icon: icons.reviews},
     ])
     const [transactions, setTransactions] = useState([
         {id: "#12548796", label: "Czynsz za mieszkanie", status: "paid", date: "23-01-2025", value: 3500},
