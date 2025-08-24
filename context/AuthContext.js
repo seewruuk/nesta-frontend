@@ -1,4 +1,3 @@
-// context/AuthContext.js
 "use client";
 
 import { createContext, useState, useEffect } from "react";
@@ -10,30 +9,79 @@ export const AuthContext = createContext({
     isLogged: null,
     accessToken: null,
     refreshToken: null,
+    username: null,
+    userId: null,
+    userRoles: [],
     handleLogin: () => {},
     handleRegister: () => {},
     handleLogout: () => {},
 });
 
+function decodeJwt(token) {
+    try {
+        const payload = token.split('.')[1];
+        const decoded = JSON.parse(atob(payload));
+        return decoded;
+    } catch (e) {
+        console.error("JWT decode error:", e);
+        return null;
+    }
+}
+
 export default function AuthContextProvider({ children }) {
     const router = useRouter();
 
-    // null = jeszcze nie zweryfikowano, true/false = status zalogowania
-    const [isLogged, setIsLogged] = useState(() => Cookies.get("loggedIn") === "true");
-    const [accessToken, setAccessToken] = useState(() => Cookies.get("access_token") || null);
-    const [refreshToken, setRefreshToken] = useState(() => Cookies.get("refresh_token") || null);
+    const [isLogged, setIsLogged] = useState(Cookies.get("loggedIn") === "true");
+    const [accessToken, setAccessToken] = useState(Cookies.get("access_token") || null);
+    const [refreshToken, setRefreshToken] = useState(Cookies.get("refresh_token") || null);
+    const [username, setUsername] = useState(Cookies.get("username") || null);
+    const [userId, setUserId] = useState(Cookies.get("user_id") || null);
+    const [userRoles, setUserRoles] = useState(() => {
+        const roles = Cookies.get("user_roles");
+        return roles ? JSON.parse(roles) : [];
+    });
 
-    // Pollujemy cookie co sekundę, żeby reagować na zmiany (np. wylogowanie w nowej karcie)
+
     useEffect(() => {
         const id = setInterval(() => {
             setIsLogged(Cookies.get("loggedIn") === "true");
             setAccessToken(Cookies.get("access_token") || null);
             setRefreshToken(Cookies.get("refresh_token") || null);
+            setUsername(Cookies.get("username") || null);
+            setUserId(Cookies.get("user_id") || null);
+            const roles = Cookies.get("user_roles");
+            setUserRoles(roles ? JSON.parse(roles) : []);
         }, 1000);
         return () => clearInterval(id);
     }, []);
 
-    // Funkcja logowania
+    useEffect(() => {
+        if (accessToken) {
+            const decoded = decodeJwt(accessToken);
+            if (decoded) {
+                const id = decoded.sub;
+                const uname = decoded.preferred_username;
+                const roles = decoded.realm_access?.roles || [];
+
+                // Zapis do ciastek
+                Cookies.set("user_id", id);
+                Cookies.set("user_roles", JSON.stringify(roles));
+                Cookies.set("username", uname);
+
+                // Aktualizacja stanu
+                setUserId(id);
+                setUserRoles(roles);
+                setUsername(uname);
+            }
+        } else {
+            Cookies.remove("user_id");
+            Cookies.remove("user_roles");
+            setUserId(null);
+            setUserRoles([]);
+        }
+    }, [accessToken]);
+
+
     const handleLogin = async ({ username, password }) => {
         try {
             const res = await fetch("/api/login", {
@@ -48,10 +96,10 @@ export default function AuthContextProvider({ children }) {
                 return;
             }
 
-            // Ustawienie cookie i stan po zalogowaniu
             Cookies.set("loggedIn", "true");
             Cookies.set("access_token", json.json.access_token);
             Cookies.set("refresh_token", json.json.refresh_token);
+
             setIsLogged(true);
             setAccessToken(json.json.access_token);
             setRefreshToken(json.json.refresh_token);
@@ -64,18 +112,16 @@ export default function AuthContextProvider({ children }) {
         }
     };
 
-    // Funkcja rejestracji
     const handleRegister = async ({ username, email, password, confirmPassword }) => {
         if (password !== confirmPassword) {
             toast.error("Hasła nie są takie same!");
             return;
         }
-
         try {
             const res = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({ username, email, password, role: "LANDLORD" }),
             });
             const json = await res.json();
 
@@ -92,7 +138,7 @@ export default function AuthContextProvider({ children }) {
         }
     };
 
-    // Funkcja wylogowania
+
     const handleLogout = async () => {
         try {
             const res = await fetch("/api/logout", { method: "POST" });
@@ -100,14 +146,14 @@ export default function AuthContextProvider({ children }) {
                 toast.error("Błąd podczas wylogowania");
                 return;
             }
-
-            // Usunięcie cookie i aktualizacja stanu
-            Cookies.remove("loggedIn");
-            Cookies.remove("access_token");
-            Cookies.remove("refresh_token");
+            // czyścimy ciasteczka i stan
+            ["loggedIn", "access_token", "refresh_token", "username", "user_id", "user_roles"].forEach(Cookies.remove);
             setIsLogged(false);
             setAccessToken(null);
             setRefreshToken(null);
+            setUsername(null);
+            setUserId(null);
+            setUserRoles([]);
 
             toast.success("Wylogowano pomyślnie");
             router.push("/");
@@ -119,7 +165,17 @@ export default function AuthContextProvider({ children }) {
 
     return (
         <AuthContext.Provider
-            value={{ isLogged, accessToken, refreshToken, handleLogin, handleRegister, handleLogout }}
+            value={{
+                isLogged,
+                accessToken,
+                refreshToken,
+                username,
+                userId,
+                userRoles,
+                handleLogin,
+                handleRegister,
+                handleLogout,
+            }}
         >
             {children}
         </AuthContext.Provider>

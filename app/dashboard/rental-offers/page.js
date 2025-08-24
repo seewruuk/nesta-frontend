@@ -1,24 +1,21 @@
-import DashboardLayout from "@/components/_layouts/DashboardLayout";
-import AddApartmentWidget from "@/components/AddApartmentWidget";
 import DashboardElement from "@/components/DashboardElement";
-import UserApartments from "@/components/UserApartments";
-import Button from "@/components/Button";
 import UserOffers from "@/components/UserOffers";
+import Button from "@/components/Button";
 
 export default function Page() {
     return (
-        <DashboardLayout>
+        <>
 
             <DashboardElement>
                 <div className="flex flex-col items-center justify-center h-full">
                     <h2 className="text-2xl font-semibold mb-4">Witaj w sekcji ofert!</h2>
-                    <p className="text-gray-600">Tutaj możesz zarządzać swoimi ofertami ofertami wynajmu.</p>
+                    <p className="text-gray-600">Tutaj możesz zarządzać swoimi ofertami wynajmu.</p>
                 </div>
             </DashboardElement>
 
             <DashboardElement>
                 <div>
-                    <h3>Twoje Oferty</h3>
+                    <h3>Twoje oferty</h3>
                     <UserOffers />
                 </div>
             </DashboardElement>
@@ -35,11 +32,13 @@ export default function Page() {
                         type={"link"}
                         style={"black"}
                         onClick={"/dashboard/rental-offers/add"}
-
                     />
                 </div>
             </div>
 
-        </DashboardLayout>
+        </>
     )
 }
+
+
+

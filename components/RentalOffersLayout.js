@@ -1,12 +1,14 @@
 // File: components/RentalOffersLayout.js
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useContext } from "react";
 import { useSearchParams } from "next/navigation";
-import FilterSidebar from "@/components/FilterSidebar";
+import FiltersTopBar from "@/components/FiltersTopBar";
 import ApartmentsList from "@/components/ApartmentsList";
 import PageTransition from "@/components/PageTransition";
 import Loading from "@/components/Loading";
+import { AuthContext } from "@/context/AuthContext";
+import Debugger from "@/components/Debugger";
 
 export default function RentalOffersLayout() {
     return (
@@ -19,13 +21,13 @@ export default function RentalOffersLayout() {
 }
 
 function RentalOffersRoot() {
+    const { accessToken } = useContext(AuthContext);
     const searchParams = useSearchParams();
 
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState("");
 
-    // Domyślne filtry, priceRange ustawione na min wartość
     const [filters, setFilters] = useState({
         location: "",
         priceRange: 2500,
@@ -42,78 +44,212 @@ function RentalOffersRoot() {
         smokingAllowed: undefined,
         disabledAccess: undefined,
         petsAccepted: undefined,
+        availableFrom: undefined,
+        availableUntil: undefined,
+        preferredEmploymentStatus: "",
+        hasStorageRoomInBasement: undefined,
+        parkingType: "",
     });
 
-    // Pobranie ofert z backendu
+    // Pobranie danych z URL (location, priceRange)
+    useEffect(() => {
+        const locationParam = searchParams.get("location") ?? "";
+        const priceRangeParam = searchParams.get("priceRange");
+
+        setFilters(prev => ({
+            ...prev,
+            location: locationParam,
+            priceRange: priceRangeParam ? Number(priceRangeParam) : prev.priceRange,
+        }));
+    }, [searchParams]);
+
     useEffect(() => {
         const fetchOffers = async () => {
-            setLoading(true);
             try {
-                const res = await fetch("/api/rentalOffer");
+                setLoading(true);
+                setError("");
+
+                const res = await fetch("/api/rental-offers", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ accessToken }),
+                });
+
                 const response = await res.json();
-                console.log(response);
-                if (res.status === 401) {
-                    throw new Error("Brak autoryzacji lub token wygasł");
-                }
-                if (!res.ok) {
-                    const txt = await res.text();
-                    throw new Error(txt || "Błąd serwera");
-                }
-                const data = await res.json();
-                // Mapowanie pól odpowiedzi na format frontendu
-                const adapted = data.map((o) => ({
-                    id: o.id,
-                    landlordId: o.userId,
-                    propertyType: o.apartment.type || "Mieszkanie",
-                    rooms: o.apartment.numberOfRooms,
-                    bathrooms: o.apartment.numberOfBathrooms,
-                    area: o.apartment.area,
-                    elevator: o.apartment.hasElevator,
-                    balcony: o.apartment.hasBalcony,
-                    city: o.apartment.city,
-                    address: `${o.apartment.streetName} ${o.apartment.buildingNumber}/${o.apartment.apartmentNumber}, ${o.apartment.postalCode} ${o.apartment.city}`,
-                    price: o.monthlyRent,
-                    utilitiesIncluded: o.utilitiesIncluded,
-                    deposit: o.deposit,
-                    amenities: o.apartment.furnished ? ["Umeblowane"] : [],
-                    image: null,
-                }));
+
+                const adapted = (response?.offers ?? []).map((o) => {
+                    const furnishingMap = {
+                        FURNISHED: "Umeblowane",
+                        UNFURNISHED: "Nieumeblowane",
+                        PARTLY_FURNISHED: "Częściowo umeblowane",
+                        PARTIALLY_FURNISHED: "Częściowo umeblowane",
+                    };
+                    const furnishing =
+                        furnishingMap[o.furnishingStatus] ??
+                        (o.apartment?.furnished ? "Umeblowane" : "Nieumeblowane");
+
+                    const amenities = [];
+                    if (o.apartment?.hasBalcony) amenities.push("Balkon");
+                    if (o.apartment?.hasElevator) amenities.push("Winda");
+                    if (o.apartment?.parkingType && o.apartment.parkingType !== "STREET") {
+                        amenities.push("Miejsce parkingowe");
+                    }
+
+                    const smokingAllowed = o.smokingPolicy === "YES";
+                    const petsAccepted = o.petPolicy === "YES";
+                    const disabledAccess = Boolean(
+                        o.accessibleForDisabled || o.apartment?.disabledAccessible
+                    );
+
+                    return {
+                        id: o.id,
+                        landlordId: o.landlordId,
+                        propertyType: "Mieszkanie",
+                        rooms: o.apartment.numberOfRooms,
+                        bathrooms: o.apartment.numberOfBathrooms,
+                        area: o.apartment.area,
+                        elevator: o.apartment.hasElevator,
+                        balcony: o.apartment.hasBalcony,
+                        city: o.apartment.city,
+                        address: `${o.apartment.streetName} ${o.apartment.buildingNumber}/${o.apartment.apartmentNumber}, ${o.apartment.postalCode} ${o.apartment.city}`,
+                        price: o.monthlyRent,
+                        utilitiesIncluded: o.utilitiesIncluded,
+                        deposit: o.deposit,
+                        floor: o.apartment.floor,
+                        furnishing,
+                        shortTermRental: o.shortTermRental,
+                        smokingAllowed,
+                        petsAccepted,
+                        disabledAccess,
+                        amenities,
+                        availableFrom: o.availableFrom,
+                        availableUntil: o.availableUntil,
+                        preferredEmploymentStatus: o.preferredEmploymentStatus,
+                        hasStorageRoomInBasement: o.apartment?.hasStorageRoomInBasement,
+                        parkingType: o.apartment?.parkingType,
+                        image: null,
+                    };
+                });
+
                 setOffers(adapted);
             } catch (err) {
-                setError(err.message);
+                setError(err?.message || "Nie udało się pobrać ofert.");
             } finally {
                 setLoading(false);
             }
         };
+
         fetchOffers();
     }, []);
 
-    // Inicjalizacja filtrów z URL tylko raz
-    useEffect(() => {
-        const upd = { ...filters };
-        const pLocation = searchParams.get("location");
-        if (pLocation) upd.location = pLocation;
-        const pPrice = searchParams.get("priceRange");
-        if (pPrice) upd.priceRange = Number(pPrice);
-        const pType = searchParams.get("propertyType");
-        if (pType) upd.propertyType = pType;
-        const pMin = searchParams.get("minArea");
-        if (pMin) upd.minArea = Number(pMin);
-        const pMax = searchParams.get("maxArea");
-        if (pMax) upd.maxArea = Number(pMax);
-        setFilters(upd);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Zastosowanie filtrów
     const displayed = offers.filter((item) => {
-        if (filters.location && !item.city.toLowerCase().includes(filters.location.toLowerCase())) return false;
-        if (filters.priceRange && item.price > filters.priceRange) return false;
-        if (filters.propertyType && item.propertyType !== filters.propertyType) return false;
+        if (filters.location) {
+            const q = filters.location.toLowerCase();
+            const hit =
+                (item.city || "").toLowerCase().includes(q) ||
+                (item.address || "").toLowerCase().includes(q);
+            if (!hit) return false;
+        }
+
+        if (typeof filters.priceRange === "number" && item.price > filters.priceRange)
+            return false;
+
+        if (filters.propertyType && item.propertyType !== filters.propertyType)
+            return false;
+
         if (filters.minArea !== undefined && item.area < filters.minArea) return false;
         if (filters.maxArea !== undefined && item.area > filters.maxArea) return false;
-        if (filters.billsIncluded !== undefined && item.utilitiesIncluded !== filters.billsIncluded) return false;
-        if (filters.deposit !== undefined && (item.deposit > 0) !== filters.deposit) return false;
+
+        if (
+            filters.billsIncluded !== undefined &&
+            item.utilitiesIncluded !== filters.billsIncluded
+        )
+            return false;
+
+        if (filters.deposit !== undefined && (item.deposit > 0) !== filters.deposit)
+            return false;
+
+        if (Array.isArray(filters.furnishing) && filters.furnishing.length > 0) {
+            if (!filters.furnishing.includes(item.furnishing)) return false;
+        }
+
+        if (Array.isArray(filters.roomsCount) && filters.roomsCount.length > 0) {
+            const okRooms = filters.roomsCount.some((val) =>
+                val === "4+" ? item.rooms >= 4 : item.rooms === Number(val)
+            );
+            if (!okRooms) return false;
+        }
+
+        if (Array.isArray(filters.bathrooms) && filters.bathrooms.length > 0) {
+            const okBath = filters.bathrooms.some((val) =>
+                val === "3+" ? item.bathrooms >= 3 : item.bathrooms === Number(val)
+            );
+            if (!okBath) return false;
+        }
+
+        if (Array.isArray(filters.amenities) && filters.amenities.length > 0) {
+            const allPresent = filters.amenities.every((a) => item.amenities.includes(a));
+            if (!allPresent) return false;
+        }
+
+        if (
+            filters.shortTermRental !== undefined &&
+            item.shortTermRental !== filters.shortTermRental
+        )
+            return false;
+
+        if (
+            typeof filters.smokingAllowed === "boolean" &&
+            item.smokingAllowed !== filters.smokingAllowed
+        )
+            return false;
+
+        if (
+            filters.disabledAccess !== undefined &&
+            item.disabledAccess !== filters.disabledAccess
+        )
+            return false;
+
+        if (
+            typeof filters.petsAccepted === "boolean" &&
+            item.petsAccepted !== filters.petsAccepted
+        )
+            return false;
+
+        // NOWE FILTRY ⬇️⬇️⬇️
+
+        if (
+            filters.availableFrom &&
+            new Date(item.availableFrom) < new Date(filters.availableFrom)
+        )
+            return false;
+
+        if (
+            filters.availableUntil &&
+            new Date(item.availableUntil) > new Date(filters.availableUntil)
+        )
+            return false;
+
+        if (
+            filters.preferredEmploymentStatus &&
+            item.preferredEmploymentStatus !== filters.preferredEmploymentStatus
+        )
+            return false;
+
+        if (
+            filters.hasStorageRoomInBasement !== undefined &&
+            item.hasStorageRoomInBasement !== filters.hasStorageRoomInBasement
+        )
+            return false;
+
+        if (
+            filters.parkingType &&
+            item.parkingType !== filters.parkingType
+        )
+            return false;
+
         return true;
     });
 
@@ -121,9 +257,10 @@ function RentalOffersRoot() {
     if (error) return <div className="p-6 text-red-500">Błąd: {error}</div>;
 
     return (
-        <div className="flex bg-gray-50 min-h-screen items-start pt-[100px]">
-            <FilterSidebar filters={filters} setFilters={setFilters} />
+        <div className="bg-gray-50 min-h-screen pt-[100px] px-4">
+            <FiltersTopBar filters={filters} setFilters={setFilters} />
             <ApartmentsList apartments={displayed} />
+            {/*<Debugger data={displayed}  />*/}
         </div>
     );
 }

@@ -17,7 +17,6 @@ export async function POST(req) {
         const contentType = apiRes.headers.get("content-type") || "";
         if (contentType.includes("application/json")) {
             const json = await apiRes.json();
-            // zakładam, że przy błędzie masz { status, error, message, … }
             message = json.message || json;
         } else {
             message = await apiRes.text();

@@ -1,10 +1,9 @@
-import DashboardLayout from "@/components/_layouts/DashboardLayout";
-import AddApartment from "@/components/AddApartment";
+import AddEditApartment from "@/components/AddEditApartment";
 
 export default function Page(){
     return(
-        <DashboardLayout>
-            <AddApartment />
-        </DashboardLayout>
+        <>
+            <AddEditApartment />
+        </>
     )
 }

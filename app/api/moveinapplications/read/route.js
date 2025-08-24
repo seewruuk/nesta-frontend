@@ -1,12 +1,12 @@
 import {NextResponse} from "next/server";
 
 export async function POST(req){
-
-    try{
+    try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const { accessToken } = await req.json();
+        const { accessToken, id } = await req.json();
 
-        const response = await fetch(`${apiUrl}/api/rental-offers`, {
+
+        const response = await fetch(`${apiUrl}/api/move-in-applications/${id}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -17,16 +17,15 @@ export async function POST(req){
         const json = await response.json();
         return NextResponse.json({
             status: 200,
-            message: "Apartments fetched successfully",
-            offers: json
+            message: "Offer fetched successfully",
+            applications: json
         })
 
-    }catch(err){
+    }catch (err){
         return NextResponse.json({
             status: "error",
-            message: "There was an error fetching the apartments",
+            message: "There was an error fetching the move in applications",
+            error: err || "Unknown error"
         });
     }
-
-
 }

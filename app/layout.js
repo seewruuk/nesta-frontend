@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import StateContextProvider from "@/context/StateContext";
 import AuthContextProvider from "@/context/AuthContext";
 import DisplayContextProvider from "@/context/DisplayContext";
+import {Toaster} from "react-hot-toast";
+import Debugger from "@/components/Debugger";
 
 export const metadata = {
     title: "Create Next App",
@@ -30,7 +32,9 @@ export default function RootLayout({children}) {
         <AuthContextProvider>
 
             <StateContextProvider>
-                {/*<Navbar/>*/}
+                <Toaster />
+                {/*<Debugger />*/}
+                <Navbar/>
                 {children}
             </StateContextProvider>
         </AuthContextProvider>

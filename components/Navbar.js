@@ -67,6 +67,7 @@ function DesktopMenu({pathname, isLogged}) {
                           ))}
                       </ul>
 
+
                     {/*<div>*/}
                     {/*    <span className={"text-[2"}>*/}
                     {/*            Logo*/}
@@ -84,7 +85,7 @@ function DesktopMenu({pathname, isLogged}) {
                             <Button
                                 type="button"
                                 title="Wyloguj"
-                                onClick={handleLogout}
+                                onClick={() => handleLogout()}
                                 style="white"
                             />
                         </div>
@@ -104,6 +105,7 @@ function DesktopMenu({pathname, isLogged}) {
                             />
                         </div>
                     )}
+
                 </div>
             </Layout>
         </div>

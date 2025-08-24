@@ -9,8 +9,8 @@ export default function Page(){
     const {transactions} = useContext(StateContext)
 
     return(
-        <DashboardLayout>
+        <>
             <Transactions maxElements={10} transactions={transactions}/>
-        </DashboardLayout>
+        </>
     )
 }

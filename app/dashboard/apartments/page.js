@@ -1,11 +1,10 @@
-import DashboardLayout from "@/components/_layouts/DashboardLayout";
 import AddApartmentWidget from "@/components/AddApartmentWidget";
 import DashboardElement from "@/components/DashboardElement";
 import UserApartments from "@/components/UserApartments";
 
 export default function Page() {
     return (
-        <DashboardLayout>
+        <>
 
             <DashboardElement>
                 <div className="flex flex-col items-center justify-center h-full">
@@ -22,6 +21,6 @@ export default function Page() {
             </DashboardElement>
             <AddApartmentWidget />
 
-        </DashboardLayout>
+        </>
     )
 }

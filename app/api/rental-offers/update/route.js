@@ -3,10 +3,10 @@ import {NextResponse} from "next/server";
 export async function POST(req) {
 
     try{
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-        const { accessToken, apartmentId, dataToSend } = await req.json();
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const { accessToken, offerId, dataToSend } = await req.json();
 
-        const  response = await fetch(`${baseUrl}/api/apartments/${apartmentId}`, {
+        const  response = await fetch(`${apiUrl}/api/rental-offers/${offerId}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -16,11 +16,10 @@ export async function POST(req) {
         });
 
         const responseJson = await response.json();
-        console.log("Update response:", responseJson);
 
         return NextResponse.json({
             status: 200,
-            message: "Apartment updated successfully",
+            message: "Offer updated successfully",
             json: responseJson
         })
     }catch(e){

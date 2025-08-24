@@ -1,6 +1,24 @@
 @import "tailwindcss";
 
 
+
+/* ===== Swiper styles ===== */
+.swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    opacity: 1 !important;
+    transition: background-color 0.3s, opacity 0.3s;
+    background-color: #fff !important;
+
+}
+
+.swiper-pagination-bullet-active {
+    opacity: 1;
+    background-color: var(--color-primary) !important;
+}
+
+
 *{
     box-sizing: border-box;
 }
@@ -38,4 +56,12 @@ html{
 h3{
     font-size: 21px;
     font-weight: bold;
+}
+
+*{
+    --webkit-scrollbar-width: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-color: transparent transparent;
+
 }

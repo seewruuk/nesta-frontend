@@ -11,16 +11,16 @@ import Image from "next/image";
 import LogoMain from "@/public/logo.svg"
 import {icons} from "@/src/icons";
 import {AuthContext} from "@/context/AuthContext";
+import ProfileWidget from "@/components/ProfileWidget";
 
 export default function DashboardLayout({children}) {
 
     const {links} = useContext(StateContext)
-    const {handleLogout} = useContext(AuthContext);
+    const {handleLogout } = useContext(AuthContext);
 
     return (
         <>
-            <div className={"flex relative min-h-screen"}>
-
+            <div className={"flex relative h-screen overflow-y-scroll"}>
 
                 <div className={"w-1/6 px-[48px] py-[32px] bg-white flex flex-col justify-between"}>
                     <div className={"flex-grow flex flex-col justify-start items-start gap-[52px]"}>
@@ -34,7 +34,7 @@ export default function DashboardLayout({children}) {
                         </div>
 
                         <div className={"flex gap-5 flex-col"}>
-                            <div className={"text-[16px] font-semibold pb-[32px] uppercase"}>Overview</div>
+                            <div className={"text-[16px] font-semibold pb-[32px] uppercase"}>Nawigacja</div>
                             {
                                 links.map((item, index) => {
                                     return (
@@ -53,7 +53,7 @@ export default function DashboardLayout({children}) {
                     </div>
                     <div>
                         <div className={"flex gap-5 flex-col"}>
-                            <div className={"text-[16px] font-semibold pb-[32px] uppercase"}>Settings</div>
+                            <div className={"text-[16px] font-semibold pb-[32px] uppercase"}>Opcje</div>
 
                             <Link href={"/"}
                                   className={"flex gap-4 hover:text-primary transition-all items-center"}>
@@ -61,7 +61,7 @@ export default function DashboardLayout({children}) {
                                     <Image src={icons.dashboard} alt={"settings icon"} layout={"fill"}
                                            className={"object-contain p-1"}/>
                                 </div>
-                                <div>Settings</div>
+                                <div>Ustawienia</div>
                             </Link>
                             <div
                                 onClick={() => handleLogout()}
@@ -81,15 +81,8 @@ export default function DashboardLayout({children}) {
                 </div>
 
 
+                <ProfileWidget/>
 
-                <div className={"w-1/6 px-[48px] py-[32px] bg-white flex flex-col justify-between"}>
-                    <div className={"flex-grow flex flex-col justify-start items-start gap-[52px]"}>
-                        <span>Profile information</span>
-                    </div>
-                    <div>
-                        <span>asd</span>
-                    </div>
-                </div>
             </div>
         </>
     )

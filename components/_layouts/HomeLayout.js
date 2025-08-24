@@ -6,6 +6,7 @@ import ImageTwo from "@/public/images/home/image-2.jpg"
 import Icon from "@/public/message.svg"
 import SearchApartments from "@/components/SearchApartments";
 import PageTransition from "@/components/PageTransition";
+import Button from "@/components/Button";
 
 
 export default function HomeLayout() {
@@ -13,7 +14,7 @@ export default function HomeLayout() {
         <PageTransition>
             <Layout>
                 <div className={"pt-[120px] flex min-h-[88dvh] text-black"}>
-                    <div className={"flex-1 flex flex-col justify-center gap-5"}>
+                    <div className={"flex-1 flex flex-col justify-center gap-5 items-start"}>
                         <div className={"flex gap-2 items-center"}>
                             <div className={"relative h-[25px] aspect-square"}>
                                 <Image src={Icon} alt="Hero" layout={"fill"} className={"object-cover"}/>
@@ -31,6 +32,7 @@ export default function HomeLayout() {
                         </p>
 
                         <SearchApartments/>
+
                     </div>
                     <div className={"flex-1 flex justify-center gap-6 mt-[60px]"}>
                         <div className={"max-w-[250px] relative w-full mb-[60px]"}>

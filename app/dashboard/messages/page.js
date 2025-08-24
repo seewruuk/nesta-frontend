@@ -10,8 +10,8 @@ export default function Page(){
 
 
     return(
-        <DashboardLayout>
+        <>
             <Messages messages={messages}/>
-        </DashboardLayout>
+        </>
     )
 }

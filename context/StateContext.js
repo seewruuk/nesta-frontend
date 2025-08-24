@@ -11,8 +11,8 @@ export default function StateContextProvider({children}) {
 
     const [links, setLinks] = useState([
         {name: "Dashboard", href: "/dashboard", icon: icons.dashboard},
-        {name: "Oferty na wynajem", href: "/dashboard/rental-offers", icon: icons.rentaloffers},
         {name: "Mieszkania", href: "/dashboard/apartments", icon: icons.apartments},
+        {name: "Oferty", href: "/dashboard/rental-offers", icon: icons.rentaloffers},
         {name: "Transakcje", href: "/dashboard/transactions", icon: icons.transactions},
         {name: "Wiadomości", href: "/dashboard/messages", icon: icons.messages},
         {name: "Opinie", href: "/dashboard/reviews", icon: icons.reviews},

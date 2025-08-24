@@ -1,4 +1,3 @@
-// components/LoginRegisterLayout.js
 "use client";
 
 import { useContext, useEffect, useState } from "react";
@@ -16,7 +15,6 @@ export default function LoginRegisterLayout({ type = "login" }) {
     const { isLogged } = useContext(AuthContext);
     const router = useRouter();
 
-    // Jeśli jeszcze nie wiadomo, czy zalogowany — pokaż loader
     if (isLogged === null) {
         return (
             <div className="w-screen h-screen flex items-center justify-center">
@@ -25,14 +23,13 @@ export default function LoginRegisterLayout({ type = "login" }) {
         );
     }
 
-    // Gdy użytkownik zalogowany, przekieruj od razu
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         if (isLogged) {
             router.replace("/dashboard");
         }
     }, [isLogged, router]);
 
-    // Jeśli po walidacji okaże się, że jest zalogowany, nic nie renderujemy
     if (isLogged) return null;
 
     const renderSection = () => {

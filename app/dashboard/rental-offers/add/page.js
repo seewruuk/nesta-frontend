@@ -1,10 +1,9 @@
-import DashboardLayout from "@/components/_layouts/DashboardLayout";
-import AddOffer from "@/components/AddOffer";
+import AddEditOffer from "@/components/AddEditOffer";
 
 export default function Page(){
     return(
-        <DashboardLayout>
-            <AddOffer />
-        </DashboardLayout>
+        <>
+            <AddEditOffer />
+        </>
     )
 }

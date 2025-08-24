@@ -7,6 +7,7 @@ export async function POST(req){
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const { accessToken, apartmentId } = await req.json();
 
+
         const response = await fetch(`${apiUrl}/api/apartments/${apartmentId}`, {
             method: "DELETE",
             headers: {
@@ -24,7 +25,8 @@ export async function POST(req){
     }catch(e){
         return NextResponse.json({
             status: 500,
-            message: "An error occurred while processing your request."
+            message: "An error occurred while processing your request.",
+            e: e.message,
         })
     }
 }

@@ -9,19 +9,19 @@ import {StateContext} from "@/context/StateContext";
 import PageTransition from "@/components/PageTransition";
 import YourOffers from "@/components/YourOffers";
 import AddRentaOfferWidget from "@/components/AddApartmentWidget";
+import UserOffers from "@/components/UserOffers";
 
 export default function Page() {
     const {messages, transactions} = useContext(StateContext)
 
     return (
-        <PageTransition>
-            <DashboardLayout>
+            <>
                 <AddRentaOfferWidget />
-                <YourOffers apartments={[...apartments, ...apartments]}/>
+                <span className={"text-[13px] font-semibold text-gray-500 -mb-[10px]"}>Twoje oferty</span>
+                <UserOffers />
                 {/*<LikedOffers apartments={[...apartments, ...apartments]}/>*/}
-                {/*<Transactions maxElements={5} transactions={transactions}/>*/}
-                {/*<Messages maxElements={2} messages={messages}/>*/}
-            </DashboardLayout>
-        </PageTransition>
+                <Transactions maxElements={5} transactions={transactions}/>
+                <Messages maxElements={2} messages={messages}/>
+            </>
     )
 }

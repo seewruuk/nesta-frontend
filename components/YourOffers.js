@@ -14,17 +14,6 @@ export default function YourOffers({apartments}) {
             <div className={"flex gap-[15px] overflow-x-scroll"}>
 
 
-                {/*<div className={"min-w-[320px]  "}>*/}
-                {/*    <div className={"bg-gray-200 aspect-video rounded-lg animate-pulse"}/>*/}
-                {/*    <div >*/}
-                {/*        <h4 className={'text-[18px] font-semibold mt-[12px]'}>Pierwsze kroki!</h4>*/}
-                {/*        <p className={"text-[13px]"}>*/}
-                {/*            Witamy w aplikacji Nesta! <br />*/}
-                {/*            Załóż swoje pierwsze ogłoszenie, aby zacząć korzystać z naszej platformy.*/}
-                {/*        </p>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-
                 {apartments.map((item, index) => {
                     return (
                         <Link

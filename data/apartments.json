@@ -1,5 +1,6 @@
 [
   {
+    "id" : "3",
     "header": "Apartament w centrum Warszawy",
     "address": "ul. Krakowska 12, Warszawa",
     "price": 3500,
@@ -40,6 +41,7 @@
     ]
   },
   {
+    "id" : "4",
     "header": "Przestronny apartament z ogrodem",
     "address": "ul. Słoneczna 5, Wrocław",
     "price": 4500,
@@ -80,6 +82,7 @@
     ]
   },
   {
+    "id" : "5",
     "header": "Klimatyczne studio przy plaży",
     "address": "ul. Morska 8, Gdańsk",
     "price": 2800,
@@ -120,6 +123,7 @@
     ]
   },
   {
+    "id" : "6",
     "header": "Luksusowy apartament z widokiem",
     "address": "ul. Piękna 20, Warszawa",
     "price": 8000,
@@ -160,6 +164,7 @@
     ]
   },
   {
+    "id" : "7",
     "header": "Przytulne mieszkanie blisko Rynku",
     "address": "ul. Piotrkowska 15, Wrocław",
     "price": 3200,
