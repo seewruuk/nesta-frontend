@@ -10,8 +10,6 @@ export async function POST(req) {
             status: status,
             reason: message,
         }
-
-
         const response = await fetch(`${apiUrl}/api/move-in-applications/${applicationId}/decision`, {
             method: "PUT",
             headers: {

@@ -11,7 +11,7 @@ import {MobileMenu} from "@/components/MobileMenu";
 export const links = [
     { name: "Strona główna", link: "/" },
     // { name: "Dashboard", link: "/dashboard" },
-    { name: "Apartamenty", link: "/rental-offers" },
+    { name: "Przeglądaj oferty", link: "/rental-offers" },
     { name: "Profil", link: "/users/k.sewruk" },
     { name: "Posty", link: "/posts" },
 ];

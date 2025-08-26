@@ -152,7 +152,7 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
     const [apartments, setApartments] = useState([]);
 
     const {transactions} = useContext(StateContext)
-    const {accessToken} = useContext(AuthContext);
+    const {accessToken, handleLogout} = useContext(AuthContext);
     const router = useRouter();
 
     useEffect(() => {
@@ -168,10 +168,14 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
                         accessToken: accessToken
                     })
                 });
-                if (!response.ok) {
-                    throw new Error("Failed to fetch apartments");
-                }
                 const data = await response.json();
+
+                if(data.status === 401){
+                    toast.error("Brak dostępu. Proszę się zalogować ponownie.");
+                    handleLogout();
+                    return;
+                }
+
                 setInitialData(data);
                 setApartments(data.apartments);
             } catch (error) {
@@ -218,6 +222,12 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
                 }),
             });
             const data = await response.json();
+
+            if(data.status === 409){
+                toast.error(data.message);
+                return;
+            }
+
             router.push('/dashboard/rental-offers');
         } catch (err) {
             console.error("🔥 Error sending request:", err);
@@ -317,7 +327,7 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
                     >
                         <option value={null}>Wybierz mieszkanie</option>
                         {
-                            apartments.map((apartment) => (
+                            apartments && apartments.map((apartment) => (
                                 <option key={apartment.id} value={apartment.id}>
                                     {apartment.streetName} {apartment.buildingNumber}, {apartment.city}
                                 </option>

@@ -14,7 +14,15 @@ export async function POST(req){
             },
         });
 
+
         const json = await response.json();
+        if(json.status === 401){
+            return NextResponse.json({
+                status: 401,
+                message: "Unauthorized access. Please check your access token.",
+                error: "Unauthorized"
+            });
+        }
         return NextResponse.json({
             status: 200,
             message: "Offer fetched successfully",

@@ -13,6 +13,7 @@ import location from ".//location.svg"
 import wc from ".//wc.svg"
 import size from ".//size.svg"
 import door from ".//door.svg"
+import images from ".//images.svg"
 
 export const icons = {
     dashboard,
@@ -30,4 +31,5 @@ export const icons = {
     wc,
     size,
     door,
+    images,
 }

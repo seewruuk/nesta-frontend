@@ -54,9 +54,9 @@ export default function UserProfileLayout({slug}) {
 
                         {/*Profile picture*/}
                         <div className={"aspect-square h-[200px] rounded-full border-8 border-background bg-background relative"}>
-                            {/*<Image*/}
-                            {/*    src={"https://images.steamusercontent.com/ugc/18082018243785591829/B7C0C2561C9D52EC68ABF639FFCA65B30B7D13A1/"}*/}
-                            {/*    alt="Profile Picture" fill className="object-cover rounded-full"/>*/}
+                            <Image
+                                src={"https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg"}
+                                alt="Profile Picture" fill className="object-cover rounded-full"/>
                             <div
                                 className={"bg-primary aspect-square h-[40px] rounded-full absolute bottom-0 right-0 border-background border-5"}/>
                         </div>
@@ -65,7 +65,7 @@ export default function UserProfileLayout({slug}) {
                         <div className={"flex justify-between items-center flex-grow mb-[20px]"}>
                             <div>
                                 <p className={"text-[9px] text-gray"}>Warszawa, Polska</p>
-                                <h3 className={"text-[24px] font-semibold text-black"}>Kacper Sewruk</h3>
+                                <h3 className={"text-[24px] font-semibold text-black"}>Natalia Bogurodzica</h3>
                                 <p className={"text-[16px] font-semibold text-black"}>Polecam swoje mieszkania, są
                                     spoko</p>
                                 <p className={"text-[9px] text-gray"}>Średnia ocen: 4.5 / 5.0</p>

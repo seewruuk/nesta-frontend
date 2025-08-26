@@ -17,7 +17,6 @@ export default function Page() {
     return (
             <>
                 <AddRentaOfferWidget />
-                <span className={"text-[13px] font-semibold text-gray-500 -mb-[10px]"}>Twoje oferty</span>
                 <UserOffers />
                 {/*<LikedOffers apartments={[...apartments, ...apartments]}/>*/}
                 <Transactions maxElements={5} transactions={transactions}/>

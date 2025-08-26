@@ -15,6 +15,14 @@ export async function POST(req){
                 },
             });
 
+            if(response.status === 401){
+                return NextResponse.json({
+                    status: 401,
+                    message: "Unauthorized access. Please check your access token.",
+                    error: "Unauthorized"
+                });
+            }
+
             const json = await response.json();
             return NextResponse.json({
                 status: 200,
@@ -30,8 +38,19 @@ export async function POST(req){
                 "Content-Type": "application/json",
             },
         });
+        console.log(response)
+
+        // Handle unauthorized access p2
+        if(response.status === 401){
+            return NextResponse.json({
+                status: 401,
+                message: "Unauthorized access. Please check your access token.",
+                error: "Unauthorized"
+            });
+        }
 
         const json = await response.json();
+
         return NextResponse.json({
             status: 200,
             message: "Offers fetched successfully",

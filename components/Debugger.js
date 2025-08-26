@@ -26,7 +26,16 @@ export default function Debugger({ data }) {
         };
     }, []);
 
-    if (!visible) return null;
+    const isDataReady = (
+        typeof isLogged !== "undefined" &&
+        typeof username !== "undefined" &&
+        typeof accessToken !== "undefined" &&
+        typeof refreshToken !== "undefined" &&
+        typeof userId !== "undefined" &&
+        typeof data !== "undefined"
+    );
+
+    if (!visible || !isDataReady) return null;
 
     return (
         <div className="fixed top-10 right-10 z-50 bg-gray-100 px-5 py-3 shadow-lg rounded overflow-scroll">

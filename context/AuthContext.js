@@ -12,6 +12,7 @@ export const AuthContext = createContext({
     username: null,
     userId: null,
     userRoles: [],
+    userRole : null,
     handleLogin: () => {},
     handleRegister: () => {},
     handleLogout: () => {},
@@ -40,6 +41,7 @@ export default function AuthContextProvider({ children }) {
         const roles = Cookies.get("user_roles");
         return roles ? JSON.parse(roles) : [];
     });
+    const [userRole, setUserRole] = useState(null);
 
 
     useEffect(() => {
@@ -59,25 +61,34 @@ export default function AuthContextProvider({ children }) {
         if (accessToken) {
             const decoded = decodeJwt(accessToken);
             if (decoded) {
+
+                console.log("decoded JWT:", decoded); // Log the decoded token to verify its contents
                 const id = decoded.sub;
                 const uname = decoded.preferred_username;
                 const roles = decoded.realm_access?.roles || [];
+                const isUserRentier = roles.includes("RENTIER");
+                const isUserLandlord = roles.includes("LANDLORD");
+
 
                 // Zapis do ciastek
                 Cookies.set("user_id", id);
                 Cookies.set("user_roles", JSON.stringify(roles));
                 Cookies.set("username", uname);
 
+
                 // Aktualizacja stanu
                 setUserId(id);
                 setUserRoles(roles);
                 setUsername(uname);
+                setUserRole(isUserRentier ? "RENTIER" : isUserLandlord ? "LANDLORD" : "RENTIER");
             }
         } else {
             Cookies.remove("user_id");
             Cookies.remove("user_roles");
             setUserId(null);
             setUserRoles([]);
+            setUsername(null);
+            setUserRole(null);
         }
     }, [accessToken]);
 
@@ -175,6 +186,8 @@ export default function AuthContextProvider({ children }) {
                 handleLogin,
                 handleRegister,
                 handleLogout,
+                setIsLogged,
+                userRole
             }}
         >
             {children}

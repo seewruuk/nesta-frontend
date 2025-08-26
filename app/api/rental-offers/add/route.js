@@ -14,6 +14,25 @@ export async function POST(req) {
             body: data
         });
         const result = await response.json();
+
+
+        if(response.status === 401){
+            return NextResponse.json({
+                status: 401,
+                message: "Unauthorized access. Please check your access token.",
+                error: "Unauthorized"
+            });
+        }
+
+        if(response.status === 409){
+            return NextResponse.json({
+                status: 409,
+                message: "Conflict error. The offer might already exist.",
+                error: "Conflict"
+            });
+        }
+
+
         return NextResponse.json(
             {status: "success", message: "Offer saved successfully", data: result},
             {status: 200}

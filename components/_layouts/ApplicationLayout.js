@@ -1,23 +1,138 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/context/AuthContext";
+import {useContext, useEffect, useMemo, useState} from "react";
+import {AuthContext} from "@/context/AuthContext";
 import DashboardElement from "@/components/DashboardElement";
 import Image from "next/image";
 import formatDate from "@/lib/formatDate";
 import Button from "@/components/Button";
 import StatusLabel from "@/components/StatusLabel";
 import Debugger from "@/components/Debugger";
+import {toast} from "react-hot-toast";
+import {AnimatePresence, motion} from "framer-motion";
+import {useRouter} from "next/navigation";
 
-export default function ApplicationLayout({ applicationId }) {
-    const { accessToken, userId } = useContext(AuthContext);
+/** ===================== Pomocnicze komponenty ===================== **/
+
+/** Delikatny box informacyjny / ostrzegawczy */
+function InfoBanner({tone = "info", children, className = ""}) {
+    const toneClasses = {
+        info: "bg-blue-50 border-blue-200 text-blue-800",
+        warn: "bg-yellow-50 border-yellow-200 text-yellow-800",
+        ok: "bg-green-50 border-green-200 text-green-800",
+        error: "bg-red-50 border-red-200 text-red-800",
+        neutral: "bg-gray-50 border-gray-200 text-gray-800",
+    };
+    return (
+        <div className={`p-4 border rounded-lg ${toneClasses[tone]} ${className}`}>
+            {children}
+        </div>
+    );
+}
+
+function StatusBlock({title, status, decidedAt, reason}) {
+    if (!status || status === "PENDING") return null;
+
+    const isApproved = status === "APPROVED";
+    const tone = isApproved ? "ok" : "error";
+
+    return (
+        <InfoBanner tone={tone} className="mb-4">
+            <div className="font-medium">{title} <span className="capitalize">{status?.toLowerCase()}</span></div>
+            {reason && <div className="mt-2 text-sm text-gray-700">Powód: {reason}</div>}
+            {decidedAt && (
+                <div className="mt-1 text-xs text-gray-500">{formatDate(decidedAt, "absolute")}</div>
+            )}
+        </InfoBanner>
+    );
+}
+
+function DecisionActions({onApprove, onReject}) {
+    return (
+        <div className="flex gap-2 mt-4">
+            <Button
+                type="button"
+                title="Akceptuj"
+                style="primary"
+                onClick={() => onApprove()}
+            />
+            <Button
+                type="button"
+                title="Odrzuć"
+                style="primary"
+                onClick={() => {
+                    const msg = prompt("Podaj powód odrzucenia aplikacji") || "Brak podanego powodu";
+                    onReject(msg);
+                }}
+            />
+        </div>
+    );
+}
+
+function RescheduleModal({open, onClose, onConfirm}) {
+    const [date, setDate] = useState("");
+    const [time, setTime] = useState("");
+
+    useEffect(() => {
+        if (!open) {
+            setDate("");
+            setTime("");
+        }
+    }, [open]);
+
+    return (
+        <AnimatePresence>
+            {open && (
+                <motion.div
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    exit={{opacity: 0}}
+                    className="fixed inset-0 z-50 grid place-items-center"
+                >
+                    <div className="absolute inset-0 bg-primary opacity-90" />
+                    <div className="relative z-10 p-8 rounded-3xl bg-white w-full max-w-md">
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-center text-lg font-semibold">Wybierz datę i godzinę</h3>
+
+                            <div className="flex flex-col gap-4">
+                                <input
+                                    type="date"
+                                    className="border border-gray/20 rounded-lg p-2"
+                                    value={date}
+                                    onChange={(e) => setDate(e.target.value)}
+                                />
+                                <input
+                                    type="time"
+                                    className="border border-gray/20 rounded-lg p-2"
+                                    value={time}
+                                    onChange={(e) => setTime(e.target.value)}
+                                />
+
+                                <div className="flex gap-2 justify-end">
+                                    <Button type="button" title="Anuluj" style="black" onClick={onClose} />
+                                    <Button
+                                        type="button"
+                                        title="Zapisz"
+                                        style="primary"
+                                        onClick={() => onConfirm(date, time)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+}
+
+
+export default function ApplicationLayout({applicationId}) {
+    const {accessToken, userId, handleLogout} = useContext(AuthContext);
     const [applicationDetails, setApplicationDetails] = useState(null);
+    const [loaded, setLoaded] = useState(false);           // <- ukrywa layout do czasu zakończenia próby pobrania
     const [showPopUp, setShowPopUp] = useState(false);
+    const router = useRouter();
 
-    // Rozdzielone stany dla daty i czasu
-    const [selectedDate, setSelectedDate] = useState("");
-    const [selectedTime, setSelectedTime] = useState("");
-
-    // Fetch szczegółów aplikacji
     useEffect(() => {
         if (!accessToken) return;
         (async () => {
@@ -25,124 +140,193 @@ export default function ApplicationLayout({ applicationId }) {
                 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
                 const res = await fetch(`${baseUrl}/api/moveinapplications/read`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ accessToken, id: applicationId }),
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({accessToken, id: applicationId}),
                 });
-                if (!res.ok) throw new Error("Fetch failed");
-                const { applications } = await res.json();
-                setApplicationDetails(applications);
+
+                if (res.status === 401) {
+                    toast.error("Sesja wygasła. Zaloguj się ponownie.");
+                    handleLogout();
+                    setLoaded(true);
+                    return;
+                }
+
+                if (!res.ok) {
+                    toast.error("Nie udało się pobrać danych aplikacji.");
+                    setLoaded(true);
+                    return;
+                }
+
+                const {applications} = await res.json();
+                setApplicationDetails(applications ?? null);
             } catch (err) {
                 console.error("Błąd przy pobieraniu aplikacji:", err);
+                toast.error("Wystąpił problem z połączeniem. Spróbuj ponownie.");
+            } finally {
+                setLoaded(true);
             }
         })();
-    }, [accessToken, applicationId]);
+    }, [accessToken, applicationId, handleLogout]);
 
-    // Ustawienie wybranej daty
-    const handleSelectDate = (e) => {
-        setSelectedDate(e.target.value);
-    };
+    const {
+        isLandlord,
+        myStatus,
+        otherStatus,
+        decidedAt,
+        decisionReason,
+        landlordStatus
+    } = useMemo(() => {
+        const app = applicationDetails;
+        const isLand = app ? app.rentierId !== userId : false;
+        const mine = isLand ? app?.landlordStatus : app?.rentierStatus;
+        const other = isLand ? app?.rentierStatus : app?.landlordStatus;
+        const decided = isLand ? app?.landlordDecidedAt : app?.rentierDecidedAt;
+        const reason = isLand ? app?.landlordDecisionReason : app?.rentierDecisionReason;
+        return {
+            isLandlord: isLand,
+            myStatus: mine,
+            otherStatus: other,
+            decidedAt: decided,
+            decisionReason: reason,
+            landlordStatus: app?.landlordStatus,
+        };
+    }, [applicationDetails, userId]);
 
-    // Ustawienie wybranej godziny
-    const handleSelectTime = (e) => {
-        setSelectedTime(e.target.value);
-    };
 
-    // Wyślij aplikację z połączoną datą i czasem w formacie ISO
-    const handleSaveApplication = async () => {
-        if (!selectedDate || !selectedTime) {
-            alert("Proszę wybrać zarówno datę, jak i godzinę oględzin.");
+    const handleDecide = async (status, message) => {
+            if (!accessToken) return;
+            try {
+                const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+                const res = await fetch(`${baseUrl}/api/moveinapplications/set-decision`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({accessToken, applicationId, status, message}),
+                });
+
+                if (res.status === 401) {
+                    toast.error("Sesja wygasła. Zaloguj się ponownie.");
+                    handleLogout();
+                    return;
+                }
+
+
+                const data = await res.json();
+                setApplicationDetails((prev) => prev ? ({
+                    ...prev,
+                    landlordStatus: status,
+                    landlordDecidedAt: data.decidedAt ?? prev.landlordDecidedAt,
+                    landlordDecisionReason: data.reason ?? prev.landlordDecisionReason,
+                }) : prev);
+                router.refresh()
+
+                toast.success(
+                    status === "APPROVED" ? "Aplikacja zaakceptowana." : "Aplikacja odrzucona."
+                );
+            } catch (err) {
+                console.error("Błąd decyzji:", err);
+                toast.error("Wystąpił błąd. Spróbuj ponownie.");
+            }
+        };
+
+    const handleReschedule = async (date, time) => {
+        if (!date || !time) {
+            toast("Wybierz datę i godzinę.", {icon: "📅"});
             return;
         }
-        const viewingDateTime = `${selectedDate}T${selectedTime}:00`;
+        if (!accessToken) return;
+
+        const viewingDateTime = `${date}T${time}:00`;
 
         try {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-            const response = await fetch(`${baseUrl}/api/moveinapplications/create`, {
+            const res = await fetch(`${baseUrl}/api/moveinapplications/reschedule-viewing`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    accessToken,
-                    rentalOfferId: applicationDetails.rentalOfferId,
-                    viewingDateTime,
-                }),
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({accessToken, applicationId, newDate: viewingDateTime}),
             });
-            const data = await response.json();
-            if (data.application) {
-                alert("Aplikacja została wysłana pomyślnie!");
-                setShowPopUp(false);
-                setApplicationDetails(data.application);
-            } else {
-                alert(
-                    "Wystąpił błąd podczas wysyłania aplikacji: " +
-                    (data.error || "Nieznany błąd")
-                );
+
+            if (res.status === 401) {
+                toast.error("Sesja wygasła. Zaloguj się ponownie.");
+                handleLogout();
+                return;
             }
+            if (res.status === 409) {
+                toast.error("Wybrany termin jest już zajęty. Wybierz inny.");
+                return;
+            }
+
+
+            setShowPopUp(false);
+            setApplicationDetails((prev) => prev ? ({...prev, viewingDateTime}) : prev);
+            router.refresh()
+            toast.success("Termin oględzin zaktualizowany.");
         } catch (err) {
-            console.error("Wystąpił błąd:", err);
-            alert("Wystąpił błąd sieci. Spróbuj ponownie.");
+            console.error("Błąd zmiany terminu oględzin:", err);
+            toast.error("Wystąpił błąd. Spróbuj ponownie.");
         }
     };
 
-    // Landlord podejmuje decyzję (APPROVED/REJECTED)
-    const handleDecide = async (status, message) => {
+    const handleCancelApplication = async () => {
+        if (!accessToken) return;
         try {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
             const res = await fetch(`${baseUrl}/api/moveinapplications/set-decision`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ accessToken, applicationId, status, message }),
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    accessToken,
+                    applicationId,
+                    status: "CANCELLED",
+                    message: "Najemca anulował aplikację",
+                }),
             });
-            if (!res.ok) throw new Error("Decision failed");
-            const data = await res.json();
-            setApplicationDetails((prev) => ({
-                ...prev,
-                landlordStatus: status,
-                landlordDecidedAt: data.decidedAt,
-                landlordDecisionReason: data.reason || prev.landlordDecisionReason,
-            }));
+
+            if (res.status === 401) {
+                toast.error("Sesja wygasła. Zaloguj się ponownie.");
+                handleLogout();
+                return;
+            }
+            if (!res.ok) {
+                toast.error("Nie udało się anulować aplikacji.");
+                return;
+            }
+
+            toast.success("Aplikacja anulowana.");
+            router.refresh();
         } catch (err) {
-            console.error("Błąd decyzji:", err);
-            alert("Nie udało się zapisać decyzji. Spróbuj ponownie.");
+            console.error("Błąd anulowania aplikacji:", err);
+            toast.error("Wystąpił błąd. Spróbuj ponownie.");
         }
     };
 
-    if (!applicationDetails) {
-        return <DashboardElement>Ładowanie szczegółów aplikacji...</DashboardElement>;
-    }
+    if (!loaded) return null;
 
-    // Określenie roli użytkownika
-    const isLandlord =
-        applicationDetails.rentierId !== userId;
-    const myStatus = isLandlord
-        ? applicationDetails.landlordStatus
-        : applicationDetails.rentierStatus;
-    const otherStatus = isLandlord
-        ? applicationDetails.rentierStatus
-        : applicationDetails.landlordStatus;
-    const decidedAt = isLandlord
-        ? applicationDetails.landlordDecidedAt
-        : applicationDetails.rentierDecidedAt;
-    const decisionReason = isLandlord
-        ? applicationDetails.landlordDecisionReason
-        : applicationDetails.rentierDecisionReason;
+    if (!applicationDetails) {
+        return (
+            <DashboardElement>
+                <InfoBanner tone="neutral">Nie znaleziono szczegółów tej aplikacji.</InfoBanner>
+            </DashboardElement>
+        );
+    }
 
     return (
         <>
-            <DashboardElement>
-                {/* Debugger dla surowych danych */}
-                <Debugger data={applicationDetails} />
+            <Debugger data={applicationDetails} />
 
-                <h2 className="text-2xl font-semibold mb-4">
-                    Aplikacja #{applicationId}
-                </h2>
+            {/* Modal zmiany terminu */}
+            <RescheduleModal
+                open={showPopUp}
+                onClose={() => setShowPopUp(false)}
+                onConfirm={handleReschedule}
+            />
+
+            <DashboardElement>
+                <h2 className="text-2xl font-semibold mb-4">Aplikacja #{applicationId}</h2>
 
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-gray-200">
+                    <div className="relative h-20 w-20 rounded-full overflow-hidden border-[5px] border-primary">
                         <Image
-                            src={
-                                applicationDetails.rentierAvatarUrl ||
-                                "/default-avatar.png"
-                            }
+                            src={"https://images.pexels.com/photos/25643042/pexels-photo-25643042.jpeg"}
                             alt="Avatar najemcy"
                             fill
                             className="object-cover"
@@ -151,101 +335,90 @@ export default function ApplicationLayout({ applicationId }) {
                             <span className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-white" />
                         )}
                     </div>
+
                     <div>
                         <div className="text-lg font-bold">
-                            {applicationDetails.rentierName}
+                            {applicationDetails.rentierId}
                         </div>
                         <div className="text-sm text-gray-500">
-                            Złożono:{" "}
-                            {formatDate(
-                                applicationDetails.createdAt,
-                                "absolute"
-                            )}
+                            Złożono: {formatDate(applicationDetails.createdAt, "absolute")}
                         </div>
                     </div>
-                    <StatusLabel
-                        status={myStatus}
-                        fontSize={14}
-                        paddingX={8}
-                        paddingY={4}
-                    />
+
+                    <div className="flex flex-grow items-center justify-end gap-3">
+                        <div className={"text-[14px] font-semibold text-gray-500"}>Twoja decyzja: </div>
+                        <StatusLabel status={myStatus} fontSize={14} paddingX={8} paddingY={4} />
+
+                    </div>
+
                 </div>
 
                 {/* Proponowany termin wizyty */}
-                <div className="p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg mb-4">
-                    Zaproponowany termin wizyty:{" "}
-                    <span className="font-semibold">
-            {formatDate(
-                applicationDetails.viewingDateTime,
-                "absolute"
-            )}
-          </span>
-                </div>
-
-                {/* Sekcja decyzji i statusów */}
-                {myStatus !== "PENDING" && decidedAt && (
-                    <div
-                        className={
-                            "p-4 mb-4 rounded-lg border " +
-                            (myStatus === "APPROVED"
-                                ? "bg-green-50 border-green-200 text-green-800"
-                                : "bg-red-50 border-red-200 text-red-800")
-                        }
-                    >
-                        {isLandlord
-                            ? "Twój ruch:"
-                            : "Twoja decyzja:"}{" "}
-                        <span className="font-semibold capitalize">
-              {myStatus.toLowerCase()}
+                {applicationDetails.viewingDateTime && (
+                    <InfoBanner tone="warn" className="mb-4">
+                        Zaproponowany termin wizyty:{" "}
+                        <span className="font-semibold">
+              {formatDate(applicationDetails.viewingDateTime, "absolute")}
             </span>
-                        {decisionReason && (
-                            <div className="mt-2 text-sm text-gray-600">
-                                Powód: {decisionReason}
-                            </div>
-                        )}
-                        <div className="mt-1 text-xs text-gray-500">
-                            {formatDate(decidedAt, "absolute")}
-                        </div>
-                    </div>
+                    </InfoBanner>
                 )}
 
-                {/* Landlord może podjąć decyzję gdy status PENDING */}
+                {/* Blok statusu mojej strony */}
+                <StatusBlock
+                    title={isLandlord ? "Twój ruch:" : "Twoja decyzja:"}
+                    status={myStatus}
+                    decidedAt={decidedAt}
+                    reason={decisionReason}
+                />
 
-
-                {/* Rentier czeka na decyzję landlord’a */}
-                {myStatus === "PENDING" && !isLandlord && (
-                    <div className="p-4 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg mb-4">
-                        Oczekiwanie na decyzję landlord’a
-                    </div>
-                )}
-
-
-                {/* Status drugiej strony */}
+                {/* Informacja o statusie drugiej strony */}
                 {otherStatus && (
-                    <div className="p-4 bg-gray-50 border border-gray-200 text-gray-800 rounded-lg">
+                    <InfoBanner tone="neutral" className="mb-4">
                         {isLandlord
                             ? `Status najemcy: ${otherStatus.toLowerCase()}`
                             : `Decyzja właściciela: ${otherStatus.toLowerCase()}`}
-                    </div>
+                    </InfoBanner>
                 )}
 
+                {/* Komunikat po odrzuceniu przez landlord'a */}
+                {applicationDetails.viewingDateTime && landlordStatus === "REJECTED" && !isLandlord && (
+                    <InfoBanner tone="error" className="mb-4">
+                        Twoja aplikacja została odrzucona. Skontaktuj się z właścicielem w celu ustalenia nowego terminu
+                        oględzin.
+                    </InfoBanner>
+                )}
+
+                {/* Komunikat o anulowaniu przez najemcę */}
+                {applicationDetails.rentierStatus === "CANCELLED" && (
+                    <InfoBanner tone="error" className="mb-4">
+                        {isLandlord ? "Najemca anulował aplikację." : "Anulowałeś swoją aplikację."}
+                    </InfoBanner>
+                )}
+
+                {/* Dostępne akcje */}
                 {myStatus === "PENDING" && isLandlord && (
-                    <div className="flex gap-2 mt-4">
+                    <DecisionActions
+                        onApprove={() => handleDecide("APPROVED", "Mam nadzieję, że mieszkanie się spodoba!")}
+                        onReject={(msg) => handleDecide("REJECTED", msg)}
+                    />
+                )}
+
+                {myStatus === "PENDING" && landlordStatus === "PENDING" && !isLandlord && (
+                    <div className="flex flex-col gap-2">
                         <Button
-                            type={"button"}
-                            title="Akceptuj"
+                            type="button"
+                            title="Zaproponuj nowy termin"
                             style="primary"
-                            onClick={() => handleDecide("APPROVED", "Spadaj")}
+                            onClick={() => setShowPopUp(true)}
                         />
                         <Button
-                            type={"button"}
-                            title="Odrzuć"
-                            style="primary"
-                            onClick={() => handleDecide("REJECTED", "Witaj")}
+                            type="button"
+                            title="Anuluj aplikację"
+                            style="black"
+                            onClick={handleCancelApplication}
                         />
                     </div>
                 )}
-
             </DashboardElement>
         </>
     );

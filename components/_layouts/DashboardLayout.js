@@ -5,21 +5,23 @@ import apartments from "@/data/apartments.json"
 import Transactions from "@/components/Transactions";
 import Messages from "@/components/Messages";
 import {StateContext} from "@/context/StateContext";
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import PageTransition from "@/components/PageTransition";
 import Image from "next/image";
 import LogoMain from "@/public/logo.svg"
 import {icons} from "@/src/icons";
 import {AuthContext} from "@/context/AuthContext";
 import ProfileWidget from "@/components/ProfileWidget";
+import Debugger from "@/components/Debugger";
 
 export default function DashboardLayout({children}) {
 
     const {links} = useContext(StateContext)
-    const {handleLogout } = useContext(AuthContext);
+    const {handleLogout, isLogged} = useContext(AuthContext);
 
     return (
         <>
+            <Debugger />
             <div className={"flex relative h-screen overflow-y-scroll"}>
 
                 <div className={"w-1/6 px-[48px] py-[32px] bg-white flex flex-col justify-between"}>

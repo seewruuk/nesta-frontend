@@ -7,19 +7,19 @@ import StatusLabel from "@/components/StatusLabel";
 
 export const UserMoveInApplications = () => {
 
-    const {accessToken, username, userId} = useContext(AuthContext);
+    const {accessToken, username, userId, handleLogout, userRole} = useContext(AuthContext);
     const [applications, setApplications] = useState([]);
-    const apiEndpoints = {
-        testnajemca4: "/api/moveinapplications/by-landlord",
-        testnajemca2: "/api/moveinapplications/by-rentier",
-        landlord: "/api/moveinapplications/by-rentier",
 
+    // notatka - endpointy trzeba poprawić na dynamiczne jak chodzi o userId oraz jego status
+    const apiEndpoints = {
+        LANDLORD: "/api/moveinapplications/by-landlord",
+        RENTIER: "/api/moveinapplications/by-rentier",
     }
 
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const response = await fetch(apiEndpoints[username], {
+                const response = await fetch(apiEndpoints[userRole], {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -29,6 +29,11 @@ export const UserMoveInApplications = () => {
                         userId: userId
                     }),
                 });
+
+                if(response.status === 401){
+                    handleLogout();
+                    return;
+                }
 
                 if (response.ok) {
                     const data = await response.json();
@@ -44,40 +49,41 @@ export const UserMoveInApplications = () => {
         if (accessToken) {
             fetchApplications();
         }
-    }, []);
+    }, [accessToken]);
 
     return (
-        <div className={"w-full"}>
-            <label>Aplikacje</label>
+      <>
+          {
+              applications && applications.length > 0 && (
+                  <div className={"w-full"}>
+                      <label>Aplikacje</label>
+                      <div className={"flex flex-col gap-2 w-full"}>
+                          {
+                              applications && applications.length > 0 && applications.map((app, index) => (
+                                  <Link
+                                      key={index}
+                                      className={"bg-slate-50 p-5 rounded-lg text-[11px] w-full flex flex-col gap-3"}
+                                      href={`/dashboard/moveinapplications/${app.id}`}
+                                  >
+                                      <div>{formatDate(app.createdAt, "relative")}</div>
+                                      <div className={"flex justify-between items-center"}>
+                                          <div>Landlord status:</div>
+                                          <StatusLabel status={app.landlordStatus} />
+                                      </div>
+                                      <div className={"flex justify-between items-center"}>
+                                          <div>Rentier status:</div>
+                                          <StatusLabel status={app.rentierStatus} />
+                                      </div>
+                                      <p className={"truncate"}>{app.rentierId}</p>
+                                      <p className={"truncate"}>Rental offer: {app.rentalOffer}</p>
+                                  </Link>
+                              ))
+                          }
+                      </div>
+                  </div>
+              )
+          }
 
-            <div className={"flex flex-col gap-2 w-full"}>
-                {
-                    applications.length === 0 ? (
-                        <div>Brak aplikacji</div>
-                    ) : (
-                        applications && applications.map((app, index) => (
-                            <Link
-                                key={index}
-                                className={"bg-slate-50 p-5 rounded-lg text-[11px] w-full flex flex-col gap-3"}
-                                href={`/dashboard/moveinapplications/${app.id}`}
-                            >
-                                <div>{formatDate(app.createdAt, "relative")}</div>
-                                <div className={"flex justify-between items-center"}>
-                                    <div>Landlord status:</div>
-                                    <StatusLabel status={app.landlordStatus} />
-                                </div>
-                                <div className={"flex justify-between items-center"}>
-                                    <div>Rentier status:</div>
-                                    <StatusLabel status={app.rentierStatus} />
-                                </div>
-                                <p className={"truncate"}>{app.rentierId}</p>
-                                <p className={"truncate"}>Rental offer: {app.rentalOffer}</p>
-                            </Link>
-                        ))
-                    )
-                }
-            </div>
-
-        </div>
+      </>
     )
 }

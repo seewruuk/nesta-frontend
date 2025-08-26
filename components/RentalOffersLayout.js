@@ -21,7 +21,7 @@ export default function RentalOffersLayout() {
 }
 
 function RentalOffersRoot() {
-    const { accessToken } = useContext(AuthContext);
+    const { accessToken , handleLogout  } = useContext(AuthContext);
     const searchParams = useSearchParams();
 
     const [offers, setOffers] = useState([]);
@@ -77,7 +77,20 @@ function RentalOffersRoot() {
                     body: JSON.stringify({ accessToken }),
                 });
 
+
+
+                // Handle unauthorized access p1
+                // response = await json.json()
                 const response = await res.json();
+                if(response.status === 401){
+                    setError("Brak dostępu. Proszę się zalogować ponownie.");
+                    setOffers([]);
+                    handleLogout();
+                    return;
+                }
+
+
+
 
                 const adapted = (response?.offers ?? []).map((o) => {
                     const furnishingMap = {
@@ -118,6 +131,7 @@ function RentalOffersRoot() {
                         utilitiesIncluded: o.utilitiesIncluded,
                         deposit: o.deposit,
                         floor: o.apartment.floor,
+                        images: o.apartment.images || [],
                         furnishing,
                         shortTermRental: o.shortTermRental,
                         smokingAllowed,
