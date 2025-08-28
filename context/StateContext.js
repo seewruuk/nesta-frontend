@@ -13,9 +13,9 @@ export default function StateContextProvider({children}) {
         {name: "Dashboard", href: "/dashboard", icon: icons.dashboard},
         {name: "Mieszkania", href: "/dashboard/apartments", icon: icons.apartments},
         {name: "Oferty", href: "/dashboard/rental-offers", icon: icons.rentaloffers},
-        {name: "Transakcje", href: "/dashboard/transactions", icon: icons.transactions},
+        {name: "Faktury", href: "/dashboard/invoices", icon: icons.transactions},
         {name: "Wiadomości", href: "/dashboard/messages", icon: icons.messages},
-        {name: "Opinie", href: "/dashboard/reviews", icon: icons.reviews},
+        // {name: "Opinie", href: "/dashboard/reviews", icon: icons.reviews},
     ])
     const [transactions, setTransactions] = useState([
         {id: "#12548796", label: "Czynsz za mieszkanie", status: "paid", date: "23-01-2025", value: 3500},

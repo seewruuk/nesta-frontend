@@ -166,7 +166,7 @@ export default function ApplicationLayout({applicationId}) {
                 setLoaded(true);
             }
         })();
-    }, [accessToken, applicationId, handleLogout]);
+    }, [accessToken, applicationId]);
 
     const {
         isLandlord,
@@ -311,7 +311,6 @@ export default function ApplicationLayout({applicationId}) {
 
     return (
         <>
-            <Debugger data={applicationDetails} />
 
             {/* Modal zmiany terminu */}
             <RescheduleModal

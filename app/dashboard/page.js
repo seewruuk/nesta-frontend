@@ -10,17 +10,21 @@ import PageTransition from "@/components/PageTransition";
 import YourOffers from "@/components/YourOffers";
 import AddRentaOfferWidget from "@/components/AddApartmentWidget";
 import UserOffers from "@/components/UserOffers";
+import UserApartments from "@/components/UserApartments";
+import UserInvoices from "@/components/UserInvoices";
 
 export default function Page() {
     const {messages, transactions} = useContext(StateContext)
 
     return (
             <>
-                <AddRentaOfferWidget />
+                {/*<AddRentaOfferWidget />*/}
                 <UserOffers />
+                <UserApartments />
+                <UserInvoices />
                 {/*<LikedOffers apartments={[...apartments, ...apartments]}/>*/}
-                <Transactions maxElements={5} transactions={transactions}/>
-                <Messages maxElements={2} messages={messages}/>
+                {/*<Transactions maxElements={5} transactions={transactions}/>*/}
+                {/*<Messages maxElements={2} messages={messages}/>*/}
             </>
     )
 }

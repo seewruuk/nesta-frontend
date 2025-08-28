@@ -1,4 +1,3 @@
-// File: components/RentalOffersLayout.js
 "use client";
 
 import { useState, useEffect, Suspense, useContext } from "react";
@@ -70,28 +69,13 @@ function RentalOffersRoot() {
                 setError("");
 
                 const res = await fetch("/api/rental-offers", {
-                    method: "POST",
+                    method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ accessToken }),
                 });
 
-
-
-                // Handle unauthorized access p1
-                // response = await json.json()
                 const response = await res.json();
-                if(response.status === 401){
-                    setError("Brak dostępu. Proszę się zalogować ponownie.");
-                    setOffers([]);
-                    handleLogout();
-                    return;
-                }
-
-
-
-
                 const adapted = (response?.offers ?? []).map((o) => {
                     const furnishingMap = {
                         FURNISHED: "Umeblowane",

@@ -10,6 +10,8 @@ import "swiper/css/pagination";
 import {RenderIcon} from "@/components/RenderIcon";
 import {icons} from "@/src/icons";
 import Debugger from "@/components/Debugger";
+import {ImageUrl} from "@/lib/imageUrl";
+import NoImage from "@/public/images/no-image.png"
 
 export const DEFAULT_IMAGES = [
     "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
@@ -53,15 +55,10 @@ export default function ApartmentsList({apartments}) {
     }
     return (
         <>
-            {
-                <Debugger data={apartments} />
-            }
             <div className="space-y-6 max-w-[1200px] mx-auto pb-16">
                 {apartments.map((item) => {
                     const images =
-                        Array.isArray(item.images) && item.images.length > 0
-                            ? item.images
-                            : DEFAULT_IMAGES;
+                        Array.isArray(item.images) && item.images && item.images.length > 0 ? item.images : []
 
                     const initialIndex = Math.floor(Math.random() * images.length);
 
@@ -73,33 +70,63 @@ export default function ApartmentsList({apartments}) {
 
                             {/* LEWA: zdjęcie */}
                             <div className="h-[320px] w-[450px] relative shrink-0">
-                                <Swiper
-                                    modules={[Pagination, A11y]}
-                                    pagination={{
-                                        clickable: true,
-                                        bulletClass: "swiper-pagination-bullet bg-gray-300", // bazowe
-                                        bulletActiveClass: "bg-primary swiper-pagination-bullet-active" // aktywna = kolor primary
-                                    }}
-                                    loop={images.length > 1}
-                                    initialSlide={initialIndex}
-                                    className="h-full w-full"
-                                >
+                                {
+                                    images && images.length > 0 ? (
+                                        <Swiper
+                                            modules={[Pagination, A11y]}
+                                            pagination={{
+                                                clickable: true,
+                                                bulletClass: "swiper-pagination-bullet bg-gray-300", // bazowe
+                                                bulletActiveClass: "bg-primary swiper-pagination-bullet-active" // aktywna = kolor primary
+                                            }}
+                                            loop={images.length > 1}
+                                            initialSlide={initialIndex}
+                                            className="h-full w-full"
+                                        >
 
-                                    {images.map((src, idx) => (
-                                        <SwiperSlide key={`${item.id}-img-${idx}`}>
-                                            <div className="relative w-full h-full bg-gray-100">
-                                                <Image
-                                                    src={`${process.env.NEXT_PUBLIC_API_URL}${src.publicUrl}`}
-                                                    alt={`Zdjęcie ${idx + 1}`}
-                                                    fill
-                                                    className="object-cover"
-                                                    sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 100vw"
-                                                />
-                                            </div>
-                                        </SwiperSlide>
-                                    ))}
-                                </Swiper>
+                                            {
+                                                images && images.length > 0 ? (
+
+                                                    images.map((src, idx) => (
+                                                            <SwiperSlide key={`${item.id}-img-${idx}`}>
+                                                                <div className="relative w-full h-full bg-gray-100">
+                                                                    <Image
+                                                                        src={
+                                                                            src.id ? ImageUrl(src.publicUrl) : "https://via.placeholder.com/450x320?text=No+Image"
+                                                                        }
+                                                                        alt={`Zdjęcie ${idx + 1}`}
+                                                                        fill
+                                                                        className="object-cover"
+                                                                        sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 100vw"
+                                                                    />
+
+                                                                </div>
+                                                            </SwiperSlide>
+                                                        )
+                                                    )
+                                                ) : (
+                                                    <div className="relative w-full h-full bg-gray-100">
+                                                        asd
+                                                    </div>
+                                                )
+                                            }
+                                        </Swiper>
+                                    ) : (
+                                        <div className="relative w-full h-full bg-gray-100">
+                                            <Image
+                                                alt={"text"}
+                                                src={
+                                                    NoImage
+                                                }
+                                                fill
+                                                className="object-cover"
+                                                sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 100vw"
+                                            />
+                                        </div>
+                                    )
+                                }
                             </div>
+
 
                             {/* PRAWA: szczegóły */}
                             <div className="p-4 flex flex-col flex-grow relative">

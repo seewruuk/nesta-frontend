@@ -19,7 +19,15 @@ export default function Page() {
                     <UserApartments />
                 </div>
             </DashboardElement>
-            <AddApartmentWidget />
+
+            <AddApartmentWidget
+                type="apartment"
+                bgClass="bg-emerald-300"
+                title="Dodaj mieszkanie!"
+                description="Szybko rozpocznij dodawanie nowej nieruchomości."
+                ctaTitle="Rozpocznij dodawanie mieszkania"
+                href="/dashboard/apartments/add"
+            />
 
         </>
     )

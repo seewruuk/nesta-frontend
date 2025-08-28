@@ -285,8 +285,6 @@ export default function DashboardApartmentView({ id }) {
 
     return (
         <>
-            {/* Debug tylko gdy istnieje wartość — jak w oryginale */}
-            {memo.heroUrl && <Debugger data={memo.heroUrl} />}
 
             <ConfirmDeleteModal
                 open={showAlert}

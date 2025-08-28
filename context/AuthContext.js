@@ -11,6 +11,7 @@ export const AuthContext = createContext({
     refreshToken: null,
     username: null,
     userId: null,
+    userEmail: null,
     userRoles: [],
     userRole : null,
     handleLogin: () => {},
@@ -37,6 +38,7 @@ export default function AuthContextProvider({ children }) {
     const [refreshToken, setRefreshToken] = useState(Cookies.get("refresh_token") || null);
     const [username, setUsername] = useState(Cookies.get("username") || null);
     const [userId, setUserId] = useState(Cookies.get("user_id") || null);
+    const [userEmail, setUserEmail] = useState(null);
     const [userRoles, setUserRoles] = useState(() => {
         const roles = Cookies.get("user_roles");
         return roles ? JSON.parse(roles) : [];
@@ -53,6 +55,7 @@ export default function AuthContextProvider({ children }) {
             setUserId(Cookies.get("user_id") || null);
             const roles = Cookies.get("user_roles");
             setUserRoles(roles ? JSON.parse(roles) : []);
+
         }, 1000);
         return () => clearInterval(id);
     }, []);
@@ -64,6 +67,7 @@ export default function AuthContextProvider({ children }) {
 
                 console.log("decoded JWT:", decoded); // Log the decoded token to verify its contents
                 const id = decoded.sub;
+                const email = decoded.email;
                 const uname = decoded.preferred_username;
                 const roles = decoded.realm_access?.roles || [];
                 const isUserRentier = roles.includes("RENTIER");
@@ -80,6 +84,7 @@ export default function AuthContextProvider({ children }) {
                 setUserId(id);
                 setUserRoles(roles);
                 setUsername(uname);
+                setUserEmail(email);
                 setUserRole(isUserRentier ? "RENTIER" : isUserLandlord ? "LANDLORD" : "RENTIER");
             }
         } else {
@@ -89,6 +94,7 @@ export default function AuthContextProvider({ children }) {
             setUserRoles([]);
             setUsername(null);
             setUserRole(null);
+            setUserEmail(null);
         }
     }, [accessToken]);
 
@@ -187,7 +193,8 @@ export default function AuthContextProvider({ children }) {
                 handleRegister,
                 handleLogout,
                 setIsLogged,
-                userRole
+                userRole,
+                userEmail
             }}
         >
             {children}

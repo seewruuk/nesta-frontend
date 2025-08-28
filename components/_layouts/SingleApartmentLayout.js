@@ -14,6 +14,7 @@ import {DEFAULT_IMAGES, randomApartmentTitles} from "@/components/ApartmentsList
 import {toast} from "react-hot-toast";
 import {useRouter} from "next/navigation";
 import {ImageUrl} from "@/lib/imageUrl";
+import NoImage from "@/public/images/no-image.png"
 
 /**
  * ---------------------------
@@ -41,7 +42,7 @@ const ApplicationPopup = React.memo(function ApplicationPopup({
                     aria-modal="true"
                     role="dialog"
                 >
-                    <div className="absolute inset-0 bg-primary opacity-90" onClick={onClose} />
+                    <div className="absolute inset-0 bg-primary opacity-90" onClick={onClose}/>
                     <div className="relative z-50 w-[min(92vw,560px)] rounded-3xl bg-white p-6 md:p-8 shadow-xl">
                         <div className="flex flex-col gap-4">
                             <h3 className="text-center text-lg font-semibold">Wybierz datę i godzinę</h3>
@@ -185,49 +186,78 @@ const Gallery = React.memo(function Gallery({
     const main = images?.[selectedIndex];
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden">
-            <div
-                className="relative h-[380px] cursor-zoom-in overflow-hidden rounded-lg bg-gray/10"
-                onClick={onOpenLightbox}
-                role="button"
-                aria-label="Otwórz zdjęcie w trybie pełnoekranowym"
-            >
-                {main && (
-                    <Image
-                        src={ImageUrl(main.publicUrl)}
-                        alt="Zdjęcie mieszkania"
-                        fill
-                        className="object-cover"
-                        priority
-                    />
-                )}
-            </div>
-            <div className="mt-[12px]">
-                <div className="flex gap-2 justify-start overflow-x-auto">
-                    {images?.map((i, idx) => (
-                        <button
-                            key={idx}
-                            className={`relative h-[80px] min-w-[130px] overflow-hidden rounded-lg border ${
-                                idx === selectedIndex ? "border-black" : "border-transparent"
-                            }`}
-                            onClick={() => setSelectedIndex(idx)}
-                            aria-label={`Wybierz zdjęcie ${idx + 1}`}
-                        >
-                            <Image
-                                src={ImageUrl(i.publicUrl)}
-                                alt={`Miniatura ${idx + 1}`}
-                                fill
-                                className="object-cover"
-                            />
-                        </button>
-                    ))}
+        <>
+            {
+                images && (
+                    <Debugger data={images}/>
+                )
+            }
+
+            <div className="flex-1 flex flex-col overflow-hidden">
+
+                <div
+                    className="relative h-[380px] cursor-zoom-in overflow-hidden rounded-lg bg-gray/10"
+                    onClick={onOpenLightbox}
+                    role="button"
+                    aria-label="Otwórz zdjęcie w trybie pełnoekranowym"
+                >
+                    {main ? (
+                        <Image
+                            src={
+                                ImageUrl(main.publicUrl)
+                            }
+                            alt="Zdjęcie mieszkania"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    ) : (
+                        <Image
+                            src={
+                                NoImage
+                            }
+                            alt="Zdjęcie mieszkania"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    )
+                    }
+
+
+                </div>
+                <div className="mt-[12px]">
+                    <div className="flex gap-2 justify-start overflow-x-auto">
+                        {
+                            images && images.length > 0 &&
+                            images?.map((i, idx) => (
+                                <button
+                                    key={idx}
+                                    className={`relative h-[80px] min-w-[130px] overflow-hidden rounded-lg border ${
+                                        idx === selectedIndex ? "border-black" : "border-transparent"
+                                    }`}
+                                    onClick={() => setSelectedIndex(idx)}
+                                    aria-label={`Wybierz zdjęcie ${idx + 1}`}
+                                >
+                                    <Image
+                                        src={ImageUrl(i.publicUrl)}
+                                        alt={`Miniatura ${idx + 1}`}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </button>
+                            ))}
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
+
     );
 });
 
-const InfoList = React.memo(function InfoList({apartmentData}) {
+const InfoList = React.memo(function InfoList({
+                                                  apartmentData
+                                              }) {
     const a = apartmentData?.apartment ?? {};
     return (
         <div>
@@ -257,7 +287,9 @@ const InfoList = React.memo(function InfoList({apartmentData}) {
     );
 });
 
-const Policies = React.memo(function Policies({apartmentData}) {
+const Policies = React.memo(function Policies({
+                                                  apartmentData
+                                              }) {
     const mapEmployment = {
         ANY: "Dowolny",
         EMPLOYED: "Zatrudniony",
@@ -282,7 +314,9 @@ const Policies = React.memo(function Policies({apartmentData}) {
     );
 });
 
-const Amenities = React.memo(function Amenities({apartmentData}) {
+const Amenities = React.memo(function Amenities({
+                                                    apartmentData
+                                                }) {
     const a = apartmentData?.apartment ?? {};
     const parkingMap = {STREET: "Ulica", UNDERGROUND: "Podziemny", NONE: "Brak"};
     return (
@@ -313,13 +347,9 @@ const Amenities = React.memo(function Amenities({apartmentData}) {
     );
 });
 
-/**
- * ---------------------------
- *     KOMPONENT GŁÓWNY
- * ---------------------------
- */
-
-export default function SingleApartmentLayout({id}) {
+export default function SingleApartmentLayout({
+                                                  id
+                                              }) {
     const {accessToken, handleLogout, userId} = useContext(AuthContext);
     const [showPopUp, setShowPopUp] = useState(false);
     const [apartmentData, setApartmentData] = useState(null);
@@ -368,7 +398,7 @@ export default function SingleApartmentLayout({id}) {
                 const offer = data?.offer;
                 setApartmentData(offer ?? null);
 
-                const imgs = offer?.apartment?.images?.length ? offer.apartment.images : DEFAULT_IMAGES;
+                const imgs = offer?.apartment?.images?.length ? offer.apartment.images : [];
                 setApartmentImages(imgs);
                 setSelectedIndex(0);
 
@@ -441,8 +471,8 @@ export default function SingleApartmentLayout({id}) {
     if (loading) {
         return (
             <div className="px-6 pt-[150px]">
-                <div className="h-6 w-24 animate-pulse rounded bg-gray-200" />
-                <div className="mt-4 h-[380px] w-full animate-pulse rounded bg-gray-200" />
+                <div className="h-6 w-24 animate-pulse rounded bg-gray-200"/>
+                <div className="mt-4 h-[380px] w-full animate-pulse rounded bg-gray-200"/>
             </div>
         );
     }
@@ -466,10 +496,7 @@ export default function SingleApartmentLayout({id}) {
 
     return (
         <>
-            {/* Debugger wyłączony w produkcji */}
-            {process.env.NODE_ENV === "development" && apartmentImages && <Debugger data={apartmentImages} />}
 
-            {/* Lightbox Fullscreen */}
             <Lightbox
                 open={lightboxOpen}
                 images={apartmentImages}
@@ -485,18 +512,16 @@ export default function SingleApartmentLayout({id}) {
                         <Link href="/rental-offers" className="text-sm text-gray-500">
                             Powrót
                         </Link>
-                        <div className="h-[1px] flex-grow bg-gray/20" />
+                        <div className="h-[1px] flex-grow bg-gray/20"/>
                     </div>
 
                     <section className="mt-[24px] flex items-center justify-between gap-12">
-                        {/* Galeria */}
                         <Gallery
                             images={apartmentImages}
                             selectedIndex={selectedIndex}
                             setSelectedIndex={setSelectedIndex}
                             onOpenLightbox={openLightbox}
                         />
-
                         {/* Prawy panel */}
                         <div className="flex-1 h-full">
                             <div className="flex flex-col gap-5">
@@ -513,7 +538,8 @@ export default function SingleApartmentLayout({id}) {
                                         viewBox="0 0 24 24"
                                         aria-hidden="true"
                                     >
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                              d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
@@ -524,24 +550,25 @@ export default function SingleApartmentLayout({id}) {
                                 </div>
 
                                 <div className="flex-grow">
-                                    <div className="mt-2 flex items-center gap-4 text-[16px] font-semibold text-gray-700">
+                                    <div
+                                        className="mt-2 flex items-center gap-4 text-[16px] font-semibold text-gray-700">
                                         {a?.numberOfRooms ? (
                                             <div className="flex items-center gap-2">
-                                                <RenderIcon icon={icons.door} className="h-[32px]" />
+                                                <RenderIcon icon={icons.door} className="h-[32px]"/>
                                                 <span>{a.numberOfRooms}</span>
                                             </div>
                                         ) : null}
 
                                         {a?.numberOfBathrooms ? (
                                             <div className="flex items-center gap-2">
-                                                <RenderIcon icon={icons.wc} className="h-[32px]" />
+                                                <RenderIcon icon={icons.wc} className="h-[32px]"/>
                                                 <span>{a.numberOfBathrooms}</span>
                                             </div>
                                         ) : null}
 
                                         {a?.area ? (
                                             <div className="flex items-center gap-2">
-                                                <RenderIcon icon={icons.size} className="h-[32px]" />
+                                                <RenderIcon icon={icons.size} className="h-[32px]"/>
                                                 <span>{a.area} m²</span>
                                             </div>
                                         ) : null}
@@ -588,10 +615,10 @@ export default function SingleApartmentLayout({id}) {
 
                     <section className="mt-[90px] flex flex-wrap gap-12 pb-[120px]">
                         <div className="flex gap-12">
-                            <InfoList apartmentData={apartmentData} />
-                            <Policies apartmentData={apartmentData} />
+                            <InfoList apartmentData={apartmentData}/>
+                            <Policies apartmentData={apartmentData}/>
                         </div>
-                        <Amenities apartmentData={apartmentData} />
+                        <Amenities apartmentData={apartmentData}/>
                     </section>
                 </Layout>
             </PageTransition>

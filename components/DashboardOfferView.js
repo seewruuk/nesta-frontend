@@ -10,6 +10,7 @@ import {AnimatePresence, motion} from "framer-motion";
 import {useRouter} from "next/navigation";
 import AddEditOffer from "@/components/AddEditOffer";
 import {deleteOffer} from "@/lib/offers/deleteOffer";
+import Debugger from "@/components/Debugger";
 
 export default function DashboardOfferView({id}) {
 
@@ -228,6 +229,8 @@ export default function DashboardOfferView({id}) {
 
     return (
         <>
+            {
+            }
 
             <AnimatePresence>
                 {
@@ -321,12 +324,6 @@ export default function DashboardOfferView({id}) {
 
                 )
             }
-
-            {/*<pre>*/}
-            {/*    <code className="text-sm text-gray-800">*/}
-            {/*        {JSON.stringify(initialState, null, 2)}*/}
-            {/*    </code>*/}
-            {/*</pre>*/}
 
         </>
     );

@@ -1,12 +1,12 @@
 import {NextResponse} from "next/server";
 
-export async function POST(req){
+export async function POST(req) {
 
-    try{
+    try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const { accessToken, id } = await req.json();
+        const {accessToken, id} = await req.json();
 
-        if(id){
+        if (id) {
             const response = await fetch(`${apiUrl}/api/rental-offers/${id}`, {
                 method: "GET",
                 headers: {
@@ -15,7 +15,7 @@ export async function POST(req){
                 },
             });
 
-            if(response.status === 401){
+            if (response.status === 401) {
                 return NextResponse.json({
                     status: 401,
                     message: "Unauthorized access. Please check your access token.",
@@ -31,6 +31,7 @@ export async function POST(req){
             })
         }
 
+
         const response = await fetch(`${apiUrl}/api/rental-offers`, {
             method: "GET",
             headers: {
@@ -38,10 +39,9 @@ export async function POST(req){
                 "Content-Type": "application/json",
             },
         });
-        console.log(response)
 
         // Handle unauthorized access p2
-        if(response.status === 401){
+        if (response.status === 401) {
             return NextResponse.json({
                 status: 401,
                 message: "Unauthorized access. Please check your access token.",
@@ -57,7 +57,7 @@ export async function POST(req){
             offers: json
         })
 
-    }catch(err){
+    } catch (err) {
         return NextResponse.json({
             status: "error",
             message: "There was an error fetching the offers",
@@ -66,4 +66,29 @@ export async function POST(req){
     }
 
 
+}
+
+export async function GET(req) {
+    try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const response = await fetch(`${apiUrl}/api/rental-offers`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json()
+
+        return NextResponse.json({
+            status: 200,
+            message: "Offers fetched successfully",
+            offers: data
+        })
+    }catch (error) {
+        return NextResponse.json({
+            status: "error",
+            message: "There was an error fetching the offers",
+            error: error.message || "Unknown error"
+        });
+    }
 }

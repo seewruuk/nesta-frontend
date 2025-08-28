@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import {updateOffer} from "@/lib/offers/updateOffer";
 import Transactions from "@/components/Transactions";
 import {StateContext} from "@/context/StateContext";
+import UserInvoices from "@/components/UserInvoices";
 
 export default function AddEditOffer({type = "add", body, offerId, dataOfferApartmentId}) {
 
@@ -291,6 +292,7 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
 
     return (
         <>
+
             <div className="bg-white py-[24px] px-[32px] rounded-lg flex flex-col gap-5">
 
                 <div className={"flex flex-col gap-[32px]"}>
@@ -358,8 +360,9 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
 
             </div>
 
-            <Transactions transactions={transactions} maxElements={5}/>
+            {/*<Transactions transactions={transactions} maxElements={5}/>*/}
 
+            <UserInvoices offerId={offerId} />
         </>
     );
 }

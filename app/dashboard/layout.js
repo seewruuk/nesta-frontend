@@ -8,3 +8,8 @@ export default function layout({children}) {
 
     );
 }
+
+export const metadata = {
+    title: 'Dashboard - Nesta',
+    description: 'Zarządzaj swoimi ofertami i kontem na Nesta.',
+}

@@ -1,6 +1,6 @@
 import DashboardElement from "@/components/DashboardElement";
 import UserOffers from "@/components/UserOffers";
-import Button from "@/components/Button";
+import AddApartmentWidget from "@/components/AddApartmentWidget";
 
 export default function Page() {
     return (
@@ -20,25 +20,16 @@ export default function Page() {
                 </div>
             </DashboardElement>
 
-            <div className="bg-black/20 w-full py-[42px] px-[24px] rounded-[20px]">
-                <div className="flex items-start flex-col gap-[12px]">
-                    <span>Witaj, Kacper!</span>
-                    <h1 className={"text-[24px] font-bold"}>Dodaj Oferte!</h1>
-                    <p>
-                        Tutaj możesz dodać nową ofertę wynajmu. Wypełnij formularz i dodaj szczegóły swojej oferty.
-                    </p>
-                    <Button
-                        title={"Dodaj ofertę"}
-                        type={"link"}
-                        style={"black"}
-                        onClick={"/dashboard/rental-offers/add"}
-                    />
-                </div>
-            </div>
+            {/* Uwaga: preset w AddApartmentWidget ma klucz "rental-offer" (liczba pojedyncza) */}
+            <AddApartmentWidget
+                type="rental-offer"
+                bgClass="bg-blue-300"
+                title="Dodaj ofertę wynajmu!"
+                description="Rozpocznij dodawanie nowej oferty wynajmu."
+                ctaTitle="Dodaj nową ofertę"
+                href="/dashboard/rental-offers/add"
+            />
 
         </>
     )
 }
-
-
-

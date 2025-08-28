@@ -38,7 +38,7 @@ export default function Debugger({ data }) {
     if (!visible || !isDataReady) return null;
 
     return (
-        <div className="fixed top-10 right-10 z-50 bg-gray-100 px-5 py-3 shadow-lg rounded overflow-scroll">
+        <div className=" fixed top-10 right-10 z-50 bg-gray-100 px-5 py-3 shadow-lg rounded overflow-scroll">
             <div className="max-w-[350px] max-h-[500px] overflow-x-auto overflow-y-auto text-sm">
                 <pre>
                     <code>{JSON.stringify(
