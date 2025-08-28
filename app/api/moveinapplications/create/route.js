@@ -18,16 +18,12 @@ export async function POST(req) {
 
         });
         const result = await response.json();
-        if(result.id){
-            return NextResponse.json(
-                {status: "success", message: "Apartment saved successfully", application: result},
-                {status: 200}
-            );
-        }
-        return NextResponse.json(
-            {status: "error", error: result.message || "Something went wrong"},
-            {status: 503}
-        );
+
+        return NextResponse.json({
+            status: 200,
+            result,
+        });
+
 
     } catch (error) {
         return NextResponse.json(

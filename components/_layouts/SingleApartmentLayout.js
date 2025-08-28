@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import Link from "next/link";
 import Button from "@/components/Button";
 import Image from "next/image";
-import React, {useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import PageTransition from "@/components/PageTransition";
 import {AnimatePresence, motion} from "framer-motion";
 import {AuthContext} from "@/context/AuthContext";
@@ -14,7 +14,7 @@ import {DEFAULT_IMAGES, randomApartmentTitles} from "@/components/ApartmentsList
 import {toast} from "react-hot-toast";
 import {useRouter} from "next/navigation";
 import {ImageUrl} from "@/lib/imageUrl";
-import NoImage from "@/public/images/no-image.png"
+import NoImage from "@/public/images/no-image.png";
 
 /**
  * ---------------------------
@@ -22,15 +22,18 @@ import NoImage from "@/public/images/no-image.png"
  * ---------------------------
  */
 
-const ApplicationPopup = React.memo(function ApplicationPopup({
-                                                                  open,
-                                                                  onClose,
-                                                                  onSubmit,
-                                                                  availableFrom,
-                                                                  availableUntil,
-                                                                  setDate,
-                                                                  setTime,
-                                                              }) {
+function ApplicationPopup({
+                              open,
+                              onClose,
+                              onSubmit,
+                              availableFrom,
+                              availableUntil,
+                              setDate,
+                              setTime,
+                              // ⬇⬇⬇ DODANE: kontrolowane wartości pól
+                              dateValue,
+                              timeValue,
+                          }) {
     return (
         <AnimatePresence>
             {open && (
@@ -63,11 +66,15 @@ const ApplicationPopup = React.memo(function ApplicationPopup({
                                     type="date"
                                     className="rounded-lg border border-gray/20 p-2"
                                     onChange={(e) => setDate(e.target.value)}
+                                    // ⬇⬇⬇ DODANE
+                                    value={dateValue || ""}
                                 />
                                 <input
                                     type="time"
                                     className="rounded-lg border border-gray/20 p-2"
                                     onChange={(e) => setTime(e.target.value)}
+                                    // ⬇⬇⬇ DODANE
+                                    value={timeValue || ""}
                                 />
 
                                 <Button type="button" style="black" title="Wyślij aplikację" onClick={onSubmit}>
@@ -88,34 +95,23 @@ const ApplicationPopup = React.memo(function ApplicationPopup({
             )}
         </AnimatePresence>
     );
-});
+}
 
-const Lightbox = React.memo(function Lightbox({
-                                                  open,
-                                                  images,
-                                                  index,
-                                                  onClose,
-                                                  onPrev,
-                                                  onNext,
-                                              }) {
-    const escHandler = useCallback(
-        (e) => {
+function Lightbox({open, images, index, onClose, onPrev, onNext}) {
+    useEffect(() => {
+        if (!open) return;
+        const escHandler = (e) => {
             if (e.key === "Escape") onClose();
             if (e.key === "ArrowLeft") onPrev();
             if (e.key === "ArrowRight") onNext();
-        },
-        [onClose, onPrev, onNext]
-    );
-
-    useEffect(() => {
-        if (!open) return;
+        };
         document.addEventListener("keydown", escHandler);
         document.body.style.overflow = "hidden";
         return () => {
             document.removeEventListener("keydown", escHandler);
             document.body.style.overflow = "";
         };
-    }, [open, escHandler]);
+    }, [open, onClose, onPrev, onNext]);
 
     if (!open) return null;
 
@@ -175,26 +171,14 @@ const Lightbox = React.memo(function Lightbox({
             </motion.div>
         </AnimatePresence>
     );
-});
+}
 
-const Gallery = React.memo(function Gallery({
-                                                images,
-                                                selectedIndex,
-                                                setSelectedIndex,
-                                                onOpenLightbox,
-                                            }) {
+function Gallery({images, selectedIndex, setSelectedIndex, onOpenLightbox}) {
     const main = images?.[selectedIndex];
 
     return (
         <>
-            {
-                images && (
-                    <Debugger data={images}/>
-                )
-            }
-
             <div className="flex-1 flex flex-col overflow-hidden">
-
                 <div
                     className="relative h-[380px] cursor-zoom-in overflow-hidden rounded-lg bg-gray/10"
                     onClick={onOpenLightbox}
@@ -203,33 +187,20 @@ const Gallery = React.memo(function Gallery({
                 >
                     {main ? (
                         <Image
-                            src={
-                                ImageUrl(main.publicUrl)
-                            }
+                            src={ImageUrl(main.publicUrl)}
                             alt="Zdjęcie mieszkania"
                             fill
                             className="object-cover"
                             priority
                         />
                     ) : (
-                        <Image
-                            src={
-                                NoImage
-                            }
-                            alt="Zdjęcie mieszkania"
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                    )
-                    }
-
-
+                        <Image src={NoImage} alt="Zdjęcie mieszkania" fill className="object-cover" priority/>
+                    )}
                 </div>
                 <div className="mt-[12px]">
                     <div className="flex gap-2 justify-start overflow-x-auto">
-                        {
-                            images && images.length > 0 &&
+                        {images &&
+                            images.length > 0 &&
                             images?.map((i, idx) => (
                                 <button
                                     key={idx}
@@ -239,25 +210,18 @@ const Gallery = React.memo(function Gallery({
                                     onClick={() => setSelectedIndex(idx)}
                                     aria-label={`Wybierz zdjęcie ${idx + 1}`}
                                 >
-                                    <Image
-                                        src={ImageUrl(i.publicUrl)}
-                                        alt={`Miniatura ${idx + 1}`}
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    <Image src={ImageUrl(i.publicUrl)} alt={`Miniatura ${idx + 1}`} fill
+                                           className="object-cover"/>
                                 </button>
                             ))}
                     </div>
                 </div>
             </div>
         </>
-
     );
-});
+}
 
-const InfoList = React.memo(function InfoList({
-                                                  apartmentData
-                                              }) {
+function InfoList({apartmentData}) {
     const a = apartmentData?.apartment ?? {};
     return (
         <div>
@@ -265,7 +229,9 @@ const InfoList = React.memo(function InfoList({
             <ul className="leading-8 text-[16px] font-[300] text-gray-700">
                 <li>
                     <strong>Adres:</strong>{" "}
-                    {`${a.streetName ?? ""} ${a.buildingNumber ?? ""}/${a.apartmentNumber ?? ""}, ${a.postalCode ?? ""} ${a.city ?? ""}, ${a.country ?? ""}`}
+                    {`${a.streetName ?? ""} ${a.buildingNumber ?? ""}/${a.apartmentNumber ?? ""}, ${
+                        a.postalCode ?? ""
+                    } ${a.city ?? ""}, ${a.country ?? ""}`}
                 </li>
                 <li>
                     <strong>Piętro:</strong> {a.floor ?? "-"}
@@ -279,17 +245,14 @@ const InfoList = React.memo(function InfoList({
                     {apartmentData?.availableUntil ? new Date(apartmentData.availableUntil).toLocaleDateString() : "-"}
                 </li>
                 <li>
-                    <strong>Wynajem krótkoterminowy:</strong>{" "}
-                    {apartmentData?.shortTermRental ? "Tak" : "Nie"}
+                    <strong>Wynajem krótkoterminowy:</strong> {apartmentData?.shortTermRental ? "Tak" : "Nie"}
                 </li>
             </ul>
         </div>
     );
-});
+}
 
-const Policies = React.memo(function Policies({
-                                                  apartmentData
-                                              }) {
+function Policies({apartmentData}) {
     const mapEmployment = {
         ANY: "Dowolny",
         EMPLOYED: "Zatrudniony",
@@ -312,11 +275,9 @@ const Policies = React.memo(function Policies({
             </ul>
         </div>
     );
-});
+}
 
-const Amenities = React.memo(function Amenities({
-                                                    apartmentData
-                                                }) {
+function Amenities({apartmentData}) {
     const a = apartmentData?.apartment ?? {};
     const parkingMap = {STREET: "Ulica", UNDERGROUND: "Podziemny", NONE: "Brak"};
     return (
@@ -324,8 +285,7 @@ const Amenities = React.memo(function Amenities({
             <h4 className="mb-[12px] text-[24px] font-semibold text-black">Udogodnienia</h4>
             <ul className="leading-8 text-[16px] font-[300] text-gray-700">
                 <li>
-                    <strong>Meble:</strong> {a.furnished ? "Tak" : "Nie"} (
-                    {apartmentData?.furnishingStatus?.toLowerCase?.() ?? "-"})
+                    <strong>Meble:</strong> {a.furnished ? "Tak" : "Nie"} ({apartmentData?.furnishingStatus?.toLowerCase?.() ?? "-"})
                 </li>
                 <li>
                     <strong>Balkon:</strong> {a.hasBalcony ? "Tak" : "Nie"}
@@ -345,11 +305,20 @@ const Amenities = React.memo(function Amenities({
             </ul>
         </div>
     );
-});
+}
 
-export default function SingleApartmentLayout({
-                                                  id
-                                              }) {
+// Pomocnicze: formaty dla <input type="date"> i <input type="time">
+function toInputDateString(d) {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function toInputTimeString(d) {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+export default function SingleApartmentLayout({id}) {
     const {accessToken, handleLogout, userId} = useContext(AuthContext);
     const [showPopUp, setShowPopUp] = useState(false);
     const [apartmentData, setApartmentData] = useState(null);
@@ -371,7 +340,7 @@ export default function SingleApartmentLayout({
     useEffect(() => {
         if (!accessToken || !id) return;
 
-        // zapobiegnij niepotrzebnym wielokrotnym wywołaniom, jeśli React StricMode w DEV wywołuje dwukrotnie
+        // zapobiegnij wielokrotnym wywołaniom w DEV (StrictMode)
         if (fetchedRef.current) return;
         fetchedRef.current = true;
 
@@ -424,18 +393,33 @@ export default function SingleApartmentLayout({
         }
     }, [selectedDate, selectedTime]);
 
-    const displayedTitle = useMemo(() => {
-        if (!apartmentData?.id && apartmentData?.id !== 0) return "";
-        return randomApartmentTitles[apartmentData.id % randomApartmentTitles.length];
-    }, [apartmentData]);
+    useEffect(() => {
+        if (!showPopUp) return;
 
-    const handleSaveApplication = useCallback(async () => {
+        const af = apartmentData?.availableFrom;
+        const d = af ? new Date(af) : new Date(); // fallback: dziś
+
+        setSelectedDate(toInputDateString(d));
+
+        const hasTime = !!af && /T\d{2}:\d{2}/.test(af);
+        setSelectedTime(hasTime ? toInputTimeString(d) : "12:00");
+    }, [showPopUp, apartmentData?.availableFrom]);
+
+    // Tytuł mieszkania (bez useMemo)
+    let displayedTitle = "";
+    if (apartmentData?.id || apartmentData?.id === 0) {
+        displayedTitle = randomApartmentTitles[apartmentData.id % randomApartmentTitles.length];
+    }
+
+    // Funkcje — bez useCallback
+    async function handleSaveApplication() {
         if (!combinedDateTime || !apartmentData?.id) {
             toast.error("Wybierz poprawnie datę i godzinę.");
             return;
         }
         try {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
             const response = await fetch(`${baseUrl}/api/moveinapplications/create`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -446,10 +430,10 @@ export default function SingleApartmentLayout({
                 }),
             });
             const data = await response.json();
-            if (data?.application) {
+            if (data.result.id) {
                 toast.success("Twoja aplikacja została wysłana pomyślnie!");
                 setShowPopUp(false);
-                router.refresh();
+                router.push("/dashboard/moveinapplications");
             } else {
                 toast.error(data?.error || "Coś poszło nie tak. Spróbuj ponownie później.");
             }
@@ -457,16 +441,16 @@ export default function SingleApartmentLayout({
             console.error("Wystąpił błąd:", err);
             toast.error("Nie udało się wysłać aplikacji.");
         }
-    }, [combinedDateTime, apartmentData?.id, accessToken, router]);
+    }
 
-    const openLightbox = useCallback(() => setLightboxOpen(true), []);
-    const closeLightbox = useCallback(() => setLightboxOpen(false), []);
-    const prevImage = useCallback(() => {
+    const openLightbox = () => setLightboxOpen(true);
+    const closeLightbox = () => setLightboxOpen(false);
+    const prevImage = () => {
         setSelectedIndex((i) => (i - 1 + apartmentImages.length) % apartmentImages.length);
-    }, [apartmentImages.length]);
-    const nextImage = useCallback(() => {
+    };
+    const nextImage = () => {
         setSelectedIndex((i) => (i + 1) % apartmentImages.length);
-    }, [apartmentImages.length]);
+    };
 
     if (loading) {
         return (
@@ -496,7 +480,6 @@ export default function SingleApartmentLayout({
 
     return (
         <>
-
             <Lightbox
                 open={lightboxOpen}
                 images={apartmentImages}
@@ -632,6 +615,9 @@ export default function SingleApartmentLayout({
                 availableUntil={apartmentData?.availableUntil}
                 setDate={setSelectedDate}
                 setTime={setSelectedTime}
+                // ⬇⬇⬇ DODANE: przekazujemy wartości, by pola miały domyślne inputy
+                dateValue={selectedDate}
+                timeValue={selectedTime}
             />
         </>
     );

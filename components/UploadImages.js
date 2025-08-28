@@ -203,6 +203,7 @@ const TrashIcon = ({ className = "h-5 w-5" }) => (
 );
 
 function GalleryTile({ img, index, onDelete, appId }) {
+    const {accessToken} = useContext(AuthContext);
     const src = ImageUrl(img.publicUrl);
 
     const handleDelete = async (imageId) => {
@@ -213,11 +214,14 @@ function GalleryTile({ img, index, onDelete, appId }) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ appId, imageId }),
+                body: JSON.stringify({
+                    accessToken: accessToken,
+                    apartmentId: appId,
+                    imageId: imageId,
+                }),
             });
 
-            const data = await response.json();
-            if (data.status === 200) {
+            if (response.status === 200) {
                 toast.success("Zdjęcie usunięte");
                 if (onDelete) onDelete(img, index);
             } else {

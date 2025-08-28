@@ -1,7 +1,9 @@
+import MoveInApplicationLayout from "@/components/MoveInApplicationLayout";
+
 export default function page(){
     return(
-        <div>
-            All Applications Page
-        </div>
+        <>
+            <MoveInApplicationLayout />
+        </>
     )
 }

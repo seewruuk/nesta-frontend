@@ -4,6 +4,7 @@ import { AuthContext } from "@/context/AuthContext";
 import Link from "next/link";
 import Image from "next/image";
 import Debugger from "@/components/Debugger";
+import {ImageUrl} from "@/lib/imageUrl";
 
 /** ————————————————————————————————————————————
  *  Minimalny, wspólny Skeleton
@@ -20,8 +21,9 @@ Skeleton.Image = ({ className = "" }) => <Skeleton className={`aspect-[16/10] w-
 function OfferCard({ item }) {
     const [imgLoaded, setImgLoaded] = useState(false);
 
+
     // Zdj. przykładowe dopóki nie masz miniatur per oferta
-    const imageUrl = "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg";
+    const imageUrl = item.apartment.images ? ImageUrl(item.apartment.images[0].publicUrl) : "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg";
 
     return (
         <div className="relative">

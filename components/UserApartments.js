@@ -26,7 +26,7 @@ function Skeleton({ className = "" }) {
 }
 Skeleton.Text = ({ className = "" }) => <Skeleton className={`h-4 ${className}`} />;
 Skeleton.Circle = ({ className = "" }) => <Skeleton className={`rounded-full ${className}`} />;
-Skeleton.Image = ({ className = "" }) => <Skeleton className={`aspect-[16/10] w-full ${className}`} />;
+Skeleton.Image = ({ className = "" }) => <Skeleton className={`aspect-[16/10] w-full animate-pulse ${className}`} />;
 
 /** ————————————————————————————————————————————
  *  Badge / Feature

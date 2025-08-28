@@ -15,14 +15,13 @@ export default function ProfileWidget() {
     const [isClient, setIsClient] = useState(false);
     const { username, userRoles = [], userId } = useContext(AuthContext);
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    useEffect(() => { setIsClient(true); }, []);
 
-    const LoadingCard = () => (
-        <aside className="w-1/6 shrink-0 px-[48px] py-[32px] bg-white flex flex-col justify-between">
-            <div className="flex-grow flex flex-col justify-start items-start gap-[52px]">
+    const LoadingContent = () => (
+        <>
+            <div className="flex-grow flex flex-col justify-start items-start gap-[52px] w-full">
                 <div className="text-[16px] font-semibold pb-[32px] uppercase">Twój profil</div>
+
                 <div className="flex flex-col items-center w-full">
                     <div className="relative h-[120px] aspect-square">
                         <Skeleton.Circle className="w-full h-full" />
@@ -33,6 +32,7 @@ export default function ProfileWidget() {
                         <Skeleton.Text className="w-1/3" />
                     </div>
                 </div>
+
                 {/* Placeholder listy aplikacji */}
                 <div className="w-full flex flex-col gap-2">
                     <Skeleton.Text className="w-24" />
@@ -43,21 +43,23 @@ export default function ProfileWidget() {
                     </div>
                 </div>
             </div>
+
             <div className="flex flex-col gap-[8px] items-start">
                 <Skeleton.Text className="w-24" />
             </div>
-        </aside>
+        </>
     );
 
-    // Jeśli SSR/nie-klient albo brak danych profilu – pokazujemy skeleton o stałej szerokości
     if (!isClient || !username) {
-        return <LoadingCard />;
+        // Ten sam układ co wersja finalna – brak skoków layoutu
+        return <LoadingContent />;
     }
 
     return (
-        <aside className="w-1/6 shrink-0 px-[48px] py-[32px] bg-white flex flex-col justify-between">
-            <div className="flex-grow flex flex-col justify-start items-start gap-[52px]">
+        <>
+            <div className="flex-grow flex flex-col justify-start items-start gap-[52px] w-full">
                 <div className="text-[16px] font-semibold pb-[32px] uppercase">Twój profil</div>
+
                 <div className="flex flex-col items-center w-full">
                     <div className="relative aspect-square h-[120px] border-white border-[7px]">
                         <Image
@@ -68,15 +70,13 @@ export default function ProfileWidget() {
                         />
                         <div className="absolute rounded-full border-4 border-white bottom-0 right-0 h-[32px] aspect-square bg-primary" />
                     </div>
+
                     <div className="text-[15px] text-center flex flex-col items-center gap-1">
                         <div className="flex gap-2 flex-col">
                             <label className="text-[14px] font-semibold">@{username}</label>
                             <label className="text-gray-600 text-[15px] font-mono">{userId}</label>
                         </div>
                         <div className="text-gray text-[11px] font-semibold">{userRoles?.[2]}</div>
-                        {/*<div className="font-semibold">*/}
-                        {/*    <span className="bg-gray-200 text-gray-500 px-2 py-1 rounded-md">4.25</span> / 5.00*/}
-                        {/*</div>*/}
                     </div>
                 </div>
 
@@ -87,6 +87,6 @@ export default function ProfileWidget() {
             <div className="flex flex-col gap-[8px] items-start">
                 <button className="text-[14px] text-gray-500 hover:text-black transition-all">Nesta 2025</button>
             </div>
-        </aside>
+        </>
     );
 }
