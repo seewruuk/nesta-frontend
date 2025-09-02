@@ -50,7 +50,6 @@ function RentalOffersRoot() {
         parkingType: "",
     });
 
-    // Pobranie danych z URL (location, priceRange)
     useEffect(() => {
         const locationParam = searchParams.get("location") ?? "";
         const priceRangeParam = searchParams.get("priceRange");
@@ -76,62 +75,65 @@ function RentalOffersRoot() {
                 });
 
                 const response = await res.json();
-                const adapted = (response?.offers ?? []).map((o) => {
-                    const furnishingMap = {
-                        FURNISHED: "Umeblowane",
-                        UNFURNISHED: "Nieumeblowane",
-                        PARTLY_FURNISHED: "Częściowo umeblowane",
-                        PARTIALLY_FURNISHED: "Częściowo umeblowane",
-                    };
-                    const furnishing =
-                        furnishingMap[o.furnishingStatus] ??
-                        (o.apartment?.furnished ? "Umeblowane" : "Nieumeblowane");
+                const adapted = (response?.offers ?? [])
+                    .filter((o) => o.listed === true)   // ⬅️ tu filtrujemy tylko oferty z listed === true
+                    .map((o) => {
+                        const furnishingMap = {
+                            FURNISHED: "Umeblowane",
+                            UNFURNISHED: "Nieumeblowane",
+                            PARTLY_FURNISHED: "Częściowo umeblowane",
+                            PARTIALLY_FURNISHED: "Częściowo umeblowane",
+                        };
+                        const furnishing =
+                            furnishingMap[o.furnishingStatus] ??
+                            (o.apartment?.furnished ? "Umeblowane" : "Nieumeblowane");
 
-                    const amenities = [];
-                    if (o.apartment?.hasBalcony) amenities.push("Balkon");
-                    if (o.apartment?.hasElevator) amenities.push("Winda");
-                    if (o.apartment?.parkingType && o.apartment.parkingType !== "STREET") {
-                        amenities.push("Miejsce parkingowe");
-                    }
+                        const amenities = [];
+                        if (o.apartment?.hasBalcony) amenities.push("Balkon");
+                        if (o.apartment?.hasElevator) amenities.push("Winda");
+                        if (o.apartment?.parkingType && o.apartment.parkingType !== "STREET") {
+                            amenities.push("Miejsce parkingowe");
+                        }
 
-                    const smokingAllowed = o.smokingPolicy === "YES";
-                    const petsAccepted = o.petPolicy === "YES";
-                    const disabledAccess = Boolean(
-                        o.accessibleForDisabled || o.apartment?.disabledAccessible
-                    );
+                        const smokingAllowed = o.smokingPolicy === "YES";
+                        const petsAccepted = o.petPolicy === "YES";
+                        const disabledAccess = Boolean(
+                            o.accessibleForDisabled || o.apartment?.disabledAccessible
+                        );
 
-                    return {
-                        id: o.id,
-                        landlordId: o.landlordId,
-                        propertyType: "Mieszkanie",
-                        rooms: o.apartment.numberOfRooms,
-                        bathrooms: o.apartment.numberOfBathrooms,
-                        area: o.apartment.area,
-                        elevator: o.apartment.hasElevator,
-                        balcony: o.apartment.hasBalcony,
-                        city: o.apartment.city,
-                        address: `${o.apartment.streetName} ${o.apartment.buildingNumber}/${o.apartment.apartmentNumber}, ${o.apartment.postalCode} ${o.apartment.city}`,
-                        price: o.monthlyRent,
-                        utilitiesIncluded: o.utilitiesIncluded,
-                        deposit: o.deposit,
-                        floor: o.apartment.floor,
-                        images: o.apartment.images || [],
-                        furnishing,
-                        shortTermRental: o.shortTermRental,
-                        smokingAllowed,
-                        petsAccepted,
-                        disabledAccess,
-                        amenities,
-                        availableFrom: o.availableFrom,
-                        availableUntil: o.availableUntil,
-                        preferredEmploymentStatus: o.preferredEmploymentStatus,
-                        hasStorageRoomInBasement: o.apartment?.hasStorageRoomInBasement,
-                        parkingType: o.apartment?.parkingType,
-                        image: null,
-                    };
-                });
+                        return {
+                            id: o.id,
+                            landlordId: o.landlordId,
+                            propertyType: "Mieszkanie",
+                            rooms: o.apartment.numberOfRooms,
+                            bathrooms: o.apartment.numberOfBathrooms,
+                            area: o.apartment.area,
+                            elevator: o.apartment.hasElevator,
+                            balcony: o.apartment.hasBalcony,
+                            city: o.apartment.city,
+                            address: `${o.apartment.streetName} ${o.apartment.buildingNumber}/${o.apartment.apartmentNumber}, ${o.apartment.postalCode} ${o.apartment.city}`,
+                            price: o.monthlyRent,
+                            utilitiesIncluded: o.utilitiesIncluded,
+                            deposit: o.deposit,
+                            floor: o.apartment.floor,
+                            images: o.apartment.images || [],
+                            furnishing,
+                            shortTermRental: o.shortTermRental,
+                            smokingAllowed,
+                            petsAccepted,
+                            disabledAccess,
+                            amenities,
+                            availableFrom: o.availableFrom,
+                            availableUntil: o.availableUntil,
+                            preferredEmploymentStatus: o.preferredEmploymentStatus,
+                            hasStorageRoomInBasement: o.apartment?.hasStorageRoomInBasement,
+                            parkingType: o.apartment?.parkingType,
+                            image: null,
+                        };
+                    });
 
                 setOffers(adapted);
+
             } catch (err) {
                 setError(err?.message || "Nie udało się pobrać ofert.");
             } finally {

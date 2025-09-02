@@ -7,147 +7,113 @@ import Button from "@/components/Button";
 import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
 import {updateOffer} from "@/lib/offers/updateOffer";
-import Transactions from "@/components/Transactions";
 import {StateContext} from "@/context/StateContext";
 import UserInvoices from "@/components/UserInvoices";
 
 export default function AddEditOffer({type = "add", body, offerId, dataOfferApartmentId}) {
 
 
-    const [offerData, setOfferData] = useState(
-        body ? body : [
-            {
-                label: "Miesięczny czynsz",
-                type: "float",
-                placeholder: "Podaj miesięczny czynsz",
-                value: "",
-                name: "monthlyRent",
-                inputFiledType: "input",
+    const [offerData, setOfferData] = useState(body ? body : [{
+        label: "Miesięczny czynsz",
+        type: "float",
+        placeholder: "Podaj miesięczny czynsz",
+        value: "",
+        name: "monthlyRent",
+        inputFiledType: "input",
 
-            },
-            {
-                label: "Kaucja",
-                type: "float",
-                placeholder: "Podaj wysokość kaucji",
-                value: "",
-                name: "deposit",
-                inputFiledType: "input",
+    }, {
+        label: "Kaucja",
+        type: "float",
+        placeholder: "Podaj wysokość kaucji",
+        value: "",
+        name: "deposit",
+        inputFiledType: "input",
 
-            },
-            {
-                label: "Opłaty dodatkowe",
-                type: "float",
-                placeholder: "Podaj wysokość opłat dodatkowych",
-                value: "",
-                name: "utilitiesCost",
-                inputFiledType: "input",
+    }, {
+        label: "Opłaty dodatkowe",
+        type: "float",
+        placeholder: "Podaj wysokość opłat dodatkowych",
+        value: "",
+        name: "utilitiesCost",
+        inputFiledType: "input",
 
-            },
-            {
-                label: "Czy opłaty są wliczone w czynsz?",
-                type: "text",
-                placeholder: "Tak/Nie",
-                value: "",
-                name: "utilitiesIncluded",
-                selectOptions: [
-                    {label: "Tak", value: true},
-                    {label: "Nie", value: false},
-                ],
-                inputFiledType: "select",
-            },
-            {
-                label: "Dostępność od",
-                type: "date",
-                placeholder: "Podaj datę dostępności",
-                value: "",
-                name: "availableFrom",
-                inputFiledType: "input",
-            },
-            {
-                label: "Dostępność do",
-                type: "date",
-                placeholder: "Podaj datę dostępności",
-                value: "",
-                name: "availableUntil",
-                inputFiledType: "input",
-            },
-            {
-                label: "Krótko- lub długoterminowy",
-                type: "text",
-                placeholder: "Tak/Nie",
-                value: "",
-                name: "shortTermRental",
-                selectOptions: [
-                    {label: "Tak", value: true},
-                    {label: "Nie", value: false},
-                ],
-                inputFiledType: "select",
-            },
-            {
-                label: "Czy umeblowany?",
-                type: "text",
-                placeholder: "FURNISHED / UNFURNISHED",
-                value: "",
-                name: "furnishingStatus",
-                selectOptions: [
-                    {label: "FURNISHED", value: "FURNISHED"},
-                    {label: "UNFURNISHED", value: "UNFURNISHED"},
-                ],
-                inputFiledType: "select",
-            },
-            {
-                label: "Preferowany status zatrudnienia",
-                type: "text",
-                placeholder: "EMPLOYED / STUDENT / ANY / Inny",
-                value: "",
-                name: "preferredEmploymentStatus",
-                selectOptions: [
-                    {label: "EMPLOYED", value: "EMPLOYED"},
-                    {label: "STUDENT", value: "STUDENT"},
-                    {label: "ANY", value: "ANY"},
-                ],
-                inputFiledType: "select",
-            },
-            {
-                label: "Palenie dozwolone?",
-                type: "text",
-                placeholder: "NO/YES",
-                value: "",
-                name: "smokingPolicy",
-                selectOptions: [
-                    {label: "Tak", value: "YES"},
-                    {label: "Nie", value: "NO"},
-                ],
-                inputFiledType: "select",
-            },
-            {
-                label: "Zwierzęta dozwolone?",
-                type: "text",
-                placeholder: "YES/NO",
-                value: "",
-                name: "petPolicy",
-                selectOptions: [
-                    {label: "Tak", value: "YES"},
-                    {label: "Nie", value: "NO"},
-                ],
-                inputFiledType: "select",
+    }, {
+        label: "Czy opłaty są wliczone w czynsz?",
+        type: "text",
+        placeholder: "Tak/Nie",
+        value: "",
+        name: "utilitiesIncluded",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
+    }, {
+        label: "Dostępność od",
+        type: "date",
+        placeholder: "Podaj datę dostępności",
+        value: "",
+        name: "availableFrom",
+        inputFiledType: "input",
+    }, {
+        label: "Dostępność do",
+        type: "date",
+        placeholder: "Podaj datę dostępności",
+        value: "",
+        name: "availableUntil",
+        inputFiledType: "input",
+    }, {
+        label: "Krótko- lub długoterminowy",
+        type: "text",
+        placeholder: "Tak/Nie",
+        value: "",
+        name: "shortTermRental",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
+    }, {
+        label: "Czy umeblowany?",
+        type: "text",
+        placeholder: "FURNISHED / UNFURNISHED",
+        value: "",
+        name: "furnishingStatus",
+        selectOptions: [{label: "FURNISHED", value: "FURNISHED"}, {label: "UNFURNISHED", value: "UNFURNISHED"},],
+        inputFiledType: "select",
+    }, {
+        label: "Preferowany status zatrudnienia",
+        type: "text",
+        placeholder: "EMPLOYED / STUDENT / ANY / Inny",
+        value: "",
+        name: "preferredEmploymentStatus",
+        selectOptions: [{label: "EMPLOYED", value: "EMPLOYED"}, {label: "STUDENT", value: "STUDENT"}, {
+            label: "ANY",
+            value: "ANY"
+        },],
+        inputFiledType: "select",
+    }, {
+        label: "Palenie dozwolone?",
+        type: "text",
+        placeholder: "NO/YES",
+        value: "",
+        name: "smokingPolicy",
+        selectOptions: [{label: "Tak", value: "YES"}, {label: "Nie", value: "NO"},],
+        inputFiledType: "select",
+    }, {
+        label: "Zwierzęta dozwolone?",
+        type: "text",
+        placeholder: "YES/NO",
+        value: "",
+        name: "petPolicy",
+        selectOptions: [{label: "Tak", value: "YES"}, {label: "Nie", value: "NO"},],
+        inputFiledType: "select",
 
-            },
-            {
-                label: "Czy dostępne dla osób niepełnosprawnych?",
-                type: "text",
-                placeholder: "YES/NO",
-                value: "",
-                name: "accessibleForDisabled",
-                selectOptions: [
-                    {label: "Tak", value: true},
-                    {label: "Nie", value: false},
-                ],
-                inputFiledType: "select",
-            },
+    }, {
+        label: "Czy dostępne dla osób niepełnosprawnych?",
+        type: "text",
+        placeholder: "YES/NO",
+        value: "",
+        name: "accessibleForDisabled",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
+    },
 
-        ]
-    );
+    ]);
     const [apartmentId, setApartmentId] = useState(dataOfferApartmentId ? dataOfferApartmentId : null);
     const [initialData, setInitialData] = useState([]);
     const [apartments, setApartments] = useState([]);
@@ -161,22 +127,18 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
             try {
                 const response = await fetch(`${baseUrl}/api/apartments`, {
-                    method: "POST",
-                    headers: {
+                    method: "POST", headers: {
                         "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
+                    }, body: JSON.stringify({
                         accessToken: accessToken
                     })
                 });
                 const data = await response.json();
-
-                if(data.status === 401){
+                if (data.status === 401) {
                     toast.error("Brak dostępu. Proszę się zalogować ponownie.");
                     handleLogout();
                     return;
                 }
-
                 setInitialData(data);
                 setApartments(data.apartments);
             } catch (error) {
@@ -213,18 +175,15 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
 
         try {
             const response = await fetch("/api/rental-offers/add", {
-                method: "POST",
-                headers: {
+                method: "POST", headers: {
                     "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    accessToken: accessToken,
-                    data: JSON.stringify(dataToSend)
+                }, body: JSON.stringify({
+                    accessToken: accessToken, data: JSON.stringify(dataToSend)
                 }),
             });
             const data = await response.json();
 
-            if(data.status === 409){
+            if (data.status === 409) {
                 toast.error(data.message);
                 return;
             }
@@ -250,12 +209,9 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
             petPolicy: Math.random() > 0.5 ? "YES" : "NO",
             accessibleForDisabled: Math.random() > 0.5,
         };
-        setOfferData(
-            prevData =>
-                prevData.map(item => ({
-                    ...item,
-                    value: randomApartment[item.name] || item.value
-                })));
+        setOfferData(prevData => prevData.map(item => ({
+            ...item, value: randomApartment[item.name] || item.value
+        })));
     }
 
     const handleUpdate = async (id) => {
@@ -290,32 +246,25 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
         }
     };
 
-    return (
-        <>
+    return (<>
 
             <div className="bg-white py-[24px] px-[32px] rounded-lg flex flex-col gap-5">
 
                 <div className={"flex flex-col gap-[32px]"}>
                     <div>
-                        <h3>{
-                            type === "add" ? "Dodaj nową ofertę" : "Edytuj ofertę"
-                        }</h3>
+                        <h3>{type === "add" ? "Dodaj nową ofertę" : "Edytuj ofertę"}</h3>
                     </div>
                     <div className={"grid grid-cols-2 gap-5"}>
-                        {
-                            offerData.map((item, index) => (
-                                <FormFileld
-                                    key={index}
-                                    label={item.label}
-                                    item={item}
-                                    changeState={(item, value) => {
-                                        const newData = [...offerData];
-                                        newData[index].value = value;
-                                        setOfferData(newData);
-                                    }}
-                                />
-                            ))
-                        }
+                        {offerData.map((item, index) => (<FormFileld
+                                key={index}
+                                label={item.label}
+                                item={item}
+                                changeState={(item, value) => {
+                                    const newData = [...offerData];
+                                    newData[index].value = value;
+                                    setOfferData(newData);
+                                }}
+                            />))}
 
                     </div>
                 </div>
@@ -328,13 +277,9 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
                         onChange={(e) => setApartmentId(e.target.value)}
                     >
                         <option value={null}>Wybierz mieszkanie</option>
-                        {
-                            apartments && apartments.map((apartment) => (
-                                <option key={apartment.id} value={apartment.id}>
-                                    {apartment.streetName} {apartment.buildingNumber}, {apartment.city}
-                                </option>
-                            ))
-                        }
+                        {apartments && apartments.map((apartment) => (<option key={apartment.id} value={apartment.id}>
+                                {apartment.streetName} {apartment.buildingNumber}, {apartment.city}
+                            </option>))}
                     </select>
                 </div>
 
@@ -350,9 +295,7 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
                         type={"button"}
                         style={"primary"}
                         title={type === "add" ? "Dodaj nową ofertę" : "Zaktualizuj ofertę"}
-                        onClick={
-                            type === "add" ? handleAddToDatabase : () => handleUpdate(offerId, accessToken)
-                        }
+                        onClick={type === "add" ? handleAddToDatabase : () => handleUpdate(offerId, accessToken)}
                     />
 
 
@@ -362,15 +305,13 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
 
             {/*<Transactions transactions={transactions} maxElements={5}/>*/}
 
-            <UserInvoices offerId={offerId} />
-        </>
-    );
+            <UserInvoices offerId={offerId}/>
+        </>);
 }
 
 
 const FormFileld = ({label, item, changeState}) => {
-    return (
-        <div className={"group"}>
+    return (<div className={"group"}>
             <label
                 className={"text-[13px] font-semibold text-gray group-hover:text-black transition-all"}>{label}</label>
             <InputField
@@ -382,6 +323,5 @@ const FormFileld = ({label, item, changeState}) => {
                 inputFiledType={item.inputFiledType}
                 selectOptions={item.selectOptions}
             />
-        </div>
-    )
+        </div>)
 }

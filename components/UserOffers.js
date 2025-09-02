@@ -21,12 +21,30 @@ Skeleton.Image = ({ className = "" }) => <Skeleton className={`aspect-[16/10] w-
 function OfferCard({ item }) {
     const [imgLoaded, setImgLoaded] = useState(false);
 
+    // Obsługa różnych wariantów images
+    const defaultImage = "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg";
+    let imageUrl = defaultImage;
 
-    // Zdj. przykładowe dopóki nie masz miniatur per oferta
-    const imageUrl = item.apartment.images ? ImageUrl(item.apartment.images[0].publicUrl) : "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg";
+    if (Array.isArray(item.apartment.images) && item.apartment.images.length > 0) {
+        const first = item.apartment.images[0];
+        if (first && typeof first === "object" && first.publicUrl) {
+            imageUrl = ImageUrl(first.publicUrl);
+        } else if (typeof first === "string") {
+            imageUrl = first;
+        }
+    }
 
     return (
         <div className="relative">
+
+            {
+                item.rentierId && (
+                    <div className="absolute top-2 right-2 bg-black text-white text-xs font-semibold px-2 py-1 rounded-lg z-50">
+                        Wynajęte
+                    </div>
+                )
+            }
+
             <div className="bg-gray-100 px-4 py-1 rounded-lg group absolute z-50 top-2 left-2">
                 <span className="text-[12px] font-semibold text-gray-600">
                     #00{item.id}
@@ -87,7 +105,7 @@ function OfferCardSkeleton() {
 /** ————————————————————————————————————————————
  *  Lista ofert użytkownika + skeleton siatki
  *  ———————————————————————————————————————————— */
-export default function UserOffers() {
+export default function UserOffers({limit = null}) {
     const [offers, setOffers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -113,6 +131,7 @@ export default function UserOffers() {
                 }
 
                 const data = await response.json();
+                console.log(data)
 
                 // Jeżeli backend używa odpowiedzi JSON z błędem:
                 if (data?.error === "Unauthorized") {
@@ -122,6 +141,9 @@ export default function UserOffers() {
                 }
 
                 setOffers(Array.isArray(data?.offers) ? data.offers : []);
+                if(limit) {
+                    setOffers(prev => prev.slice(0, limit));
+                }
             } catch (error) {
                 console.error("Error fetching offers:", error);
                 setOffers([]);
@@ -143,8 +165,8 @@ export default function UserOffers() {
 
     return (
         <>
-
-            <div className="mt-[16px]">
+            {/*<label className={"text-xs text-gray-500 font-semibold"}>Twoje Oferty</label>*/}
+            <div className="">
                 {isLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
                         {Array.from({ length: 6 }).map((_, i) => <OfferCardSkeleton key={i} />)}

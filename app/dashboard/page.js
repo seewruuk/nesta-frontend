@@ -11,8 +11,8 @@ export default function Page() {
 
     return (
             <>
-                <UserOffers />
-                <UserApartments />
+                <UserOffers limit={3}/>
+                <UserApartments limit={3}/>
                 <UserInvoices />
                 <Messages maxElements={2} messages={messages}/>
             </>

@@ -14,6 +14,14 @@ export async function POST(req) {
             body: data
         });
         const result = await response.json();
+
+        if(result.status === 401){
+            return NextResponse.json(
+                {status: "error", error: "Unauthorized"},
+                {status: 401}
+            );
+        }
+
         return NextResponse.json(
             {status: "success", message: "Apartment saved successfully", data: result},
             {status: 200}
@@ -21,7 +29,7 @@ export async function POST(req) {
     } catch (error) {
         return NextResponse.json(
             {status: "error", error: error.message},
-            {status: 503}
+            {status: 500}
         );
     }
 }

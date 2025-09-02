@@ -15,7 +15,7 @@ export default function Page() {
 
             <DashboardElement>
                 <div>
-                    <h3>Twoje oferty</h3>
+                    <h3 className={"mb-[15px]"}>Twoje oferty</h3>
                     <UserOffers />
                 </div>
             </DashboardElement>

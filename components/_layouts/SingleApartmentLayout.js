@@ -29,15 +29,12 @@ function ApplicationPopup({
                               availableFrom,
                               availableUntil,
                               setDate,
-                              setTime,
-                              // ⬇⬇⬇ DODANE: kontrolowane wartości pól
+                              setTime, // ⬇⬇⬇ DODANE: kontrolowane wartości pól
                               dateValue,
                               timeValue,
                           }) {
-    return (
-        <AnimatePresence>
-            {open && (
-                <motion.div
+    return (<AnimatePresence>
+            {open && (<motion.div
                     initial={{opacity: 0}}
                     animate={{opacity: 1}}
                     exit={{opacity: 0}}
@@ -91,10 +88,8 @@ function ApplicationPopup({
                             ✕
                         </button>
                     </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
+                </motion.div>)}
+        </AnimatePresence>);
 }
 
 function Lightbox({open, images, index, onClose, onPrev, onNext}) {
@@ -117,8 +112,7 @@ function Lightbox({open, images, index, onClose, onPrev, onNext}) {
 
     const current = images?.[index];
 
-    return (
-        <AnimatePresence>
+    return (<AnimatePresence>
             <motion.div
                 initial={{opacity: 0}}
                 animate={{opacity: 1}}
@@ -132,8 +126,7 @@ function Lightbox({open, images, index, onClose, onPrev, onNext}) {
                     className="absolute inset-0 flex items-center justify-center p-4"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {current && (
-                        <div className="relative w-full h-full max-w-6xl max-h-[90vh]">
+                    {current && (<div className="relative w-full h-full max-w-6xl max-h-[90vh]">
                             <Image
                                 src={ImageUrl(current.publicUrl)}
                                 alt="Podgląd zdjęcia"
@@ -141,8 +134,7 @@ function Lightbox({open, images, index, onClose, onPrev, onNext}) {
                                 className="object-contain select-none"
                                 priority
                             />
-                        </div>
-                    )}
+                        </div>)}
 
                     {/* Nawigacja */}
                     <button
@@ -169,15 +161,13 @@ function Lightbox({open, images, index, onClose, onPrev, onNext}) {
                     </button>
                 </div>
             </motion.div>
-        </AnimatePresence>
-    );
+        </AnimatePresence>);
 }
 
 function Gallery({images, selectedIndex, setSelectedIndex, onOpenLightbox}) {
     const main = images?.[selectedIndex];
 
-    return (
-        <>
+    return (<>
             <div className="flex-1 flex flex-col overflow-hidden">
                 <div
                     className="relative h-[380px] cursor-zoom-in overflow-hidden rounded-lg bg-gray/10"
@@ -185,53 +175,39 @@ function Gallery({images, selectedIndex, setSelectedIndex, onOpenLightbox}) {
                     role="button"
                     aria-label="Otwórz zdjęcie w trybie pełnoekranowym"
                 >
-                    {main ? (
-                        <Image
+                    {main ? (<Image
                             src={ImageUrl(main.publicUrl)}
                             alt="Zdjęcie mieszkania"
                             fill
                             className="object-cover"
                             priority
-                        />
-                    ) : (
-                        <Image src={NoImage} alt="Zdjęcie mieszkania" fill className="object-cover" priority/>
-                    )}
+                        />) : (<Image src={NoImage} alt="Zdjęcie mieszkania" fill className="object-cover" priority/>)}
                 </div>
                 <div className="mt-[12px]">
                     <div className="flex gap-2 justify-start overflow-x-auto">
-                        {images &&
-                            images.length > 0 &&
-                            images?.map((i, idx) => (
-                                <button
-                                    key={idx}
-                                    className={`relative h-[80px] min-w-[130px] overflow-hidden rounded-lg border ${
-                                        idx === selectedIndex ? "border-black" : "border-transparent"
-                                    }`}
-                                    onClick={() => setSelectedIndex(idx)}
-                                    aria-label={`Wybierz zdjęcie ${idx + 1}`}
-                                >
-                                    <Image src={ImageUrl(i.publicUrl)} alt={`Miniatura ${idx + 1}`} fill
-                                           className="object-cover"/>
-                                </button>
-                            ))}
+                        {images && images.length > 0 && images?.map((i, idx) => (<button
+                                key={idx}
+                                className={`relative h-[80px] min-w-[130px] overflow-hidden rounded-lg border ${idx === selectedIndex ? "border-black" : "border-transparent"}`}
+                                onClick={() => setSelectedIndex(idx)}
+                                aria-label={`Wybierz zdjęcie ${idx + 1}`}
+                            >
+                                <Image src={ImageUrl(i.publicUrl)} alt={`Miniatura ${idx + 1}`} fill
+                                       className="object-cover"/>
+                            </button>))}
                     </div>
                 </div>
             </div>
-        </>
-    );
+        </>);
 }
 
 function InfoList({apartmentData}) {
     const a = apartmentData?.apartment ?? {};
-    return (
-        <div>
+    return (<div>
             <h4 className="mb-[12px] text-[24px] font-semibold text-black">Informacje ogólne</h4>
             <ul className="leading-8 text-[16px] font-[300] text-gray-700">
                 <li>
                     <strong>Adres:</strong>{" "}
-                    {`${a.streetName ?? ""} ${a.buildingNumber ?? ""}/${a.apartmentNumber ?? ""}, ${
-                        a.postalCode ?? ""
-                    } ${a.city ?? ""}, ${a.country ?? ""}`}
+                    {`${a.streetName ?? ""} ${a.buildingNumber ?? ""}/${a.apartmentNumber ?? ""}, ${a.postalCode ?? ""} ${a.city ?? ""}, ${a.country ?? ""}`}
                 </li>
                 <li>
                     <strong>Piętro:</strong> {a.floor ?? "-"}
@@ -248,18 +224,14 @@ function InfoList({apartmentData}) {
                     <strong>Wynajem krótkoterminowy:</strong> {apartmentData?.shortTermRental ? "Tak" : "Nie"}
                 </li>
             </ul>
-        </div>
-    );
+        </div>);
 }
 
 function Policies({apartmentData}) {
     const mapEmployment = {
-        ANY: "Dowolny",
-        EMPLOYED: "Zatrudniony",
-        STUDENT: "Student",
+        ANY: "Dowolny", EMPLOYED: "Zatrudniony", STUDENT: "Student",
     };
-    return (
-        <div>
+    return (<div>
             <h4 className="mb-[12px] text-[24px] font-semibold text-black">Zasady i polityki</h4>
             <ul className="leading-8 text-[16px] font-[300] text-gray-700">
                 <li>
@@ -273,15 +245,13 @@ function Policies({apartmentData}) {
                     {mapEmployment[apartmentData?.preferredEmploymentStatus] ?? "-"}
                 </li>
             </ul>
-        </div>
-    );
+        </div>);
 }
 
 function Amenities({apartmentData}) {
     const a = apartmentData?.apartment ?? {};
     const parkingMap = {STREET: "Ulica", UNDERGROUND: "Podziemny", NONE: "Brak"};
-    return (
-        <div>
+    return (<div>
             <h4 className="mb-[12px] text-[24px] font-semibold text-black">Udogodnienia</h4>
             <ul className="leading-8 text-[16px] font-[300] text-gray-700">
                 <li>
@@ -303,8 +273,7 @@ function Amenities({apartmentData}) {
                     <strong>Parking:</strong> {parkingMap[a.parkingType] ?? "-"}
                 </li>
             </ul>
-        </div>
-    );
+        </div>);
 }
 
 // Pomocnicze: formaty dla <input type="date"> i <input type="time">
@@ -338,7 +307,6 @@ export default function SingleApartmentLayout({id}) {
 
     // Pobieranie danych mieszkania
     useEffect(() => {
-        if (!accessToken || !id) return;
 
         // zapobiegnij wielokrotnym wywołaniom w DEV (StrictMode)
         if (fetchedRef.current) return;
@@ -352,17 +320,18 @@ export default function SingleApartmentLayout({id}) {
                 const response = await fetch(`${baseUrl}/api/rental-offers`, {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({accessToken, id}),
+                    body: JSON.stringify({id}),
                     cache: "no-store",
                 });
 
                 const data = await response.json();
+                console.log(data)
 
-                if (data?.status === 401) {
-                    toast.error("Brak dostępu. Proszę się zalogować ponownie.");
-                    handleLogout();
-                    return;
-                }
+                // if (data?.status === 401) {
+                //     toast.error("Brak dostępu. Proszę się zalogować ponownie.");
+                //     handleLogout();
+                //     return;
+                // }
 
                 const offer = data?.offer;
                 setApartmentData(offer ?? null);
@@ -383,9 +352,8 @@ export default function SingleApartmentLayout({id}) {
         };
 
         fetchApartmentData();
-    }, [accessToken, id, handleLogout, userId]);
+    }, [id, userId]);
 
-    // Sklejanie daty i czasu na ISO
     useEffect(() => {
         if (selectedDate && selectedTime) {
             const combined = new Date(`${selectedDate}T${selectedTime}`);
@@ -397,7 +365,7 @@ export default function SingleApartmentLayout({id}) {
         if (!showPopUp) return;
 
         const af = apartmentData?.availableFrom;
-        const d = af ? new Date(af) : new Date(); // fallback: dziś
+        const d = af ? new Date(af) : new Date();
 
         setSelectedDate(toInputDateString(d));
 
@@ -421,12 +389,8 @@ export default function SingleApartmentLayout({id}) {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
             const response = await fetch(`${baseUrl}/api/moveinapplications/create`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    accessToken,
-                    selectedDate: combinedDateTime,
-                    rentalOfferId: apartmentData.id,
+                method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({
+                    accessToken, selectedDate: combinedDateTime, rentalOfferId: apartmentData.id,
                 }),
             });
             const data = await response.json();
@@ -453,23 +417,19 @@ export default function SingleApartmentLayout({id}) {
     };
 
     if (loading) {
-        return (
-            <div className="px-6 pt-[150px]">
+        return (<div className="px-6 pt-[150px]">
                 <div className="h-6 w-24 animate-pulse rounded bg-gray-200"/>
                 <div className="mt-4 h-[380px] w-full animate-pulse rounded bg-gray-200"/>
-            </div>
-        );
+            </div>);
     }
 
     if (error) {
-        return (
-            <div className="px-6 pt-[150px]">
+        return (<div className="px-6 pt-[150px]">
                 <p className="text-red-600">{error}</p>
                 <Link href="/rental-offers" className="text-sm text-gray-500 underline">
                     Powrót
                 </Link>
-            </div>
-        );
+            </div>);
     }
 
     if (!apartmentData) {
@@ -478,8 +438,7 @@ export default function SingleApartmentLayout({id}) {
 
     const a = apartmentData?.apartment ?? {};
 
-    return (
-        <>
+    return (<>
             <Lightbox
                 open={lightboxOpen}
                 images={apartmentImages}
@@ -535,26 +494,20 @@ export default function SingleApartmentLayout({id}) {
                                 <div className="flex-grow">
                                     <div
                                         className="mt-2 flex items-center gap-4 text-[16px] font-semibold text-gray-700">
-                                        {a?.numberOfRooms ? (
-                                            <div className="flex items-center gap-2">
+                                        {a?.numberOfRooms ? (<div className="flex items-center gap-2">
                                                 <RenderIcon icon={icons.door} className="h-[32px]"/>
                                                 <span>{a.numberOfRooms}</span>
-                                            </div>
-                                        ) : null}
+                                            </div>) : null}
 
-                                        {a?.numberOfBathrooms ? (
-                                            <div className="flex items-center gap-2">
+                                        {a?.numberOfBathrooms ? (<div className="flex items-center gap-2">
                                                 <RenderIcon icon={icons.wc} className="h-[32px]"/>
                                                 <span>{a.numberOfBathrooms}</span>
-                                            </div>
-                                        ) : null}
+                                            </div>) : null}
 
-                                        {a?.area ? (
-                                            <div className="flex items-center gap-2">
+                                        {a?.area ? (<div className="flex items-center gap-2">
                                                 <RenderIcon icon={icons.size} className="h-[32px]"/>
                                                 <span>{a.area} m²</span>
-                                            </div>
-                                        ) : null}
+                                            </div>) : null}
                                     </div>
                                 </div>
 
@@ -564,26 +517,22 @@ export default function SingleApartmentLayout({id}) {
                                         <div>/ miesiąc</div>
                                     </div>
 
-                                    {apartmentData?.deposit ? (
-                                        <div>
+                                    {apartmentData?.deposit ? (<div>
                                             <span className="text-[14px] text-gray-500">Kaucja: </span>
                                             <span className="font-semibold">{apartmentData.deposit} zł</span>
-                                        </div>
-                                    ) : null}
+                                        </div>) : null}
                                 </div>
                             </div>
 
-                            {!userHasApplied ? (
-                                <div className="mt-[12px] flex flex-col gap-2">
+                            {!userHasApplied ? (<div className="mt-[12px] flex flex-col gap-2">
                                     <Button
                                         type="button"
                                         onClick={() => setShowPopUp(true)}
-                                        title="Zaproponuj datę wprowadzenia się"
+                                        title={accessToken ? "Złóż aplikację" : "Aby złożyć aplikację, musisz być zalogowany"}
                                         style="primary"
+                                        disabled={!accessToken}
                                     />
-                                </div>
-                            ) : (
-                                <div className="mt-[12px] flex flex-col gap-2">
+                                </div>) : (<div className="mt-[12px] flex flex-col gap-2">
                                     <Button
                                         type="button"
                                         title="Już złożyłeś aplikację na to mieszkanie"
@@ -591,8 +540,9 @@ export default function SingleApartmentLayout({id}) {
                                         disabled={userHasApplied}
                                         onClick={() => setShowPopUp(false)}
                                     />
-                                </div>
-                            )}
+                                </div>)}
+
+
                         </div>
                     </section>
 
@@ -619,6 +569,5 @@ export default function SingleApartmentLayout({id}) {
                 dateValue={selectedDate}
                 timeValue={selectedTime}
             />
-        </>
-    );
+        </>);
 }

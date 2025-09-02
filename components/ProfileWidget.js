@@ -13,7 +13,7 @@ Skeleton.Circle = ({ className = "" }) => <Skeleton className={`rounded-full ${c
 
 export default function ProfileWidget() {
     const [isClient, setIsClient] = useState(false);
-    const { username, userRoles = [], userId } = useContext(AuthContext);
+    const { username, userRoles = [], userId, userRole } = useContext(AuthContext);
 
     useEffect(() => { setIsClient(true); }, []);
 
@@ -76,7 +76,7 @@ export default function ProfileWidget() {
                             <label className="text-[14px] font-semibold">@{username}</label>
                             <label className="text-gray-600 text-[15px] font-mono">{userId}</label>
                         </div>
-                        <div className="text-gray text-[11px] font-semibold">{userRoles?.[2]}</div>
+                        <div className="text-gray text-[11px] font-semibold">{userRole}</div>
                     </div>
                 </div>
 

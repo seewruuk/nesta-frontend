@@ -1,8 +1,5 @@
 import {NextResponse} from "next/server";
-
-
 export async function POST(req){
-
     try{
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const { accessToken, offerId } = await req.json();

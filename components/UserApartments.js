@@ -1,7 +1,7 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/context/AuthContext";
+import React, {useContext, useEffect, useState} from "react";
+import {AuthContext} from "@/context/AuthContext";
 import Link from "next/link";
 import Debugger from "@/components/Debugger";
 import Image from "next/image";
@@ -10,10 +10,30 @@ import Image from "next/image";
  *  Utilities
  *  ———————————————————————————————————————————— */
 const firstImageUrl = (item) => {
-    const firstPublic = item?.images?.[0]?.publicUrl;
-    if (!firstPublic) return "/default-image.jpg";
-    const base = process.env.NEXT_PUBLIC_API_URL || "";
-    return `${base}${firstPublic}`;
+    const imgs = item?.images;
+    const fallback = "/default-image.jpg";
+
+    if (!Array.isArray(imgs) || imgs.length === 0) return fallback;
+
+    const first = imgs[0];
+
+    // Wariant: tablica stringów (pełne URL-e)
+    if (typeof first === "string" && first.trim() !== "") {
+        return first;
+    }
+
+    // Wariant: tablica obiektów — preferuj publicUrl; alternatywnie url
+    if (first && typeof first === "object") {
+        if (first.publicUrl) {
+            const base = process.env.NEXT_PUBLIC_API_URL || "";
+            return `${base}${first.publicUrl}`;
+        }
+        if (first.url && typeof first.url === "string") {
+            return first.url;
+        }
+    }
+
+    return fallback;
 };
 
 const fmt = (v, fallback = "—") => (v === 0 ? "0" : v ? String(v) : fallback);
@@ -21,25 +41,27 @@ const fmt = (v, fallback = "—") => (v === 0 ? "0" : v ? String(v) : fallback);
 /** ————————————————————————————————————————————
  *  Minimalny, wspólny Skeleton
  *  ———————————————————————————————————————————— */
-function Skeleton({ className = "" }) {
-    return <div className={`animate-pulse bg-gray-200 rounded ${className}`} />;
+function Skeleton({className = ""}) {
+    return <div className={`animate-pulse bg-gray-200 rounded ${className}`}/>;
 }
-Skeleton.Text = ({ className = "" }) => <Skeleton className={`h-4 ${className}`} />;
-Skeleton.Circle = ({ className = "" }) => <Skeleton className={`rounded-full ${className}`} />;
-Skeleton.Image = ({ className = "" }) => <Skeleton className={`aspect-[16/10] w-full animate-pulse ${className}`} />;
+
+Skeleton.Text = ({className = ""}) => <Skeleton className={`h-4 ${className}`}/>;
+Skeleton.Circle = ({className = ""}) => <Skeleton className={`rounded-full ${className}`}/>;
+Skeleton.Image = ({className = ""}) => <Skeleton className={`aspect-[16/10] w-full animate-pulse ${className}`}/>;
 
 /** ————————————————————————————————————————————
  *  Badge / Feature
  *  ———————————————————————————————————————————— */
-function Badge({ children }) {
+function Badge({children}) {
     return (
-        <span className="rounded-full bg-black/60 backdrop-blur px-2.5 py-1 text-[11px] font-medium text-white shadow-sm">
+        <span
+            className="rounded-full bg-black/60 backdrop-blur px-2.5 py-1 text-[11px] font-medium text-white shadow-sm">
             {children}
         </span>
     );
 }
 
-function Feature({ label, value }) {
+function Feature({label, value}) {
     return (
         <div className="text-[12px] text-gray-700">
             <span className="font-semibold text-gray-900">{label}: </span>
@@ -51,20 +73,21 @@ function Feature({ label, value }) {
 /** ————————————————————————————————————————————
  *  Kafelek z obrazkiem + lokalny skeleton obrazu
  *  ———————————————————————————————————————————— */
-function ApartmentCard({ item }) {
+function ApartmentCard({item}) {
     const [imgLoaded, setImgLoaded] = useState(false);
     // bez useMemo — proste wyprowadzenie za każdym renderem
     const imageUrl = firstImageUrl(item);
-    const photosCount = item?.images?.length || 0;
+    const photosCount = Array.isArray(item?.images) ? item.images.length : 0;
 
     return (
-        <div className="group relative bg-white rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden transition-all duration-300">
+        <div
+            className="group relative bg-white rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden transition-all duration-300">
             {/* Obszar obrazka */}
             <div className="relative">
                 {/* Skeleton obrazu (przykryty po załadowaniu) */}
                 {!imgLoaded && (
                     <div className="absolute inset-0 z-0">
-                        <Skeleton.Image />
+                        <Skeleton.Image/>
                     </div>
                 )}
 
@@ -78,7 +101,7 @@ function ApartmentCard({ item }) {
                         priority={false}
                         onLoadingComplete={() => setImgLoaded(true)}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"/>
 
                     {/* Badges lewy górny */}
                     <div className="absolute top-3 left-3 flex gap-2">
@@ -111,9 +134,9 @@ function ApartmentCard({ item }) {
             {/* Treść pod obrazem */}
             <div className="p-4">
                 <div className="grid grid-cols-3 gap-2">
-                    <Feature label="Piętro" value={fmt(item?.floor)} />
-                    <Feature label="Winda" value={item?.hasElevator ? "Tak" : "Nie"} />
-                    <Feature label="Balkon" value={item?.hasBalcony ? "Tak" : "Nie"} />
+                    <Feature label="Piętro" value={fmt(item?.floor)}/>
+                    <Feature label="Winda" value={item?.hasElevator ? "Tak" : "Nie"}/>
+                    <Feature label="Balkon" value={item?.hasBalcony ? "Tak" : "Nie"}/>
                 </div>
 
                 <div className="mt-4 flex items-center justify-between">
@@ -132,7 +155,8 @@ function ApartmentCard({ item }) {
                             fill="none"
                             className="opacity-90"
                         >
-                            <path d="M8 5l8 7-8 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M8 5l8 7-8 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                                  strokeLinejoin="round"/>
                         </svg>
                     </Link>
                 </div>
@@ -144,10 +168,10 @@ function ApartmentCard({ item }) {
 /** ————————————————————————————————————————————
  *  Widok listy użytkownika z pełnym skeletonem siatki
  *  ———————————————————————————————————————————— */
-export default function UserApartments() {
+export default function UserApartments({limit = null}) {
     const [apartments, setApartments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const { accessToken, handleLogout, userId } = useContext(AuthContext);
+    const {accessToken, handleLogout, userId} = useContext(AuthContext);
 
     useEffect(() => {
         const fetchUserApartments = async () => {
@@ -156,8 +180,8 @@ export default function UserApartments() {
                 setIsLoading(true);
                 const response = await fetch(`${baseUrl}/api/apartments`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ accessToken }),
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({accessToken}),
                 });
                 if (response.status === 401) {
                     handleLogout();
@@ -165,6 +189,9 @@ export default function UserApartments() {
                 }
                 const data = await response.json();
                 setApartments(Array.isArray(data?.apartments) ? data.apartments : []);
+                if (limit) {
+                    setApartments((prev) => prev.slice(0, limit));
+                }
             } catch (error) {
                 console.error("Error fetching apartments:", error);
             } finally {
@@ -184,16 +211,16 @@ export default function UserApartments() {
     // Skeleton element odzwierciedlający kartę
     const CardSkeleton = () => (
         <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden">
-            <Skeleton.Image />
+            <Skeleton.Image/>
             <div className="p-4">
                 <div className="grid grid-cols-3 gap-2">
-                    <Skeleton.Text className="w-2/3" />
-                    <Skeleton.Text className="w-1/2" />
-                    <Skeleton.Text className="w-2/5" />
+                    <Skeleton.Text className="w-2/3"/>
+                    <Skeleton.Text className="w-1/2"/>
+                    <Skeleton.Text className="w-2/5"/>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                    <Skeleton.Text className="w-24" />
-                    <Skeleton className="h-9 w-24" />
+                    <Skeleton.Text className="w-24"/>
+                    <Skeleton className="h-9 w-24"/>
                 </div>
             </div>
         </div>
@@ -202,17 +229,17 @@ export default function UserApartments() {
     return (
         <>
 
-            <div className="mt-[32px]">
+            <div className="">
                 {isLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
-                        {Array.from({ length: 6 }).map((_, i) => (
-                            <CardSkeleton key={i} />
+                        {Array.from({length: 6}).map((_, i) => (
+                            <CardSkeleton key={i}/>
                         ))}
                     </div>
                 ) : myApartments?.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
                         {myApartments.map((item) => (
-                            <ApartmentCard key={item.id} item={item} />
+                            <ApartmentCard key={item.id} item={item}/>
                         ))}
                     </div>
                 ) : (

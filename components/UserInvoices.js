@@ -21,9 +21,7 @@ export default function UserInvoices({offerId}) {
             try {
                 setLoading(true);
                 const response = await fetch(`${baseUrl}/api/invoices`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({accessToken}),
+                    method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({accessToken}),
                 });
                 const data = await response.json();
 
@@ -36,7 +34,7 @@ export default function UserInvoices({offerId}) {
                 }
                 if (data.status === 200) {
 
-                    if(!offerId){
+                    if (!offerId) {
                         setUserInvoices(data.invoices.content);
                         return;
                     }
@@ -62,9 +60,7 @@ export default function UserInvoices({offerId}) {
         const amount = (amountCents ?? 0) / 100;
         try {
             return new Intl.NumberFormat("pl-PL", {
-                style: "currency",
-                currency,
-                minimumFractionDigits: 2,
+                style: "currency", currency, minimumFractionDigits: 2,
             }).format(amount);
         } catch {
             return `${amount.toFixed(2)} ${currency}`;
@@ -75,11 +71,7 @@ export default function UserInvoices({offerId}) {
         if (!iso) return "—";
         const d = new Date(iso);
         return d.toLocaleString("pl-PL", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
+            year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit",
         });
     };
 
@@ -95,11 +87,7 @@ export default function UserInvoices({offerId}) {
     const filtered = useMemo(() => {
         if (!query) return userInvoices;
         const q = query.toLowerCase();
-        return userInvoices.filter((i) =>
-            [i.number, i.currency, i.rentalOfferId?.toString()].some((v) =>
-                (v ?? "").toString().toLowerCase().includes(q)
-            )
-        );
+        return userInvoices.filter((i) => [i.number, i.currency, i.rentalOfferId?.toString()].some((v) => (v ?? "").toString().toLowerCase().includes(q)));
     }, [query, userInvoices]);
 
 
@@ -108,9 +96,7 @@ export default function UserInvoices({offerId}) {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
             const response = await fetch(`${baseUrl}/api/payments/checkout`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
+                method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({
                     accessToken: accessToken,
                     invoiceId: invoiceId,
                     email: userEmail,
@@ -142,11 +128,8 @@ export default function UserInvoices({offerId}) {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
             const response = await fetch(`${baseUrl}/api/invoices/delete`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    accessToken: accessToken,
-                    invoiceId: invoiceId,
+                method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({
+                    accessToken: accessToken, invoiceId: invoiceId,
                 }),
             });
 
@@ -160,8 +143,7 @@ export default function UserInvoices({offerId}) {
     }
 
 
-    return (
-        <>
+    return (<>
 
             <DashboardElement>
                 {sectionHeader("Twoje faktury")}
@@ -200,16 +182,14 @@ export default function UserInvoices({offerId}) {
                                     placeholder="Szukaj po numerze / walucie / ofercie"
                                     className="h-9 w-full rounded-md bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-gray-300"
                                 />
-                                {query && (
-                                    <button
+                                {query && (<button
                                         type="button"
                                         className="h-9 w-9 inline-flex items-center justify-center rounded-md hover:bg-gray-100"
                                         onClick={() => setQuery("")}
                                         aria-label="Wyczyść filtr"
                                     >
                                         <XIcon className="h-4 w-4"/>
-                                    </button>
-                                )}
+                                    </button>)}
                             </div>
                         </div>
                     </div>
@@ -217,36 +197,26 @@ export default function UserInvoices({offerId}) {
 
                 {/* List */}
                 <div className="mt-6">
-                    {loading ? (
-                        <InvoiceSkeleton/>
-                    ) : filtered.length === 0 ? (
-                        <EmptyState/>
-                    ) : (
+                    {loading ? (<InvoiceSkeleton/>) : filtered.length === 0 ? (<EmptyState/>) : (
                         <div className="max-h-[60vh] rounded-xl    bg-white/60 overflow-y-auto">
                             <ul className="">
-                                {filtered.map((inv) => (
-                                    <li key={inv.id} className="p-4 hover:bg-gray-50/70 transition">
+                                {filtered.map((inv) => (<li key={inv.id} className="p-4 hover:bg-gray-50/70 transition">
                                         <div
                                             className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     <span className="font-medium truncate">{inv.number}</span>
-                                                    {inv.paid ? (
+                                                    {inv.paid ? (<span
+                                                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-600 text-white">Opłacona</span>) : (
                                                         <span
-                                                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-emerald-600 text-white">Opłacona</span>
-                                                    ) : (
-                                                        <span
-                                                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-800">Do zapłaty</span>
-                                                    )}
+                                                            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-800">Do zapłaty</span>)}
                                                 </div>
                                                 <div className="mt-1 text-sm text-gray-500">
                                                     Wystawiono: {formatDate(inv.createdAt)}
-                                                    {inv.paidAt && (
-                                                        <>
+                                                    {inv.paidAt && (<>
                                                             <span className="mx-2">•</span>
                                                             Opłacono: {formatDate(inv.paidAt)}
-                                                        </>
-                                                    )}
+                                                        </>)}
                                                 </div>
                                                 <div className="mt-1 text-xs text-gray-400">Oferta najmu
                                                     ID: {inv.rentalOfferId ?? "—"}</div>
@@ -261,57 +231,45 @@ export default function UserInvoices({offerId}) {
                                                     <div className="text-xs text-gray-500">{inv.currency}</div>
                                                 </div>
 
-                                                {inv.paid ? (
-                                                    <div
+                                                {inv.paid ? (<div
                                                         className="flex items-center text-emerald-600 text-sm font-medium">
                                                         <CheckIcon className="h-5 w-5 mr-1"/> Opłacona
-                                                    </div>
-                                                ) : (
+                                                    </div>) : (
 
                                                     <>
-                                                        {
-                                                            userRole === "LANDLORD" ? (
-                                                                <button
-                                                                    type="button"
-                                                                    className="inline-flex items-center justify-center rounded-2xl bg-red-50 text-red-500 px-4 py-2 text-sm font-medium hover:bg-red-500 hover:text-white transition-all active:scale-[0.98]"
-                                                                    onClick={() => {
-                                                                        handleDeleteInvoice(inv.id);
-                                                                    }}
-                                                                >
-                                                                    Usuń fakturę
-                                                                </button>
-                                                            ) : (
-                                                                <button
-                                                                    type="button"
-                                                                    className="inline-flex items-center justify-center rounded-2xl bg-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 active:scale-[0.98]"
-                                                                    onClick={() => {
-                                                                        handlePayInvoice(inv.id);
-                                                                    }}
-                                                                >
-                                                                    Opłać
-                                                                </button>
-                                                            )
-                                                        }
+                                                        {userRole === "LANDLORD" ? (<button
+                                                                type="button"
+                                                                className="inline-flex items-center justify-center rounded-2xl bg-red-50 text-red-500 px-4 py-2 text-sm font-medium hover:bg-red-500 hover:text-white transition-all active:scale-[0.98]"
+                                                                onClick={() => {
+                                                                    handleDeleteInvoice(inv.id);
+                                                                }}
+                                                            >
+                                                                Usuń fakturę
+                                                            </button>) : (<button
+                                                                type="button"
+                                                                className="inline-flex items-center justify-center rounded-2xl bg-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 active:scale-[0.98]"
+                                                                onClick={() => {
+                                                                    handlePayInvoice(inv.id);
+                                                                }}
+                                                            >
+                                                                Opłać
+                                                            </button>)}
                                                     </>
 
                                                 )}
 
                                             </div>
                                         </div>
-                                    </li>
-                                ))}
+                                    </li>))}
                             </ul>
-                        </div>
-                    )}
+                        </div>)}
                 </div>
             </DashboardElement>
-        </>
-    );
+        </>);
 }
 
 function EmptyState() {
-    return (
-        <div className="     -dashed rounded-xl bg-white">
+    return (<div className="     -dashed rounded-xl bg-white">
             <div className="p-10 text-center">
                 <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
                     <ReceiptIcon className="h-5 w-5"/>
@@ -319,22 +277,18 @@ function EmptyState() {
                 <div className="text-lg font-medium">Brak faktur do wyświetlenia</div>
                 <p className="text-sm text-gray-500 mt-1">Gdy pojawią się nowe dokumenty, zobaczysz je tutaj.</p>
             </div>
-        </div>
-    );
+        </div>);
 }
 
 function InvoiceSkeleton() {
-    return (
-        <div className="space-y-3">
+    return (<div className="space-y-3">
             {Array.from({length: 4}).map((_, i) => (
                 <div key={i} className="animate-pulse rounded-lg    p-4 bg-white/50">
                     <div className="h-4 w-48 bg-gray-200 rounded"/>
                     <div className="mt-2 h-3 w-64 bg-gray-200 rounded"/>
                     <div className="mt-3 h-8 w-24 bg-gray-200 rounded"/>
-                </div>
-            ))}
-        </div>
-    );
+                </div>))}
+        </div>);
 }
 
 // --- Minimalne ikony w SVG (bez zewnętrznych bibliotek) ---
@@ -343,8 +297,7 @@ function cn(...cls) {
 }
 
 function ReceiptIcon({className}) {
-    return (
-        <svg
+    return (<svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -354,13 +307,11 @@ function ReceiptIcon({className}) {
         >
             <path d="M7 3h10a1 1 0 0 1 1 1v15l-3-2-3 2-3-2-3 2V4a1 1 0 0 1 1-1z"/>
             <path d="M9 7h6M9 11h6"/>
-        </svg>
-    );
+        </svg>);
 }
 
 function CheckIcon({className}) {
-    return (
-        <svg
+    return (<svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -369,13 +320,11 @@ function CheckIcon({className}) {
             className={cn("inline-block", className)}
         >
             <path d="M20 6 9 17l-5-5"/>
-        </svg>
-    );
+        </svg>);
 }
 
 function ClockIcon({className}) {
-    return (
-        <svg
+    return (<svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -385,13 +334,11 @@ function ClockIcon({className}) {
         >
             <circle cx="12" cy="12" r="9"/>
             <path d="M12 7v5l4 2"/>
-        </svg>
-    );
+        </svg>);
 }
 
 function SearchIcon({className}) {
-    return (
-        <svg
+    return (<svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -401,13 +348,11 @@ function SearchIcon({className}) {
         >
             <circle cx="11" cy="11" r="7"/>
             <path d="m21 21-4.3-4.3"/>
-        </svg>
-    );
+        </svg>);
 }
 
 function XIcon({className}) {
-    return (
-        <svg
+    return (<svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -416,6 +361,5 @@ function XIcon({className}) {
             className={cn("inline-block", className)}
         >
             <path d="M18 6 6 18M6 6l12 12"/>
-        </svg>
-    );
+        </svg>);
 }

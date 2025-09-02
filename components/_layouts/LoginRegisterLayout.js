@@ -23,7 +23,6 @@ export default function LoginRegisterLayout({ type = "login" }) {
         );
     }
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         if (isLogged) {
             router.replace("/dashboard");
@@ -38,8 +37,6 @@ export default function LoginRegisterLayout({ type = "login" }) {
                 return <LoginComponent />;
             case "register":
                 return <RegisterComponent />;
-            case "forgot-password":
-                return <ForgotPasswordComponent />;
             default:
                 return <LoginComponent />;
         }
@@ -112,7 +109,6 @@ const LoginComponent = () => {
         </div>
     );
 };
-
 const RegisterComponent = () => {
     const { handleRegister } = useContext(AuthContext);
     const [form, setForm] = useState({
@@ -120,6 +116,7 @@ const RegisterComponent = () => {
         email: "",
         password: "",
         confirmPassword: "",
+        role: ""
     });
 
     return (
@@ -157,6 +154,18 @@ const RegisterComponent = () => {
                     onChange={(e) =>
                         setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
                     }
+                />
+                <InputField
+                    inputFiledType="select"
+                    placeholder="Status"
+                    value={form.role}
+                    onChange={(e) =>
+                        setForm((prev) => ({ ...prev, role: e.target.value }))
+                    }
+                    selectOptions={[
+                        { value: "RENTIER", label: "Rentier" },
+                        { value: "LANDLORD", label: "Landlord" },
+                    ]}
                 />
             </div>
 

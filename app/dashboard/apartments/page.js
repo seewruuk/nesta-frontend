@@ -15,7 +15,7 @@ export default function Page() {
 
             <DashboardElement>
                 <div>
-                    <h3>Twoje mieszkania</h3>
+                    <h3 className={"mb-[15px]"}>Twoje mieszkania</h3>
                     <UserApartments />
                 </div>
             </DashboardElement>

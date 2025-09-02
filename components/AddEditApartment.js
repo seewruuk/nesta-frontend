@@ -5,180 +5,144 @@ import React, {useContext, useState} from "react";
 import {AuthContext} from "@/context/AuthContext";
 import Button from "@/components/Button";
 import {updateApartment} from "@/lib/apartment/updateApartment";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useRouter} from "next/navigation";
 import toast from "react-hot-toast";
 import {data} from "autoprefixer";
+
 export default function AddEditApartment({type = "add", body, appId}) {
 
+    const [appData, setAppData] = useState(body ? body : [{
+        label: "Powierzchnia",
+        type: "number",
+        placeholder: "Podaj powierzchnię mieszkania",
+        value: "",
+        name: "area",
+        inputFiledType: "input",
 
-    const [appData, setAppData] = useState(
-        body ? body :
-            [
-                {
-                    label: "Powierzchnia",
-                    type: "number",
-                    placeholder: "Podaj powierzchnię mieszkania",
-                    value: "",
-                    name: "area",
-                    inputFiledType: "input",
+    }, {
+        label: "Ilość pokoi",
+        type: "number",
+        placeholder: "Podaj ilość pokoi",
+        value: "",
+        name: "numberOfRooms",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Ilość pokoi",
-                    type: "number",
-                    placeholder: "Podaj ilość pokoi",
-                    value: "",
-                    name: "numberOfRooms",
-                    inputFiledType: "input",
+    }, {
+        label: "Ilość łazienek",
+        type: "number",
+        placeholder: "Podaj ilość łazienek",
+        value: "",
+        name: "numberOfBathrooms",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Ilość łazienek",
-                    type: "number",
-                    placeholder: "Podaj ilość łazienek",
-                    value: "",
-                    name: "numberOfBathrooms",
-                    inputFiledType: "input",
+    }, {
+        label: "Piętro",
+        type: "number",
+        placeholder: "Piętro na którym znajduje się mieszkanie",
+        value: "",
+        name: "floor",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Piętro",
-                    type: "number",
-                    placeholder: "Piętro na którym znajduje się mieszkanie",
-                    value: "",
-                    name: "floor",
-                    inputFiledType: "input",
+    }, {
+        label: "Umeblowanie",
+        type: "text",
+        placeholder: "Tak/Nie",
+        value: "",
+        name: "furnished",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
 
-                },
-                {
-                    label: "Umeblowanie",
-                    type: "text",
-                    placeholder: "Tak/Nie",
-                    value: "",
-                    name: "furnished",
-                    selectOptions: [
-                        {label: "Tak", value: true },
-                        {label: "Nie", value: false },
-                    ],
-                    inputFiledType: "select",
+    }, {
+        label: "Czy posiada balkon?",
+        type: "text",
+        placeholder: "Tak/Nie",
+        value: "",
+        name: "hasBalcony",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
+    }, {
+        label: "Typ parkingu",
+        type: "text",
+        placeholder: "UNDERGROUND/OUTDOOR/NO PARKING",
+        value: "",
+        name: "parkingType",
+        selectOptions: [{label: "UNDERGROUND", value: "UNDERGROUND"}, {
+            label: "STREET",
+            value: "STREET"
+        }, {label: "NONE", value: "NONE"}],
+        inputFiledType: "select",
+    }, {
+        label: "Posiada windę?",
+        type: "text",
+        placeholder: "Tak/Nie",
+        value: "",
+        name: "hasElevator",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
+    }, {
+        label: "Dostęp dla osób niepełnosprawnych",
+        type: "text",
+        placeholder: "Tak/Nie",
+        value: "",
+        name: "disabledAccessible",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
+    }, {
+        label: "Czy posiada komórkę lokatorską w piwnicy?",
+        type: "text",
+        placeholder: "Tak/Nie",
+        value: "",
+        name: "hasStorageRoomInBasement",
+        selectOptions: [{label: "Tak", value: true}, {label: "Nie", value: false},],
+        inputFiledType: "select",
+    }, {
+        label: "Nazwa ulicy",
+        type: "text",
+        placeholder: "Podaj nazwę ulicy",
+        value: "",
+        name: "streetName",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Czy posiada balkon?",
-                    type: "text",
-                    placeholder: "Tak/Nie",
-                    value: "",
-                    name: "hasBalcony",
-                    selectOptions: [
-                        {label: "Tak", value: true},
-                        {label: "Nie", value: false},
-                    ],
-                    inputFiledType: "select",
-                },
-                {
-                    label: "Typ parkingu",
-                    type: "text",
-                    placeholder: "UNDERGROUND/OUTDOOR/NO PARKING",
-                    value: "",
-                    name: "parkingType",
-                    selectOptions: [
-                        {label: "UNDERGROUND", value: "UNDERGROUND"},
-                        {label: "STREET", value: "STREET"},
-                        {label: "NONE", value: "NONE"}
-                    ],
-                    inputFiledType: "select",
-                },
-                {
-                    label: "Posiada windę?",
-                    type: "text",
-                    placeholder: "Tak/Nie",
-                    value: "",
-                    name: "hasElevator",
-                    selectOptions: [
-                        {label: "Tak", value: true},
-                        {label: "Nie", value: false},
-                    ],
-                    inputFiledType: "select",
-                },
-                {
-                    label: "Dostęp dla osób niepełnosprawnych",
-                    type: "text",
-                    placeholder: "Tak/Nie",
-                    value: "",
-                    name: "disabledAccessible",
-                    selectOptions: [
-                        {label: "Tak", value: true},
-                        {label: "Nie", value: false},
-                    ],
-                    inputFiledType: "select",
-                },
-                {
-                    label: "Czy posiada komórkę lokatorską w piwnicy?",
-                    type: "text",
-                    placeholder: "Tak/Nie",
-                    value: "",
-                    name: "hasStorageRoomInBasement",
-                    selectOptions: [
-                        {label: "Tak", value: true},
-                        {label: "Nie", value: false},
-                    ],
-                    inputFiledType: "select",
-                },
-                {
-                    label: "Nazwa ulicy",
-                    type: "text",
-                    placeholder: "Podaj nazwę ulicy",
-                    value: "",
-                    name: "streetName",
-                    inputFiledType: "input",
+    }, {
+        label: "Numer budynku",
+        type: "text",
+        placeholder: "Podaj numer budynku",
+        value: "",
+        name: "buildingNumber",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Numer budynku",
-                    type: "text",
-                    placeholder: "Podaj numer budynku",
-                    value: "",
-                    name: "buildingNumber",
-                    inputFiledType: "input",
+    }, {
+        label: "Numer mieszkania",
+        type: "text",
+        placeholder: "Podaj numer mieszkania",
+        value: "",
+        name: "apartmentNumber",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Numer mieszkania",
-                    type: "text",
-                    placeholder: "Podaj numer mieszkania",
-                    value: "",
-                    name: "apartmentNumber",
-                    inputFiledType: "input",
+    }, {
+        label: "Miasto",
+        type: "text",
+        placeholder: "Podaj nazwę miasta",
+        value: "",
+        name: "city",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Miasto",
-                    type: "text",
-                    placeholder: "Podaj nazwę miasta",
-                    value: "",
-                    name: "city",
-                    inputFiledType: "input",
+    }, {
+        label: "Kod pocztowy",
+        type: "text",
+        placeholder: "Podaj kod pocztowy",
+        value: "",
+        name: "postalCode",
+        inputFiledType: "input",
 
-                },
-                {
-                    label: "Kod pocztowy",
-                    type: "text",
-                    placeholder: "Podaj kod pocztowy",
-                    value: "",
-                    name: "postalCode",
-                    inputFiledType: "input",
-
-                },
-                {
-                    label: "Kraj",
-                    type: "text",
-                    placeholder: "Podaj nazwę kraju",
-                    value: "",
-                    name: "country",
-                    inputFiledType: "input",
-                },
-            ]
-    );
+    }, {
+        label: "Kraj",
+        type: "text",
+        placeholder: "Podaj nazwę kraju",
+        value: "",
+        name: "country",
+        inputFiledType: "input",
+    },]);
     const {accessToken} = useContext(AuthContext);
     const router = useRouter();
 
@@ -205,20 +169,17 @@ export default function AddEditApartment({type = "add", body, appId}) {
 
         try {
             const response = await fetch("/api/apartments/add", {
-                method: "POST",
-                headers: {
+                method: "POST", headers: {
                     "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    accessToken: accessToken,
-                    data: JSON.stringify(dataToSend)
+                }, body: JSON.stringify({
+                    accessToken: accessToken, data: JSON.stringify(dataToSend)
                 }),
             });
             const data = await response.json();
-            if(data.data.id){
+            if (data.data.id) {
                 toast.success("Mieszkanie zostało dodane pomyślnie!");
                 router.push("/dashboard/apartments");
-            }else{
+            } else {
                 toast.error("Błąd podczas dodawania mieszkania: " + data.error);
             }
         } catch (err) {
@@ -286,41 +247,31 @@ export default function AddEditApartment({type = "add", body, appId}) {
             postalCode: `${Math.floor(Math.random() * 90) + 10}-${Math.floor(Math.random() * 900) + 100}`, // Random postal code
             country: "Poland"
         };
-        setAppData(
-            prevData =>
-                prevData.map(item => ({
-                    ...item,
-                    value: randomApartment[item.name] || item.value
-                })));
+        setAppData(prevData => prevData.map(item => ({
+            ...item, value: randomApartment[item.name] || item.value
+        })));
     }
 
-    return (
-        <>
+    return (<>
             <div className="bg-white py-[24px] px-[32px] rounded-lg flex flex-col gap-5">
 
                 <div className={"flex flex-col gap-[32px]"}>
                     <div>
                         <h3>
-                            {
-                                type === "add" ? "Dodaj mieszkanie" : "Edytuj mieszkanie"
-                            }
+                            {type === "add" ? "Dodaj mieszkanie" : "Edytuj mieszkanie"}
                         </h3>
                     </div>
                     <div className={"grid grid-cols-2 gap-5"}>
-                        {
-                            appData.map((item, index) => (
-                                <FormFileld
-                                    key={index}
-                                    label={item.label}
-                                    item={item}
-                                    changeState={(item, value) => {
-                                        const newData = [...appData];
-                                        newData[index].value = value;
-                                        setAppData(newData);
-                                    }}
-                                />
-                            ))
-                        }
+                        {appData.map((item, index) => (<FormFileld
+                                key={index}
+                                label={item.label}
+                                item={item}
+                                changeState={(item, value) => {
+                                    const newData = [...appData];
+                                    newData[index].value = value;
+                                    setAppData(newData);
+                                }}
+                            />))}
 
                     </div>
 
@@ -336,15 +287,10 @@ export default function AddEditApartment({type = "add", body, appId}) {
                     <Button
                         type={"button"}
                         style={"primary"}
-                        title={ type === "add" ? "Dodaj mieszkanie" : "Zaktualizuj mieszkanie"}
-                        onClick={
-                            type === "add" ? handleAddToDatabase : () => handleUpdate(appId, accessToken)
-                        }
+                        title={type === "add" ? "Dodaj mieszkanie" : "Zaktualizuj mieszkanie"}
+                        onClick={type === "add" ? handleAddToDatabase : () => handleUpdate(appId, accessToken)}
                     />
-
-
                 </div>
-
             </div>
 
             {/*<pre>*/}
@@ -353,14 +299,12 @@ export default function AddEditApartment({type = "add", body, appId}) {
             {/*            </code>*/}
             {/*          </pre>*/}
 
-        </>
-    );
+        </>);
 }
 
 
 const FormFileld = ({label, item, changeState}) => {
-    return (
-        <div className={"group"}>
+    return (<div className={"group"}>
             <label htmlFor={label.name}
                    className={"text-[13px] font-semibold text-gray group-hover:text-black transition-all"}>{label}</label>
             <InputField
@@ -372,6 +316,5 @@ const FormFileld = ({label, item, changeState}) => {
                 inputFiledType={item.inputFiledType}
                 selectOptions={item.selectOptions}
             />
-        </div>
-    )
+        </div>)
 }

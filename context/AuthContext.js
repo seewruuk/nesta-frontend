@@ -13,7 +13,7 @@ export const AuthContext = createContext({
     userId: null,
     userEmail: null,
     userRoles: [],
-    userRole : null,
+    userRole: null,
     handleLogin: () => {},
     handleRegister: () => {},
     handleLogout: () => {},
@@ -21,13 +21,19 @@ export const AuthContext = createContext({
 
 function decodeJwt(token) {
     try {
-        const payload = token.split('.')[1];
+        const payload = token.split(".")[1];
         const decoded = JSON.parse(atob(payload));
         return decoded;
     } catch (e) {
         console.error("JWT decode error:", e);
         return null;
     }
+}
+
+function isExpired(token) {
+    const d = decodeJwt(token);
+    if (!d?.exp) return false;
+    return Date.now() / 1000 >= d.exp;
 }
 
 export default function AuthContextProvider({ children }) {
@@ -45,7 +51,7 @@ export default function AuthContextProvider({ children }) {
     });
     const [userRole, setUserRole] = useState(null);
 
-
+    // Keep state in sync with cookies (simple polling)
     useEffect(() => {
         const id = setInterval(() => {
             setIsLogged(Cookies.get("loggedIn") === "true");
@@ -55,17 +61,39 @@ export default function AuthContextProvider({ children }) {
             setUserId(Cookies.get("user_id") || null);
             const roles = Cookies.get("user_roles");
             setUserRoles(roles ? JSON.parse(roles) : []);
-
         }, 1000);
         return () => clearInterval(id);
     }, []);
 
+    // Derive identity from token
     useEffect(() => {
         if (accessToken) {
+            if (isExpired(accessToken)) {
+                // Expired: clear and bounce if on a protected page
+                [
+                    "loggedIn",
+                    "access_token",
+                    "refresh_token",
+                    "username",
+                    "user_id",
+                    "user_roles",
+                ].forEach((n) => Cookies.remove(n));
+                setIsLogged(false);
+                setAccessToken(null);
+                setRefreshToken(null);
+                setUsername(null);
+                setUserId(null);
+                setUserRoles([]);
+                setUserRole(null);
+                setUserEmail(null);
+                if (typeof window !== "undefined" && window.location.pathname.startsWith("/dashboard")) {
+                    router.replace("/login?reason=expired");
+                }
+                return;
+            }
+
             const decoded = decodeJwt(accessToken);
             if (decoded) {
-
-                console.log("decoded JWT:", decoded); // Log the decoded token to verify its contents
                 const id = decoded.sub;
                 const email = decoded.email;
                 const uname = decoded.preferred_username;
@@ -73,14 +101,11 @@ export default function AuthContextProvider({ children }) {
                 const isUserRentier = roles.includes("RENTIER");
                 const isUserLandlord = roles.includes("LANDLORD");
 
+                // Persist minimal info in cookies
+                Cookies.set("user_id", id, { sameSite: "Lax", secure: true });
+                Cookies.set("user_roles", JSON.stringify(roles), { sameSite: "Lax", secure: true });
+                Cookies.set("username", uname, { sameSite: "Lax", secure: true });
 
-                // Zapis do ciastek
-                Cookies.set("user_id", id);
-                Cookies.set("user_roles", JSON.stringify(roles));
-                Cookies.set("username", uname);
-
-
-                // Aktualizacja stanu
                 setUserId(id);
                 setUserRoles(roles);
                 setUsername(uname);
@@ -96,8 +121,16 @@ export default function AuthContextProvider({ children }) {
             setUserRole(null);
             setUserEmail(null);
         }
-    }, [accessToken]);
+    }, [accessToken, router]);
 
+    // Extra client-side guard (middleware already blocks on the server edge)
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const onDashboard = window.location.pathname.startsWith("/dashboard");
+        if (onDashboard && (!isLogged || !accessToken)) {
+            router.replace("/login");
+        }
+    }, [isLogged, accessToken, router]);
 
     const handleLogin = async ({ username, password }) => {
         try {
@@ -113,9 +146,9 @@ export default function AuthContextProvider({ children }) {
                 return;
             }
 
-            Cookies.set("loggedIn", "true");
-            Cookies.set("access_token", json.json.access_token);
-            Cookies.set("refresh_token", json.json.refresh_token);
+            Cookies.set("loggedIn", "true", { sameSite: "Lax", secure: true });
+            Cookies.set("access_token", json.json.access_token, { sameSite: "Lax", secure: true });
+            Cookies.set("refresh_token", json.json.refresh_token, { sameSite: "Lax", secure: true });
 
             setIsLogged(true);
             setAccessToken(json.json.access_token);
@@ -129,7 +162,7 @@ export default function AuthContextProvider({ children }) {
         }
     };
 
-    const handleRegister = async ({ username, email, password, confirmPassword }) => {
+    const handleRegister = async ({ username, email, password, confirmPassword, status = "RENTIER" }) => {
         if (password !== confirmPassword) {
             toast.error("Hasła nie są takie same!");
             return;
@@ -138,7 +171,7 @@ export default function AuthContextProvider({ children }) {
             const res = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password, role: "LANDLORD" }),
+                body: JSON.stringify({ username, email, password, role: status }),
             });
             const json = await res.json();
 
@@ -155,16 +188,30 @@ export default function AuthContextProvider({ children }) {
         }
     };
 
-
     const handleLogout = async () => {
         try {
-            const res = await fetch("/api/logout", { method: "POST" });
+            const res = await fetch("/api/logout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ refreshToken, accessToken }),
+            });
+
             if (!res.ok) {
                 toast.error("Błąd podczas wylogowania");
                 return;
             }
-            // czyścimy ciasteczka i stan
-            ["loggedIn", "access_token", "refresh_token", "username", "user_id", "user_roles"].forEach(Cookies.remove);
+
+            await res.json();
+
+            [
+                "loggedIn",
+                "access_token",
+                "refresh_token",
+                "username",
+                "user_id",
+                "user_roles",
+            ].forEach((n) => Cookies.remove(n));
+
             setIsLogged(false);
             setAccessToken(null);
             setRefreshToken(null);
@@ -194,7 +241,7 @@ export default function AuthContextProvider({ children }) {
                 handleLogout,
                 setIsLogged,
                 userRole,
-                userEmail
+                userEmail,
             }}
         >
             {children}

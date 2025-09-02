@@ -1,20 +1,66 @@
 "use client";
-import React, {useContext, useEffect, useState} from 'react';
-import {StateContext} from "@/context/StateContext";
-import {AuthContext} from "@/context/AuthContext";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { StateContext } from "@/context/StateContext";
+import { AuthContext } from "@/context/AuthContext";
 import DashboardElement from "@/components/DashboardElement";
-import {RenderIcon} from "@/components/RenderIcon";
-import {icons} from "@/src/icons";
+import { RenderIcon } from "@/components/RenderIcon";
+import { icons } from "@/src/icons";
 import useFetch from "@/hooks/useFetch";
-import {AnimatePresence, motion} from "framer-motion";
-import {useRouter} from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import AddEditOffer from "@/components/AddEditOffer";
-import {deleteOffer} from "@/lib/offers/deleteOffer";
+import { deleteOffer } from "@/lib/offers/deleteOffer";
 import Debugger from "@/components/Debugger";
+import { toast } from "react-hot-toast";
 
-export default function DashboardOfferView({id}) {
+function hueFromString(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+        h = (h * 31 + str.charCodeAt(i)) % 360;
+    }
+    return h;
+}
 
-    const {accessToken} = useContext(AuthContext);
+function AssignedUserCard({ userId }) {
+    const hue = useMemo(() => hueFromString(userId || "0"), [userId]);
+    const bg = `linear-gradient(135deg, hsl(${hue},70%,55%), hsl(${(hue + 40) % 360},70%,45%))`;
+
+    const copy = async () => {
+        try {
+            await navigator.clipboard.writeText(userId);
+            toast.success("Skopiowano ID użytkownika");
+        } catch {
+            toast.error("Nie udało się skopiować");
+        }
+    };
+
+    return (
+        <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+                <div className="min-w-0">
+                    <div className="text-sm text-gray-600">Ta oferta ma przypisanego użytkownika</div>
+                    <div className="font-mono text-sm truncate">{userId}</div>
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+        <span className="rounded-full bg-emerald-100 text-emerald-700 text-xs px-2 py-1">
+          zaakceptowana
+        </span>
+                <button
+                    onClick={copy}
+                    className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+                    type="button"
+                >
+                    Kopiuj ID
+                </button>
+            </div>
+        </div>
+    );
+}
+// -----------------------------------------------------------------------------
+
+export default function DashboardOfferView({ id }) {
+    const { accessToken } = useContext(AuthContext);
     const [offerData, setOfferData] = useState([
         {
             label: "Miesięczny czynsz",
@@ -23,7 +69,6 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "monthlyRent",
             inputFiledType: "input",
-
         },
         {
             label: "Kaucja",
@@ -32,7 +77,6 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "deposit",
             inputFiledType: "input",
-
         },
         {
             label: "Opłaty dodatkowe",
@@ -41,7 +85,6 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "utilitiesCost",
             inputFiledType: "input",
-
         },
         {
             label: "Czy opłaty są wliczone w czynsz?",
@@ -50,8 +93,8 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "utilitiesIncluded",
             selectOptions: [
-                {label: "Tak", value: true},
-                {label: "Nie", value: false},
+                { label: "Tak", value: true },
+                { label: "Nie", value: false },
             ],
             inputFiledType: "select",
         },
@@ -78,8 +121,8 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "shortTermRental",
             selectOptions: [
-                {label: "Tak", value: true},
-                {label: "Nie", value: false},
+                { label: "Tak", value: true },
+                { label: "Nie", value: false },
             ],
             inputFiledType: "select",
         },
@@ -90,8 +133,8 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "furnishingStatus",
             selectOptions: [
-                {label: "FURNISHED", value: "FURNISHED"},
-                {label: "UNFURNISHED", value: "UNFURNISHED"},
+                { label: "FURNISHED", value: "FURNISHED" },
+                { label: "UNFURNISHED", value: "UNFURNISHED" },
             ],
             inputFiledType: "select",
         },
@@ -102,9 +145,9 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "preferredEmploymentStatus",
             selectOptions: [
-                {label: "Pracujący", value: "EMPLOYED"},
-                {label: "Studencki", value: "STUDENT"},
-                {label: "Inny", value: "ANY"},
+                { label: "Pracujący", value: "EMPLOYED" },
+                { label: "Studencki", value: "STUDENT" },
+                { label: "Inny", value: "ANY" },
             ],
             inputFiledType: "select",
         },
@@ -115,8 +158,8 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "smokingPolicy",
             selectOptions: [
-                {label: "Tak", value: "YES"},
-                {label: "Nie", value: "NO"},
+                { label: "Tak", value: "YES" },
+                { label: "Nie", value: "NO" },
             ],
             inputFiledType: "select",
         },
@@ -127,11 +170,10 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "petPolicy",
             selectOptions: [
-                {label: "Tak", value: "YES"},
-                {label: "Nie", value: "NO"},
+                { label: "Tak", value: "YES" },
+                { label: "Nie", value: "NO" },
             ],
             inputFiledType: "select",
-
         },
         {
             label: "Czy dostępne dla osób niepełnosprawnych?",
@@ -140,21 +182,21 @@ export default function DashboardOfferView({id}) {
             value: "",
             name: "accessibleForDisabled",
             selectOptions: [
-                {label: "Tak", value: true},
-                {label: "Nie", value: false},
+                { label: "Tak", value: true },
+                { label: "Nie", value: false },
             ],
             inputFiledType: "select",
         },
-
     ]);
-    const [initialState, setInitialState] = useState({})
-    const {
-        data,
-        loading,
-        error
-    } = useFetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/rental-offers/`, accessToken, 'POST', {id: id});
-    const {transactions} = useContext(StateContext)
-    const [formData, setFormData] = useState({})
+    const [initialState, setInitialState] = useState({});
+    const { data, loading, error } = useFetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/rental-offers/`,
+        accessToken,
+        "POST",
+        { id: id }
+    );
+    const { transactions } = useContext(StateContext);
+    const [formData, setFormData] = useState({});
     const [showAlert, setShowAlert] = useState(false);
     const router = useRouter();
 
@@ -162,26 +204,22 @@ export default function DashboardOfferView({id}) {
         try {
             const x = await deleteOffer(id, accessToken);
             router.push(`/dashboard/rental-offers`);
-
         } catch (err) {
             console.error("Błąd podczas usuwania apartamentu: ", err);
         }
     };
 
     function getValueFromData(data, name) {
-        // jeśli klucz istnieje (nawet gdy jest false), zwróć jego wartość
         if (Object.prototype.hasOwnProperty.call(data, name)) {
             return data[name];
         }
-        // w przeciwnym razie zostaw wartość domyślną (np. pusty string)
-        return '';
+        return "";
     }
-
 
     useEffect(() => {
         if (data && !loading && !error) {
             const offer = data.offer;
-            const formFields = offerData.map(field => {
+            const formFields = offerData.map((field) => {
                 return {
                     ...field,
                     value: getValueFromData(offer, field.name),
@@ -191,12 +229,13 @@ export default function DashboardOfferView({id}) {
             setInitialState({
                 formFields: formFields,
                 offerId: data.offer.id,
-                transactions: transactions.filter(transaction => transaction.offerId === data.offer.id)
+                transactions: transactions.filter(
+                    (transaction) => transaction.offerId === data.offer.id
+                ),
             });
 
-            // Initialize formData with the values from initialState.formFields
             const initialFormData = {};
-            formFields.forEach(field => {
+            formFields.forEach((field) => {
                 initialFormData[field.name] = field.value;
             });
             setFormData(initialFormData);
@@ -205,79 +244,61 @@ export default function DashboardOfferView({id}) {
             setInitialState({
                 formFields: [],
                 offerId: null,
-                transactions: []
+                transactions: [],
             });
             setFormData({});
         }
     }, [data, loading, error]);
 
-
     if (loading) return null;
 
-    if (error) return (
-        <div className="text-red-500 text-center mt-4">
-            <p>{error}</p>
-            <pre>
-                <code className="text-sm text-gray-800">
-                    {JSON.stringify(error, null, 2)}
-                </code>
-            </pre>
-
-        </div>
-    )
-
+    if (error)
+        return (
+            <div className="text-red-500 text-center mt-4">
+                <p>{error}</p>
+                <pre>
+          <code className="text-sm text-gray-800">{JSON.stringify(error, null, 2)}</code>
+        </pre>
+            </div>
+        );
 
     return (
         <>
-            {
-            }
-
             <AnimatePresence>
-                {
-                    showAlert && (
-                        <motion.div
-                            className="fixed top-0 left-0 bottom-0 right-0 bg-red-500/90 backdrop-blur-[2px] bg-opacity-50 flex items-center justify-center z-[9999]"
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}
-                            exit={{opacity: 0}}
-                        >
-                            <DashboardElement>
-                                <div className={"min-w-[34.375rem] flex items-center justify-center flex-col gap-3"}>
-                                    <h3>Czy na pewno usunąć ofertę?</h3>
-                                    <p>Wybrano oferte o Id: {id}</p>
-                                    <div className={"flex flex-col gap-2 "}>
-
-
+                {showAlert && (
+                    <motion.div
+                        className="fixed top-0 left-0 bottom-0 right-0 bg-red-500/90 backdrop-blur-[2px] bg-opacity-50 flex items-center justify-center z-[9999]"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <DashboardElement>
+                            <div className={"min-w-[34.375rem] flex items-center justify-center flex-col gap-3"}>
+                                <h3>Czy na pewno usunąć ofertę?</h3>
+                                <p>Wybrano oferte o Id: {id}</p>
+                                <div className={"flex flex-col gap-2 "}>
                                     <button
                                         className={"bg-red-500 text-white px-6 py-4 rounded-xl hover:bg-red-600 transition-colors"}
-
                                         onClick={() => handleDelete(id, accessToken)}
-                                        >
-                                            Tak, chce usunąć ofertę
-                                        </button>
-                                        <button
-                                            className={"bg-gray-200 text-gray-800 px-6 py-4 rounded-xl hover:bg-gray-300 transition-colors"}
-                                            onClick={() => setShowAlert(false)}
-                                        >
-                                            Anuluj
-                                        </button>
-                                    </div>
-
+                                    >
+                                        Tak, chce usunąć ofertę
+                                    </button>
+                                    <button
+                                        className={"bg-gray-200 text-gray-800 px-6 py-4 rounded-xl hover:bg-gray-300 transition-colors"}
+                                        onClick={() => setShowAlert(false)}
+                                    >
+                                        Anuluj
+                                    </button>
                                 </div>
-
-                            </DashboardElement>
-                        </motion.div>
-                    )
-                }
+                            </div>
+                        </DashboardElement>
+                    </motion.div>
+                )}
             </AnimatePresence>
 
             <div className={"bg-transparent py-[24px]"}>
-                <h1 className="text-[20px] font-semibold text-center">
-                    Podgląd oferty
-                </h1>
-                <p className="text-center text-gray-600 text-[11px] font-semibold">
-                    ID: {data.offer.id}
-                </p>
+                <h1 className="text-[20px] font-semibold text-center">Podgląd oferty</h1>
+                <p className="text-center text-gray-600 text-[11px] font-semibold">ID: {data.offer.id}</p>
             </div>
 
             <DashboardElement>
@@ -285,46 +306,45 @@ export default function DashboardOfferView({id}) {
                     <div>
                         <div className={"flex items-center gap-3"}>
                             <div className={"bg-gray-100 px-4 py-1 rounded-lg group"}>
-                                <span className={"text-[12px] font-semibold text-gray-600 "}>
-                                    #00{id}
-                                </span>
+                                <span className={"text-[12px] font-semibold text-gray-600 "}>#00{id}</span>
                             </div>
                             <h3>
-                                <span className={"font-[500] text-gray"}>{data.offer.apartment.streetName}, {data.offer.apartment.buildingNumber}</span>
+                <span className={"font-[500] text-gray"}>
+                  {data.offer.apartment.streetName}, {data.offer.apartment.buildingNumber}
+                </span>
                             </h3>
                         </div>
                     </div>
                     <div>
                         <div className="flex gap-6 items-center">
-                            <button className="flex items-center gap-3 cursor-pointer"
-                                    onClick={() => console.log("Settings")}>
-                                <RenderIcon icon={icons.edit} className={"h-[24px]"}/>
-                                <span className={"text-[14px] font-semibold mt-1"}>Ustawienia</span>
-                            </button>
-                            <button className="flex items-center gap-3 cursor-pointer"
-                                    onClick={
-                                        () => {
-                                            setShowAlert(true);
-                                        }
-                                    }
+                            <button
+                                className="flex items-center gap-3 cursor-pointer"
+                                onClick={() => {
+                                    setShowAlert(true);
+                                }}
                             >
-                                <RenderIcon icon={icons.remove} className={"h-[24px]"}/>
+                                <RenderIcon icon={icons.remove} className={"h-[24px]"} />
                                 <span className={"text-[14px] font-semibold mt-1 text-red-500"}>Usuń</span>
                             </button>
                         </div>
                     </div>
                 </div>
-
-
             </DashboardElement>
 
-            {
-                initialState.formFields && (
-                    <AddEditOffer type={"edit"} body={initialState.formFields} offerId={initialState.offerId} dataOfferApartmentId={data.offer.apartment.id}/>
+            {data.offer.rentierId && (
+                <DashboardElement>
+                    <AssignedUserCard userId={data.offer.rentierId} />
+                </DashboardElement>
+            )}
 
-                )
-            }
-
+            {initialState.formFields && (
+                <AddEditOffer
+                    type={"edit"}
+                    body={initialState.formFields}
+                    offerId={initialState.offerId}
+                    dataOfferApartmentId={data.offer.apartment.id}
+                />
+            )}
         </>
     );
 }

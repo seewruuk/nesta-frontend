@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useContext, useState } from "react";
 import { StateContext } from "@/context/StateContext";
 import { AuthContext } from "@/context/AuthContext";
 import DashboardElement from "@/components/DashboardElement";
@@ -173,9 +173,7 @@ function ActionBar({ apartmentId, onAskDelete }) {
     return (
         <DashboardElement>
             <div className="flex gap-3 justify-between items-center">
-                <div>
-                    {/* Placeholder na tytuł / adres — nadrabiamy w wyższym komponencie */}
-                </div>
+                <div>{/* Placeholder na tytuł / adres — nadrabiamy w wyższym komponencie */}</div>
                 <div className="flex gap-6 items-center">
                     <button className="flex items-center gap-3 cursor-pointer" onClick={() => console.log("Settings")}>
                         <RenderIcon icon={icons.edit} className="h-[24px]" />
@@ -197,10 +195,6 @@ function ActionBar({ apartmentId, onAskDelete }) {
     );
 }
 
-/* =========================
-   Główny komponent
-   ========================= */
-
 export default function DashboardApartmentView({ id }) {
     const router = useRouter();
     const { accessToken } = useContext(AuthContext);
@@ -217,8 +211,8 @@ export default function DashboardApartmentView({ id }) {
 
     const apartment = data?.apartment;
 
-    // Pochodne dane liczone raz, kiedy 'data' lub 'transactions' się zmienią
-    const memo = useMemo(() => {
+    // Pochodne dane liczone na bieżąco (bez useMemo)
+    const derived = (() => {
         if (!apartment) {
             return {
                 formFields: [],
@@ -240,9 +234,7 @@ export default function DashboardApartmentView({ id }) {
         }, {});
 
         const heroUrl = getHeroImageUrl(apartment.images ?? []);
-        const filteredTx = (transactions ?? []).filter(
-            (t) => t?.apartmentId === apartment.id
-        );
+        const filteredTx = (transactions ?? []).filter((t) => t?.apartmentId === apartment.id);
 
         return {
             formFields,
@@ -251,20 +243,18 @@ export default function DashboardApartmentView({ id }) {
             filteredTx,
             initialFormData,
         };
-    }, [apartment, transactions]);
+    })();
 
-    const handleDelete = useCallback(
-        async (appId) => {
-            try {
-                await deleteApartment(appId, accessToken);
-                router.push(`/dashboard/apartments`);
-            } catch (err) {
-                console.error("Błąd podczas usuwania apartamentu: ", err);
-                alert(`Błąd podczas usuwania apartamentu: ${err}`);
-            }
-        },
-        [router, accessToken]
-    );
+    // Zwykła funkcja zamiast useCallback
+    async function handleDelete(appId) {
+        try {
+            await deleteApartment(appId, accessToken);
+            router.push(`/dashboard/apartments`);
+        } catch (err) {
+            console.error("Błąd podczas usuwania apartamentu: ", err);
+            alert(`Błąd podczas usuwania apartamentu: ${err}`);
+        }
+    }
 
     if (loading) return null;
 
@@ -273,9 +263,7 @@ export default function DashboardApartmentView({ id }) {
             <div className="text-red-500 text-center mt-4">
                 <p>{String(error)}</p>
                 <pre>
-          <code className="text-sm text-gray-800">
-            {JSON.stringify(error, null, 2)}
-          </code>
+          <code className="text-sm text-gray-800">{JSON.stringify(error, null, 2)}</code>
         </pre>
             </div>
         );
@@ -285,6 +273,7 @@ export default function DashboardApartmentView({ id }) {
 
     return (
         <>
+            {<Debugger data={{ apartment }} />}
 
             <ConfirmDeleteModal
                 open={showAlert}
@@ -293,7 +282,7 @@ export default function DashboardApartmentView({ id }) {
                 onClose={() => setShowAlert(false)}
             />
 
-            <ApartmentHero id={apartment.id} imageUrl={memo.heroUrl} />
+            <ApartmentHero id={apartment.id} imageUrl={derived.heroUrl} />
 
             <DashboardElement>
                 <div className="flex gap-3 justify-between items-center">
@@ -307,27 +296,14 @@ export default function DashboardApartmentView({ id }) {
                     </div>
                     <div className="hidden md:block">
                         <div className="flex gap-6 items-center">
-                            <button className="flex items-center gap-3 cursor-pointer" onClick={() => console.log("Settings")}>
-                                <RenderIcon icon={icons.edit} className="h-[24px]" />
-                                <span className="text-[14px] font-semibold mt-1">Zmień zdję</span>
-                            </button>
-
-                            <Link
-                                href={`/dashboard/apartments/${apartment.id}/images`}
-                                className="flex items-center gap-3 cursor-pointer"
-                            >
+                            <Link href={`/dashboard/apartments/${apartment.id}/images`} className="flex items-center gap-3 cursor-pointer">
                                 <RenderIcon icon={icons.images} className="h-[24px]" />
                                 <span className="text-[14px] font-semibold mt-1">Zdjęcia</span>
                             </Link>
 
-                            <button
-                                className="flex items-center gap-3 cursor-pointer"
-                                onClick={() => setShowAlert(true)}
-                            >
+                            <button className="flex items-center gap-3 cursor-pointer" onClick={() => setShowAlert(true)}>
                                 <RenderIcon icon={icons.remove} className="h-[24px]" />
-                                <span className="text-[14px] font-semibold mt-1 text-red-500">
-                  Usuń
-                </span>
+                                <span className="text-[14px] font-semibold mt-1 text-red-500">Usuń</span>
                             </button>
                         </div>
                     </div>
@@ -339,9 +315,9 @@ export default function DashboardApartmentView({ id }) {
                 <ActionBar apartmentId={apartment.id} onAskDelete={() => setShowAlert(true)} />
             </div>
 
-            {/* Edycja pól (zostawiam AddEditApartment jak w oryginale, ale z już policzonym body/appId) */}
-            {memo.formFields?.length > 0 && (
-                <AddEditApartment type="edit" body={memo.formFields} appId={memo.apartmentId} />
+            {/* Edycja pól */}
+            {derived.formFields?.length > 0 && (
+                <AddEditApartment type="edit" body={derived.formFields} appId={derived.apartmentId} />
             )}
         </>
     );

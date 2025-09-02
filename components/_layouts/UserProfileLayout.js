@@ -9,34 +9,6 @@ import Button from "@/components/Button";
 
 export default function UserProfileLayout({slug}) {
 
-    const reviews = [
-        {
-            name: "Kacper Sewruk",
-            text: "Interdum et malesu they adamale fames ac anteipsu pimsine faucibus curabitur arcu site feugiat in tortor in, volutpat sollicitudin libero. Hotel non lorem acer suscipit bibendum vulla facilisi nedeuter nunc volutpa mollis sapien velet conseyer turpeutionyer masin libero sempe mollis.",
-            rating: 4.3,
-            date: "2023-10-01"
-        },
-        {
-            name: "Kacper Sewruk",
-            text: "Interdum et malesu they adamale fames ac anteipsu pimsine faucibus curabitur arcu site feugiat in tortor in, volutpat sollicitudin libero. Hotel non lorem acer suscipit bibendum vulla facilisi nedeuter nunc volutpa mollis sapien velet conseyer turpeutionyer masin libero sempe mollis.",
-            rating: 4.3,
-            date: "2023-10-01"
-        },
-        {
-            name: "Kacper Sewruk",
-            text: "Interdum et malesu they adamale fames ac anteipsu pimsine faucibus curabitur arcu site feugiat in tortor in, volutpat sollicitudin libero. Hotel non lorem acer suscipit bibendum vulla facilisi nedeuter nunc volutpa mollis sapien velet conseyer turpeutionyer masin libero sempe mollis.",
-            rating: 4.3,
-            date: "2023-10-01"
-        },
-        {
-            name: "Kacper Sewruk",
-            text: "Interdum et malesu they adamale fames ac anteipsu pimsine faucibus curabitur arcu site feugiat in tortor in, volutpat sollicitudin libero. Hotel non lorem acer suscipit bibendum vulla facilisi nedeuter nunc volutpa mollis sapien velet conseyer turpeutionyer masin libero sempe mollis.",
-            rating: 4.3,
-            date: "2023-10-01"
-        },
-    ]
-
-
     return (
         <PageTransition>
             <Layout>
