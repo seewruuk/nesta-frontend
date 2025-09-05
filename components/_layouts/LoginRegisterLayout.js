@@ -86,12 +86,12 @@ const LoginComponent = () => {
                         setForm((prev) => ({ ...prev, password: e.target.value }))
                     }
                 />
-                <div className="flex justify-between text-[9px] text-[#494949]">
-                    <p>Nie pamiętasz hasła?</p>
-                    <Link href="/forgot-password" className="underline">
-                        Przypomnij hasło
-                    </Link>
-                </div>
+                {/*<div className="flex justify-between text-[9px] text-[#494949]">*/}
+                {/*    <p>Nie pamiętasz hasła?</p>*/}
+                {/*    <Link href="/forgot-password" className="underline">*/}
+                {/*        Przypomnij hasło*/}
+                {/*    </Link>*/}
+                {/*</div>*/}
             </div>
 
             <div className="text-[11px] text-[#494949]">
@@ -188,7 +188,6 @@ const RegisterComponent = () => {
 };
 
 const ForgotPasswordComponent = () => {
-    // tu możesz dodać swój handleForgotPassword
     return (
         <div className="p-[42px] rounded-[24px] bg-white min-w-[450px] text-center flex flex-col gap-[22px]">
             <h2 className="text-black text-[21px] font-bold">Zresetuj hasło</h2>

@@ -26,7 +26,6 @@ export default function LocationDistrictFilter({
     const onLocationChange = (val) => {
         setFilters((prev) => {
             const next = { ...prev, location: val };
-            // Jeśli użytkownik zmienił miasto, zresetuj dzielnicę
             if (district && selectedCity && !val.toLowerCase().startsWith(selectedCity.toLowerCase())) {
                 next.district = "";
             }

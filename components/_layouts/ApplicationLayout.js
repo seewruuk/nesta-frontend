@@ -6,12 +6,10 @@ import Image from "next/image";
 import formatDate from "@/lib/formatDate";
 import Button from "@/components/Button";
 import StatusLabel from "@/components/StatusLabel";
-import Debugger from "@/components/Debugger";
 import {toast} from "react-hot-toast";
 import {AnimatePresence, motion} from "framer-motion";
 import {useRouter} from "next/navigation";
 
-/** ===================== Pomocnicze komponenty ===================== **/
 function InfoBanner({tone = "info", children, className = ""}) {
     const toneClasses = {
         info: "bg-blue-50 border-blue-200 text-blue-800",
@@ -27,18 +25,15 @@ function StatusBlock({title, status, decidedAt, reason}) {
     if (!status || status === "PENDING") return null;
     const isApproved = status === "APPROVED";
     const tone = isApproved ? "ok" : "error";
-    return (
-        <InfoBanner tone={tone} className="mb-4">
+    return (<InfoBanner tone={tone} className="mb-4">
             <div className="font-medium">{title} <span className="capitalize">{status?.toLowerCase()}</span></div>
             {reason && <div className="mt-2 text-sm text-gray-700">Powód: {reason}</div>}
             {decidedAt && <div className="mt-1 text-xs text-gray-500">{formatDate(decidedAt, "absolute")}</div>}
-        </InfoBanner>
-    );
+        </InfoBanner>);
 }
 
 function DecisionActions({onApprove, onReject}) {
-    return (
-        <div className="flex gap-2 mt-4">
+    return (<div className="flex gap-2 mt-4">
             <Button type="button" title="Akceptuj" style="primary" onClick={() => onApprove()}/>
             <Button
                 type="button"
@@ -49,8 +44,7 @@ function DecisionActions({onApprove, onReject}) {
                     onReject(msg);
                 }}
             />
-        </div>
-    );
+        </div>);
 }
 
 function RescheduleModal({open, onClose, onConfirm}) {
@@ -62,11 +56,9 @@ function RescheduleModal({open, onClose, onConfirm}) {
             setTime("");
         }
     }, [open]);
-    return (
-        <AnimatePresence>
-            {open && (
-                <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}
-                            className="fixed inset-0 z-50 grid place-items-center">
+    return (<AnimatePresence>
+            {open && (<motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}
+                                  className="fixed inset-0 z-50 grid place-items-center">
                     <div className="absolute inset-0 bg-primary opacity-90"/>
                     <div className="relative z-10 p-8 rounded-3xl bg-white w-full max-w-md">
                         <div className="flex flex-col gap-4">
@@ -84,10 +76,8 @@ function RescheduleModal({open, onClose, onConfirm}) {
                             </div>
                         </div>
                     </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
+                </motion.div>)}
+        </AnimatePresence>);
 }
 
 export default function ApplicationLayout({applicationId}) {
@@ -138,7 +128,6 @@ export default function ApplicationLayout({applicationId}) {
     const decisionReason = isLandlord ? applicationDetails?.landlordDecisionReason : applicationDetails?.rentierDecisionReason;
     const landlordStatus = applicationDetails?.landlordStatus;
 
-    // ✅ Naprawione: stringify body + obsługa 204
     const handleDecide = async (status, message) => {
         if (!accessToken) {
             toast.error("Brak dostępu. Zaloguj się ponownie.");
@@ -171,7 +160,7 @@ export default function ApplicationLayout({applicationId}) {
 
             const ct = res.headers.get("content-type") || "";
             if (ct.includes("application/json")) {
-                await res.json(); // opcjonalnie
+                await res.json();
             }
 
             toast.success("Decyzja zapisana.");
@@ -223,13 +212,8 @@ export default function ApplicationLayout({applicationId}) {
         try {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
             const res = await fetch(`${baseUrl}/api/moveinapplications/set-decision`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    accessToken,
-                    applicationId,
-                    status: "CANCELLED",
-                    message: "Najemca anulował aplikację",
+                method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({
+                    accessToken, applicationId, status: "CANCELLED", message: "Najemca anulował aplikację",
                 }),
             });
 
@@ -256,13 +240,8 @@ export default function ApplicationLayout({applicationId}) {
         try {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
             const res = await fetch(`${baseUrl}/api/moveinapplications/set-decision`, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    accessToken,
-                    applicationId,
-                    status: "APPROVED",
-                    message: "Rentier zaakceptował aplikację",
+                method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({
+                    accessToken, applicationId, status: "APPROVED", message: "Rentier zaakceptował aplikację",
                 }),
             });
 
@@ -287,15 +266,12 @@ export default function ApplicationLayout({applicationId}) {
     if (!loaded) return null;
 
     if (!applicationDetails) {
-        return (
-            <DashboardElement>
+        return (<DashboardElement>
                 <InfoBanner tone="neutral">Nie znaleziono szczegółów tej aplikacji.</InfoBanner>
-            </DashboardElement>
-        );
+            </DashboardElement>);
     }
 
-    return (
-        <>
+    return (<>
             <RescheduleModal open={showPopUp} onClose={() => setShowPopUp(false)} onConfirm={handleReschedule}/>
 
             <DashboardElement>
@@ -309,10 +285,8 @@ export default function ApplicationLayout({applicationId}) {
                             fill
                             className="object-cover"
                         />
-                        {applicationDetails.online && (
-                            <span
-                                className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-white"/>
-                        )}
+                        {applicationDetails.online && (<span
+                                className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-white"/>)}
                     </div>
 
                     <div>
@@ -327,55 +301,42 @@ export default function ApplicationLayout({applicationId}) {
                     </div>
                 </div>
 
-                {applicationDetails.viewingDateTime && (
-                    <InfoBanner tone="warn" className="mb-4">
+                {applicationDetails.viewingDateTime && (<InfoBanner tone="warn" className="mb-4">
                         Zaproponowany termin wizyty:{" "}
                         <span
                             className="font-semibold">{formatDate(applicationDetails.viewingDateTime, "absolute")}</span>
-                    </InfoBanner>
-                )}
+                    </InfoBanner>)}
 
                 <StatusBlock title={isLandlord ? "Twój ruch:" : "Twoja decyzja:"} status={myStatus}
                              decidedAt={decidedAt} reason={decisionReason}/>
 
-                {otherStatus && (
-                    <InfoBanner tone="neutral" className="mb-4">
-                        {isLandlord
-                            ? `Status najemcy: ${otherStatus.toLowerCase()}`
-                            : `Decyzja właściciela: ${otherStatus.toLowerCase()}`}
-                    </InfoBanner>
-                )}
+                {otherStatus && (<InfoBanner tone="neutral" className="mb-4">
+                        {isLandlord ? `Status najemcy: ${otherStatus.toLowerCase()}` : `Decyzja właściciela: ${otherStatus.toLowerCase()}`}
+                    </InfoBanner>)}
 
                 {applicationDetails.viewingDateTime && landlordStatus === "REJECTED" && !isLandlord && (
                     <InfoBanner tone="error" className="mb-4">
                         Twoja aplikacja została odrzucona. Skontaktuj się z właścicielem w celu ustalenia nowego terminu
                         oględzin.
-                    </InfoBanner>
-                )}
+                    </InfoBanner>)}
 
-                {applicationDetails.rentierStatus === "CANCELLED" && (
-                    <InfoBanner tone="error" className="mb-4">
+                {applicationDetails.rentierStatus === "CANCELLED" && (<InfoBanner tone="error" className="mb-4">
                         {isLandlord ? "Najemca anulował aplikację." : "Anulowałeś swoją aplikację."}
-                    </InfoBanner>
-                )}
+                    </InfoBanner>)}
 
-                {myStatus === "PENDING" && isLandlord && (
-                    <DecisionActions
+                {myStatus === "PENDING" && isLandlord && (<DecisionActions
                         onApprove={() => handleDecide("APPROVED", "Mam nadzieję, że mieszkanie się spodoba!")}
                         onReject={(msg) => handleDecide("REJECTED", msg)}
-                    />
-                )}
+                    />)}
 
                 {myStatus === "PENDING" && landlordStatus === "PENDING" && !isLandlord && (
                     <div className="flex flex-col gap-2">
                         <Button type="button" title="Zaproponuj nowy termin" style="primary"
                                 onClick={() => setShowPopUp(true)}/>
                         <Button type="button" title="Anuluj aplikację" style="black" onClick={handleCancelApplication}/>
-                    </div>
-                )}
+                    </div>)}
 
-                {landlordStatus === "APPROVED" && myStatus === "PENDING" && !isLandlord && (
-                    <>
+                {landlordStatus === "APPROVED" && myStatus === "PENDING" && !isLandlord && (<>
                         <InfoBanner tone="ok">
                             Właściciel zaakceptował Twoją aplikację! Zaakceptuj jego decyzję, aby dokończyć proces.
                         </InfoBanner>
@@ -384,9 +345,7 @@ export default function ApplicationLayout({applicationId}) {
                                     style={"primary"}/>
                         </div>
 
-                    </>
-                )}
+                    </>)}
             </DashboardElement>
-        </>
-    );
+        </>);
 }

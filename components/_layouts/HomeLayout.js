@@ -6,12 +6,9 @@ import ImageTwo from "@/public/images/home/image-2.jpg"
 import Icon from "@/public/message.svg"
 import SearchApartments from "@/components/SearchApartments";
 import PageTransition from "@/components/PageTransition";
-import Button from "@/components/Button";
-
 
 export default function HomeLayout() {
-    return (
-        <PageTransition>
+    return (<PageTransition>
             <Layout>
                 <div className={"pt-[120px] flex min-h-[88dvh] text-black"}>
                     <div className={"flex-1 flex flex-col justify-center gap-5 items-start"}>
