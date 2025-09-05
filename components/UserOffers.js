@@ -96,7 +96,7 @@ function OfferCardSkeleton() {
     </div>);
 }
 
-export default function UserOffers({limit = null}) {
+export default function UserOffers({limit = null, label = true}) {
     const [offers, setOffers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -151,12 +151,16 @@ export default function UserOffers({limit = null}) {
 
     return (<>
         <div className="">
+            {label && myOffers && myOffers.length > 0 ? (
+                <label className={"text-gray-500 text-[14px] font-semibold mb-2 block"}>
+                    Twoje oferty wynajmów
+                </label>) : null}
             {isLoading ? (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
                 {Array.from({length: 6}).map((_, i) => <OfferCardSkeleton key={i}/>)}
             </div>) : myOffers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
                     {myOffers.map((item) => (<OfferCard key={item.id} item={item}/>))}
-                </div>) : (<p className="text-gray-500">Brak ofert do wyświetlenia.</p>)}
+                </div>) : null}
         </div>
     </>);
 }

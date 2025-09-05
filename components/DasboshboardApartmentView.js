@@ -273,7 +273,6 @@ export default function DashboardApartmentView({ id }) {
 
     return (
         <>
-            {<Debugger data={{ apartment }} />}
 
             <ConfirmDeleteModal
                 open={showAlert}
