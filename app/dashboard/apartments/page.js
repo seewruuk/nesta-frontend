@@ -3,8 +3,7 @@ import DashboardElement from "@/components/DashboardElement";
 import UserApartments from "@/components/UserApartments";
 
 export default function Page() {
-    return (
-        <>
+    return (<>
 
             <DashboardElement>
                 <div className="flex flex-col items-center justify-center h-full">
@@ -16,7 +15,7 @@ export default function Page() {
             <DashboardElement>
                 <div>
                     <h3 className={"mb-[15px]"}>Twoje mieszkania</h3>
-                    <UserApartments />
+                    <UserApartments/>
                 </div>
             </DashboardElement>
 
@@ -29,6 +28,5 @@ export default function Page() {
                 href="/dashboard/apartments/add"
             />
 
-        </>
-    )
+        </>)
 }

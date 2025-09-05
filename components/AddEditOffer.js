@@ -233,11 +233,9 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
             petPolicy: offerData.find(item => item.name === "petPolicy")?.value,
             accessibleForDisabled: offerData.find(item => item.name === "accessibleForDisabled")?.value,
         }
-        console.log("dataToSend", dataToSend)
 
         try {
             const response = await updateOffer(id, accessToken, dataToSend);
-            console.log("✅ Offer updated successfully:", response);
             toast.success("Oferta została zaktualizowana pomyślnie!");
             router.push(`/dashboard/rental-offers`);
         } catch (err) {

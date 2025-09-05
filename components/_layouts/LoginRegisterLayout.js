@@ -15,6 +15,13 @@ export default function LoginRegisterLayout({ type = "login" }) {
     const { isLogged } = useContext(AuthContext);
     const router = useRouter();
 
+    // ✅ Hook przed możliwymi wczesnymi returnami (naprawa rules-of-hooks)
+    useEffect(() => {
+        if (isLogged) {
+            router.replace("/dashboard");
+        }
+    }, [isLogged, router]);
+
     if (isLogged === null) {
         return (
             <div className="w-screen h-screen flex items-center justify-center">
@@ -22,12 +29,6 @@ export default function LoginRegisterLayout({ type = "login" }) {
             </div>
         );
     }
-
-    useEffect(() => {
-        if (isLogged) {
-            router.replace("/dashboard");
-        }
-    }, [isLogged, router]);
 
     if (isLogged) return null;
 

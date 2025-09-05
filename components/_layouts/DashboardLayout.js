@@ -9,11 +9,18 @@ import {AuthContext} from "@/context/AuthContext";
 import ProfileWidget from "@/components/ProfileWidget";
 
 export default function DashboardLayout({children}) {
-    const {links} = useContext(StateContext)
-    const {handleLogout} = useContext(AuthContext);
+    const {links} = useContext(StateContext);
+    const {handleLogout, isLogged, accessToken} = useContext(AuthContext);
+    if (isLogged === null) {
+        return (<div className="w-screen h-screen grid place-items-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"/>
+            </div>);
+    }
+    if (!isLogged || !accessToken) {
+        return null;
+    }
 
-    return (
-        <>
+    return (<>
             {/* Wrapper pod Navbar: wysokość = viewport - 100px (wysokość Navbara) */}
             <div className="relative flex h-[calc(100vh-100px)] overflow-hidden">
 
@@ -30,18 +37,17 @@ export default function DashboardLayout({children}) {
 
                         <nav className="flex gap-5 flex-col">
                             <div className="text-[16px] font-semibold pb-[32px] uppercase">Nawigacja</div>
-                            {links.map((item, index) => (
-                                <Link
+                            {links.map((item, index) => (<Link
                                     href={item.href}
                                     key={index}
                                     className="flex gap-4 hover:text-primary transition-all items-center"
                                 >
                                     <div className="relative aspect-square h-[32px] grid place-items-center">
-                                        <Image src={item.icon} alt={`${item.name}-${index}`} fill className="object-contain p-1"/>
+                                        <Image src={item.icon} alt={`${item.name}-${index}`} fill
+                                               className="object-contain p-1"/>
                                     </div>
                                     <div>{item.name}</div>
-                                </Link>
-                            ))}
+                                </Link>))}
                         </nav>
                     </div>
 
@@ -62,7 +68,8 @@ export default function DashboardLayout({children}) {
                 </aside>
 
                 {/* Środkowa kolumna (treść) — jedyne miejsce z pionowym scrollowaniem */}
-                <main className="w-4/6 px-[30px] py-[30px] flex flex-col gap-5 relative h-full overflow-y-auto overflow-x-hidden overscroll-contain">
+                <main
+                    className="w-4/6 px-[30px] py-[30px] flex flex-col gap-5 relative h-full overflow-y-auto overflow-x-hidden overscroll-contain">
                     {children}
                 </main>
 
@@ -71,6 +78,5 @@ export default function DashboardLayout({children}) {
                     <ProfileWidget/>
                 </aside>
             </div>
-        </>
-    )
+        </>)
 }

@@ -1,5 +1,6 @@
 "use client";
 import {useState, useEffect} from 'react';
+
 export default function useFetch(url, accessToken = null, method = 'GET', body) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -12,23 +13,20 @@ export default function useFetch(url, accessToken = null, method = 'GET', body) 
 
         async function fetchData() {
             const response = await fetch(url, {
-                method: method,
-                headers: {
+                method: method, headers: {
                     "Content-Type": "application/json",
-                },
-                body: body ? JSON.stringify({
-                    accessToken: accessToken,
-                    ...body
+                }, body: body ? JSON.stringify({
+                    accessToken: accessToken, ...body
                 }) : null,
 
             });
             const responseJson = await response.json();
-            if(responseJson.status === 200){
+            if (responseJson.status === 200) {
                 if (isMounted) {
                     setData(responseJson);
                     setLoading(false);
                 }
-            }else{
+            } else {
                 if (isMounted) {
                     setError(responseJson.message || 'An error occurred');
                     setLoading(false);

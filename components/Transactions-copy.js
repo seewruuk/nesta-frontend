@@ -11,11 +11,8 @@ export default function Transactions({transactions, maxElements = undefined}) {
 
     const {accessToken} = useContext(AuthContext);
 
-    return (
-        <DashboardElement>
-            {
-                sectionHeader("Ostatnie transakcje")
-            }
+    return (<DashboardElement>
+            {sectionHeader("Ostatnie transakcje")}
 
             <div className={"text-[16px] text-black"}>
                 <div className={"flex justify-between gap-4  opacity-[40%] mb-[24px]"}>
@@ -27,24 +24,22 @@ export default function Transactions({transactions, maxElements = undefined}) {
                     <div className={""}></div>
                 </div>
                 <div className={"flex justify-between gap-4 flex-col"}>
-                {
-                        transactions.slice(0, maxElements).map((transaction, index) => {
-                            return (
-                                <div key={index} className={"flex gap-4 items-center"}>
-                                    <div className={"flex-1 font-semibold"}>{transaction.id}</div>
-                                    <div className={"flex-1"}>{transaction.id}</div>
-                                    <div className={"flex-1 justify-items-start"}>{generateTransactionLabel(transaction.status)}</div>
-                                    <div className={"flex-1"}>{transaction.date}</div>
-                                    <div className={"flex-1 font-semibold"}>{transaction.value}</div>
-                                    <button className={"relative h-[21px] aspect-square grid place-items opacity-30 hover:opacity-100 transition-all cursor-pointer"}>
-                                        <Image src={icons.payment} alt={"payment icon"} fill className={"object-contain"} />
-                                    </button>
-                                </div>
-                            )
-                        })
-                    }
+                    {transactions.slice(0, maxElements).map((transaction, index) => {
+                        return (<div key={index} className={"flex gap-4 items-center"}>
+                                <div className={"flex-1 font-semibold"}>{transaction.id}</div>
+                                <div className={"flex-1"}>{transaction.id}</div>
+                                <div
+                                    className={"flex-1 justify-items-start"}>{generateTransactionLabel(transaction.status)}</div>
+                                <div className={"flex-1"}>{transaction.date}</div>
+                                <div className={"flex-1 font-semibold"}>{transaction.value}</div>
+                                <button
+                                    className={"relative h-[21px] aspect-square grid place-items opacity-30 hover:opacity-100 transition-all cursor-pointer"}>
+                                    <Image src={icons.payment} alt={"payment icon"} fill
+                                           className={"object-contain"}/>
+                                </button>
+                            </div>)
+                    })}
                 </div>
             </div>
-        </DashboardElement>
-    )
+        </DashboardElement>)
 }

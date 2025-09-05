@@ -34,11 +34,9 @@ export default function DisplayContextProvider({children}) {
     }, [isMobile]);
 
 
-    return (
-        <DisplayContext.Provider value={{
+    return (<DisplayContext.Provider value={{
             displayVersion,
         }}>
             {children}
-        </DisplayContext.Provider>
-    );
+        </DisplayContext.Provider>);
 }

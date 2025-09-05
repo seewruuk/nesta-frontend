@@ -9,12 +9,10 @@ import UserInvoices from "@/components/UserInvoices";
 export default function Page() {
     const {messages} = useContext(StateContext)
 
-    return (
-            <>
-                <UserOffers limit={3}/>
-                <UserApartments limit={3}/>
-                <UserInvoices />
-                <Messages maxElements={2} messages={messages}/>
-            </>
-    )
+    return (<>
+            <UserOffers limit={3}/>
+            <UserApartments limit={3}/>
+            <UserInvoices/>
+            <Messages maxElements={2} messages={messages}/>
+        </>)
 }

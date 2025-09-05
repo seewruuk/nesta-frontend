@@ -8,8 +8,17 @@ import { UserMoveInApplications } from "@/components/UserMoveInApplcations";
 function Skeleton({ className = "" }) {
     return <div className={`animate-pulse bg-gray-200 rounded ${className}`} />;
 }
-Skeleton.Text = ({ className = "" }) => <Skeleton className={`h-4 ${className}`} />;
-Skeleton.Circle = ({ className = "" }) => <Skeleton className={`rounded-full ${className}`} />;
+function SkeletonText({ className = "" }) {
+    return <Skeleton className={`h-4 ${className}`} />;
+}
+SkeletonText.displayName = "Skeleton.Text";
+Skeleton.Text = SkeletonText;
+
+function SkeletonCircle({ className = "" }) {
+    return <Skeleton className={`rounded-full ${className}`} />;
+}
+SkeletonCircle.displayName = "Skeleton.Circle";
+Skeleton.Circle = SkeletonCircle;
 
 export default function ProfileWidget() {
     const [isClient, setIsClient] = useState(false);

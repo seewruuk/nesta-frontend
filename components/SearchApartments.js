@@ -1,4 +1,3 @@
-// SearchApartments.js
 "use client"
 import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
@@ -9,8 +8,7 @@ export default function SearchApartments() {
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [searchValues, setSearchValues] = useState({
-        location: "",
-        priceRange: 6500,
+        location: "", priceRange: 6500,
     });
 
     useEffect(() => setMounted(true), []);
@@ -23,9 +21,7 @@ export default function SearchApartments() {
         router.push(`/rental-offers?${params.toString()}`);
     };
 
-    return (
-        <div className="flex flex-col">
-            {/*Górna część*/}
+    return (<div className="flex flex-col">
             <div className="-mb-[16px] text-[12px] font-semibold isolate">
                 <button
                     className="pt-[14px] pb-[27px] px-[32px] rounded-lg border border-[#D9D9D9] bg-white cursor-pointer hover:bg-black hover:text-white transition-all">
@@ -38,8 +34,8 @@ export default function SearchApartments() {
                 </button>
             </div>
 
-            {/*Dolna część*/}
-            <div className="bg-white p-[24px] rounded-2xl border border-[#D9D9D9] z-50 flex gap-4 items-center justify-between">
+            <div
+                className="bg-white p-[24px] rounded-2xl border border-[#D9D9D9] z-50 flex gap-4 items-center justify-between">
                 <div>
                     <div className="w-[260px]">
                         <InputField
@@ -77,6 +73,5 @@ export default function SearchApartments() {
                     />
                 </div>
             </div>
-        </div>
-    );
+        </div>);
 }

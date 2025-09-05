@@ -3,8 +3,7 @@ import UserOffers from "@/components/UserOffers";
 import AddApartmentWidget from "@/components/AddApartmentWidget";
 
 export default function Page() {
-    return (
-        <>
+    return (<>
 
             <DashboardElement>
                 <div className="flex flex-col items-center justify-center h-full">
@@ -16,7 +15,7 @@ export default function Page() {
             <DashboardElement>
                 <div>
                     <h3 className={"mb-[15px]"}>Twoje oferty</h3>
-                    <UserOffers />
+                    <UserOffers/>
                 </div>
             </DashboardElement>
 
@@ -30,6 +29,5 @@ export default function Page() {
                 href="/dashboard/rental-offers/add"
             />
 
-        </>
-    )
+        </>)
 }

@@ -6,17 +6,13 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function YourOffers({apartments}) {
-    return (
-        <DashboardElement>
-            {
-                sectionHeader("Twoje oferty")
-            }
+    return (<DashboardElement>
+            {sectionHeader("Twoje oferty")}
             <div className={"flex gap-[15px] overflow-x-scroll"}>
 
 
                 {apartments.map((item, index) => {
-                    return (
-                        <Link
+                    return (<Link
                             href={`/rental-offers/${item.slug}`}
                             key={item + index}
                             className="flex flex-col gap-[12px] items-start max-w-[320px]"
@@ -35,10 +31,8 @@ export default function YourOffers({apartments}) {
                                 </div>
                             </div>
                             <div className={"text-[14px] font-bold"}>3200 PLN / miesiąc</div>
-                        </Link>
-                    )
+                        </Link>)
                 })}
             </div>
-        </DashboardElement>
-    )
+        </DashboardElement>)
 }

@@ -1,8 +1,7 @@
 import DashboardLayout from "@/components/_layouts/DashboardLayout";
 
 export default function layout({children}) {
-    return (
-        <DashboardLayout>
+    return (<DashboardLayout>
             {children}
         </DashboardLayout>
 
@@ -10,6 +9,5 @@ export default function layout({children}) {
 }
 
 export const metadata = {
-    title: 'Dashboard - Nesta',
-    description: 'Zarządzaj swoimi ofertami i kontem na Nesta.',
+    title: 'Dashboard - Nesta', description: 'Zarządzaj swoimi ofertami i kontem na Nesta.',
 }

@@ -1,12 +1,9 @@
-export default function layout({children}){
+export default function layout({children}) {
 
-    return(
-        <>
+    return (<>
             {children}
-        </>
-    )
+        </>)
 }
-
 
 
 export const metadata = {

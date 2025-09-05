@@ -325,13 +325,6 @@ export default function SingleApartmentLayout({id}) {
                 });
 
                 const data = await response.json();
-                console.log(data)
-
-                // if (data?.status === 401) {
-                //     toast.error("Brak dostępu. Proszę się zalogować ponownie.");
-                //     handleLogout();
-                //     return;
-                // }
 
                 const offer = data?.offer;
                 setApartmentData(offer ?? null);

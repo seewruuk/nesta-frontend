@@ -1,16 +1,13 @@
 import AddInvoice from "@/components/AddInvoice";
 
-export default function Page(){
+export default function Page() {
 
-    return(
-        <>
-            <AddInvoice />
-        </>
-    )
+    return (<>
+            <AddInvoice/>
+        </>)
 }
 
 
 export const metadata = {
-    title: "Dodaj fakture",
-    description: "Dodaj nową fakture do systemu",
+    title: "Dodaj fakture", description: "Dodaj nową fakture do systemu",
 }

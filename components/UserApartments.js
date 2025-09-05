@@ -1,14 +1,9 @@
 "use client";
-
 import React, {useContext, useEffect, useState} from "react";
 import {AuthContext} from "@/context/AuthContext";
 import Link from "next/link";
-import Debugger from "@/components/Debugger";
 import Image from "next/image";
 
-/** ————————————————————————————————————————————
- *  Utilities
- *  ———————————————————————————————————————————— */
 const firstImageUrl = (item) => {
     const imgs = item?.images;
     const fallback = "/default-image.jpg";
@@ -17,12 +12,10 @@ const firstImageUrl = (item) => {
 
     const first = imgs[0];
 
-    // Wariant: tablica stringów (pełne URL-e)
     if (typeof first === "string" && first.trim() !== "") {
         return first;
     }
 
-    // Wariant: tablica obiektów — preferuj publicUrl; alternatywnie url
     if (first && typeof first === "object") {
         if (first.publicUrl) {
             const base = process.env.NEXT_PUBLIC_API_URL || "";
@@ -38,58 +31,56 @@ const firstImageUrl = (item) => {
 
 const fmt = (v, fallback = "—") => (v === 0 ? "0" : v ? String(v) : fallback);
 
-/** ————————————————————————————————————————————
- *  Minimalny, wspólny Skeleton
- *  ———————————————————————————————————————————— */
 function Skeleton({className = ""}) {
     return <div className={`animate-pulse bg-gray-200 rounded ${className}`}/>;
 }
 
-Skeleton.Text = ({className = ""}) => <Skeleton className={`h-4 ${className}`}/>;
-Skeleton.Circle = ({className = ""}) => <Skeleton className={`rounded-full ${className}`}/>;
-Skeleton.Image = ({className = ""}) => <Skeleton className={`aspect-[16/10] w-full animate-pulse ${className}`}/>;
+function SkeletonText({className = ""}) {
+    return <Skeleton className={`h-4 ${className}`}/>;
+}
 
-/** ————————————————————————————————————————————
- *  Badge / Feature
- *  ———————————————————————————————————————————— */
+SkeletonText.displayName = "Skeleton.Text";
+Skeleton.Text = SkeletonText;
+
+function SkeletonCircle({className = ""}) {
+    return <Skeleton className={`rounded-full ${className}`}/>;
+}
+
+SkeletonCircle.displayName = "Skeleton.Circle";
+Skeleton.Circle = SkeletonCircle;
+
+function SkeletonImage({className = ""}) {
+    return <Skeleton className={`aspect-[16/10] w-full animate-pulse ${className}`}/>;
+}
+
+SkeletonImage.displayName = "Skeleton.Image";
+Skeleton.Image = SkeletonImage;
+
 function Badge({children}) {
-    return (
-        <span
+    return (<span
             className="rounded-full bg-black/60 backdrop-blur px-2.5 py-1 text-[11px] font-medium text-white shadow-sm">
             {children}
-        </span>
-    );
+        </span>);
 }
 
 function Feature({label, value}) {
-    return (
-        <div className="text-[12px] text-gray-700">
+    return (<div className="text-[12px] text-gray-700">
             <span className="font-semibold text-gray-900">{label}: </span>
             <span>{value}</span>
-        </div>
-    );
+        </div>);
 }
 
-/** ————————————————————————————————————————————
- *  Kafelek z obrazkiem + lokalny skeleton obrazu
- *  ———————————————————————————————————————————— */
 function ApartmentCard({item}) {
     const [imgLoaded, setImgLoaded] = useState(false);
-    // bez useMemo — proste wyprowadzenie za każdym renderem
     const imageUrl = firstImageUrl(item);
     const photosCount = Array.isArray(item?.images) ? item.images.length : 0;
 
-    return (
-        <div
+    return (<div
             className="group relative bg-white rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden transition-all duration-300">
-            {/* Obszar obrazka */}
             <div className="relative">
-                {/* Skeleton obrazu (przykryty po załadowaniu) */}
-                {!imgLoaded && (
-                    <div className="absolute inset-0 z-0">
+                {!imgLoaded && (<div className="absolute inset-0 z-0">
                         <Skeleton.Image/>
-                    </div>
-                )}
+                    </div>)}
 
                 <div className={`relative aspect-[16/10] ${imgLoaded ? "" : "opacity-0"}`}>
                     <Image
@@ -103,20 +94,15 @@ function ApartmentCard({item}) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent"/>
 
-                    {/* Badges lewy górny */}
                     <div className="absolute top-3 left-3 flex gap-2">
                         {item?.area ? <Badge>{item.area} m²</Badge> : null}
                         {item?.numberOfRooms ? <Badge>{item.numberOfRooms} pokoje</Badge> : null}
                     </div>
 
-                    {/* Licznik zdjęć prawy górny */}
-                    {photosCount > 0 && (
-                        <div className="absolute top-3 right-3">
+                    {photosCount > 0 && (<div className="absolute top-3 right-3">
                             <Badge>{photosCount} zdjęć</Badge>
-                        </div>
-                    )}
+                        </div>)}
 
-                    {/* Tytuł / adres */}
                     <div className="absolute bottom-3 left-3 right-3 text-white drop-shadow">
                         <Link
                             href={`/dashboard/apartments/${item.id}`}
@@ -131,7 +117,6 @@ function ApartmentCard({item}) {
                 </div>
             </div>
 
-            {/* Treść pod obrazem */}
             <div className="p-4">
                 <div className="grid grid-cols-3 gap-2">
                     <Feature label="Piętro" value={fmt(item?.floor)}/>
@@ -161,13 +146,9 @@ function ApartmentCard({item}) {
                     </Link>
                 </div>
             </div>
-        </div>
-    );
+        </div>);
 }
 
-/** ————————————————————————————————————————————
- *  Widok listy użytkownika z pełnym skeletonem siatki
- *  ———————————————————————————————————————————— */
 export default function UserApartments({limit = null}) {
     const [apartments, setApartments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -179,9 +160,7 @@ export default function UserApartments({limit = null}) {
             try {
                 setIsLoading(true);
                 const response = await fetch(`${baseUrl}/api/apartments`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({accessToken}),
+                    method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({accessToken}),
                 });
                 if (response.status === 401) {
                     handleLogout();
@@ -198,19 +177,15 @@ export default function UserApartments({limit = null}) {
                 setIsLoading(false);
             }
         };
-        if (accessToken) fetchUserApartments();
-        else {
+        if (accessToken) fetchUserApartments(); else {
             console.warn("Access token is not available");
             setIsLoading(false);
         }
     }, [accessToken]);
 
-    // bez useMemo — proste filtrowanie w renderze
     const myApartments = (apartments || []).filter((a) => a?.landlordId === userId);
 
-    // Skeleton element odzwierciedlający kartę
-    const CardSkeleton = () => (
-        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden">
+    const CardSkeleton = () => (<div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden">
             <Skeleton.Image/>
             <div className="p-4">
                 <div className="grid grid-cols-3 gap-2">
@@ -223,29 +198,17 @@ export default function UserApartments({limit = null}) {
                     <Skeleton className="h-9 w-24"/>
                 </div>
             </div>
-        </div>
-    );
+        </div>);
 
-    return (
-        <>
+    return (<>
 
             <div className="">
-                {isLoading ? (
+                {isLoading ? (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
+                        {Array.from({length: 6}).map((_, i) => (<CardSkeleton key={i}/>))}
+                    </div>) : myApartments?.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
-                        {Array.from({length: 6}).map((_, i) => (
-                            <CardSkeleton key={i}/>
-                        ))}
-                    </div>
-                ) : myApartments?.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px] text-black">
-                        {myApartments.map((item) => (
-                            <ApartmentCard key={item.id} item={item}/>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-gray-500">Brak mieszkań do wyświetlenia.</p>
-                )}
+                        {myApartments.map((item) => (<ApartmentCard key={item.id} item={item}/>))}
+                    </div>) : (<p className="text-gray-500">Brak mieszkań do wyświetlenia.</p>)}
             </div>
-        </>
-    );
+        </>);
 }

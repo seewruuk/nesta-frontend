@@ -2,12 +2,11 @@ import UserInvoices from "@/components/UserInvoices";
 import AddRentaOfferWidget from "@/components/AddApartmentWidget";
 import AddApartmentWidget from "@/components/AddApartmentWidget";
 
-export default function Page(){
+export default function Page() {
 
 
-    return(
-        <>
-            <UserInvoices />
+    return (<>
+            <UserInvoices/>
 
             <AddApartmentWidget
                 type="rental-offers"
@@ -18,6 +17,5 @@ export default function Page(){
                 href="/dashboard/invoices/add"
             />
 
-        </>
-    )
+        </>)
 }

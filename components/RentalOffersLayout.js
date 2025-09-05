@@ -1,26 +1,22 @@
 "use client";
-
-import { useState, useEffect, Suspense, useContext } from "react";
-import { useSearchParams } from "next/navigation";
+import {useState, useEffect, Suspense, useContext} from "react";
+import {useSearchParams} from "next/navigation";
 import FiltersTopBar from "@/components/FiltersTopBar";
 import ApartmentsList from "@/components/ApartmentsList";
 import PageTransition from "@/components/PageTransition";
 import Loading from "@/components/Loading";
-import { AuthContext } from "@/context/AuthContext";
-import Debugger from "@/components/Debugger";
+import {AuthContext} from "@/context/AuthContext";
 
 export default function RentalOffersLayout() {
-    return (
-        <Suspense fallback={<Loading />}>
+    return (<Suspense fallback={<Loading/>}>
             <PageTransition>
-                <RentalOffersRoot />
+                <RentalOffersRoot/>
             </PageTransition>
-        </Suspense>
-    );
+        </Suspense>);
 }
 
 function RentalOffersRoot() {
-    const { accessToken , handleLogout  } = useContext(AuthContext);
+    const {accessToken, handleLogout} = useContext(AuthContext);
     const searchParams = useSearchParams();
 
     const [offers, setOffers] = useState([]);
@@ -55,9 +51,7 @@ function RentalOffersRoot() {
         const priceRangeParam = searchParams.get("priceRange");
 
         setFilters(prev => ({
-            ...prev,
-            location: locationParam,
-            priceRange: priceRangeParam ? Number(priceRangeParam) : prev.priceRange,
+            ...prev, location: locationParam, priceRange: priceRangeParam ? Number(priceRangeParam) : prev.priceRange,
         }));
     }, [searchParams]);
 
@@ -68,15 +62,14 @@ function RentalOffersRoot() {
                 setError("");
 
                 const res = await fetch("/api/rental-offers", {
-                    method: "GET",
-                    headers: {
+                    method: "GET", headers: {
                         "Content-Type": "application/json",
                     },
                 });
 
                 const response = await res.json();
                 const adapted = (response?.offers ?? [])
-                    .filter((o) => o.listed === true)   // ⬅️ tu filtrujemy tylko oferty z listed === true
+                    .filter((o) => o.listed === true)
                     .map((o) => {
                         const furnishingMap = {
                             FURNISHED: "Umeblowane",
@@ -84,9 +77,7 @@ function RentalOffersRoot() {
                             PARTLY_FURNISHED: "Częściowo umeblowane",
                             PARTIALLY_FURNISHED: "Częściowo umeblowane",
                         };
-                        const furnishing =
-                            furnishingMap[o.furnishingStatus] ??
-                            (o.apartment?.furnished ? "Umeblowane" : "Nieumeblowane");
+                        const furnishing = furnishingMap[o.furnishingStatus] ?? (o.apartment?.furnished ? "Umeblowane" : "Nieumeblowane");
 
                         const amenities = [];
                         if (o.apartment?.hasBalcony) amenities.push("Balkon");
@@ -97,9 +88,7 @@ function RentalOffersRoot() {
 
                         const smokingAllowed = o.smokingPolicy === "YES";
                         const petsAccepted = o.petPolicy === "YES";
-                        const disabledAccess = Boolean(
-                            o.accessibleForDisabled || o.apartment?.disabledAccessible
-                        );
+                        const disabledAccess = Boolean(o.accessibleForDisabled || o.apartment?.disabledAccessible);
 
                         return {
                             id: o.id,
@@ -147,45 +136,32 @@ function RentalOffersRoot() {
     const displayed = offers.filter((item) => {
         if (filters.location) {
             const q = filters.location.toLowerCase();
-            const hit =
-                (item.city || "").toLowerCase().includes(q) ||
-                (item.address || "").toLowerCase().includes(q);
+            const hit = (item.city || "").toLowerCase().includes(q) || (item.address || "").toLowerCase().includes(q);
             if (!hit) return false;
         }
 
-        if (typeof filters.priceRange === "number" && item.price > filters.priceRange)
-            return false;
+        if (typeof filters.priceRange === "number" && item.price > filters.priceRange) return false;
 
-        if (filters.propertyType && item.propertyType !== filters.propertyType)
-            return false;
+        if (filters.propertyType && item.propertyType !== filters.propertyType) return false;
 
         if (filters.minArea !== undefined && item.area < filters.minArea) return false;
         if (filters.maxArea !== undefined && item.area > filters.maxArea) return false;
 
-        if (
-            filters.billsIncluded !== undefined &&
-            item.utilitiesIncluded !== filters.billsIncluded
-        )
-            return false;
+        if (filters.billsIncluded !== undefined && item.utilitiesIncluded !== filters.billsIncluded) return false;
 
-        if (filters.deposit !== undefined && (item.deposit > 0) !== filters.deposit)
-            return false;
+        if (filters.deposit !== undefined && (item.deposit > 0) !== filters.deposit) return false;
 
         if (Array.isArray(filters.furnishing) && filters.furnishing.length > 0) {
             if (!filters.furnishing.includes(item.furnishing)) return false;
         }
 
         if (Array.isArray(filters.roomsCount) && filters.roomsCount.length > 0) {
-            const okRooms = filters.roomsCount.some((val) =>
-                val === "4+" ? item.rooms >= 4 : item.rooms === Number(val)
-            );
+            const okRooms = filters.roomsCount.some((val) => val === "4+" ? item.rooms >= 4 : item.rooms === Number(val));
             if (!okRooms) return false;
         }
 
         if (Array.isArray(filters.bathrooms) && filters.bathrooms.length > 0) {
-            const okBath = filters.bathrooms.some((val) =>
-                val === "3+" ? item.bathrooms >= 3 : item.bathrooms === Number(val)
-            );
+            const okBath = filters.bathrooms.some((val) => val === "3+" ? item.bathrooms >= 3 : item.bathrooms === Number(val));
             if (!okBath) return false;
         }
 
@@ -194,73 +170,32 @@ function RentalOffersRoot() {
             if (!allPresent) return false;
         }
 
-        if (
-            filters.shortTermRental !== undefined &&
-            item.shortTermRental !== filters.shortTermRental
-        )
-            return false;
+        if (filters.shortTermRental !== undefined && item.shortTermRental !== filters.shortTermRental) return false;
 
-        if (
-            typeof filters.smokingAllowed === "boolean" &&
-            item.smokingAllowed !== filters.smokingAllowed
-        )
-            return false;
+        if (typeof filters.smokingAllowed === "boolean" && item.smokingAllowed !== filters.smokingAllowed) return false;
 
-        if (
-            filters.disabledAccess !== undefined &&
-            item.disabledAccess !== filters.disabledAccess
-        )
-            return false;
+        if (filters.disabledAccess !== undefined && item.disabledAccess !== filters.disabledAccess) return false;
 
-        if (
-            typeof filters.petsAccepted === "boolean" &&
-            item.petsAccepted !== filters.petsAccepted
-        )
-            return false;
+        if (typeof filters.petsAccepted === "boolean" && item.petsAccepted !== filters.petsAccepted) return false;
 
-        // NOWE FILTRY ⬇️⬇️⬇️
+        if (filters.availableFrom && new Date(item.availableFrom) < new Date(filters.availableFrom)) return false;
 
-        if (
-            filters.availableFrom &&
-            new Date(item.availableFrom) < new Date(filters.availableFrom)
-        )
-            return false;
+        if (filters.availableUntil && new Date(item.availableUntil) > new Date(filters.availableUntil)) return false;
 
-        if (
-            filters.availableUntil &&
-            new Date(item.availableUntil) > new Date(filters.availableUntil)
-        )
-            return false;
+        if (filters.preferredEmploymentStatus && item.preferredEmploymentStatus !== filters.preferredEmploymentStatus) return false;
 
-        if (
-            filters.preferredEmploymentStatus &&
-            item.preferredEmploymentStatus !== filters.preferredEmploymentStatus
-        )
-            return false;
+        if (filters.hasStorageRoomInBasement !== undefined && item.hasStorageRoomInBasement !== filters.hasStorageRoomInBasement) return false;
 
-        if (
-            filters.hasStorageRoomInBasement !== undefined &&
-            item.hasStorageRoomInBasement !== filters.hasStorageRoomInBasement
-        )
-            return false;
-
-        if (
-            filters.parkingType &&
-            item.parkingType !== filters.parkingType
-        )
-            return false;
+        if (filters.parkingType && item.parkingType !== filters.parkingType) return false;
 
         return true;
     });
 
-    if (loading) return <Loading />;
+    if (loading) return <Loading/>;
     if (error) return <div className="p-6 text-red-500">Błąd: {error}</div>;
 
-    return (
-        <div className="bg-gray-50 min-h-screen pt-[100px] px-4">
-            <FiltersTopBar filters={filters} setFilters={setFilters} />
-            <ApartmentsList apartments={displayed} />
-            {/*<Debugger data={displayed}  />*/}
-        </div>
-    );
+    return (<div className="bg-gray-50 min-h-screen pt-[100px] px-4">
+            <FiltersTopBar filters={filters} setFilters={setFilters}/>
+            <ApartmentsList apartments={displayed}/>
+        </div>);
 }
