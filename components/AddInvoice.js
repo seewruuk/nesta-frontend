@@ -123,7 +123,7 @@ export default function AddInvoice() {
             rentalOfferId: parseInt(form.rentalOfferId),
             amountCents: parseInt(form.amountCents),
             currency: form.currency || "PLN",
-            receiverId, // ⬅️ teraz z wybranej oferty
+            receiverId,
         };
 
         try {

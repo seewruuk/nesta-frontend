@@ -124,7 +124,7 @@ export default function AddEditOffer({type = "add", body, offerId, dataOfferApar
 
     useEffect(() => {
         const fetchUserApartments = async () => {
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;``
             try {
                 const response = await fetch(`${baseUrl}/api/apartments`, {
                     method: "POST", headers: {
